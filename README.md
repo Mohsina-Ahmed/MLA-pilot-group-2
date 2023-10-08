@@ -1,4 +1,4 @@
-# MLA Fitness App 
+# MLA Pilot - Fitness App 
 
 A simple and interactive fitness tracking application built with multiple microservices and programming languages. This application allows users to track their exercises and monitor their progress over time.
 
@@ -25,8 +25,8 @@ The Activity Tracking functionality uses the MERN stack (MongoDB, Express.js, Re
 ### Clone the repository
 
 ```sh
-git clone git@github.com:nadinedelia/mla-fitnessapp.git
-cd mla-fitnessapp
+git clone git@github.com:CodeFirstGirls/MLA-pilot.git
+cd MLA-Pilot
 ```
 
 ### Install dependencies
