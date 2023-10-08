@@ -1,0 +1,39 @@
+<html>
+    <head>
+        <title>{{t}}</title>
+        <!-- Add the link to your CSS file here -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    </head>
+    <body>
+        <h1>{{ h }}</h1>
+        <ul>
+            <li style="float:right"><a href="/about">About</a></li>
+        </ul>
+
+        {% if error %}
+            <div class="alert alert-danger">
+                <strong>Error!</strong> {{ error }}
+            </div>
+        {% endif %}
+
+        <hr>
+
+        {% if activities[0] %}
+            <b><big>Activity list :</big></b>
+            <ul>
+                {% for activity in activities %}
+                    <li>
+                        <span class="name">{{ activity["exerciseType"] }}: </span> 
+                        <span class="duration">{{ activity["duration"] }} minutes</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="danger">
+                <h4>No Exercises</h4>
+            </div>
+        {% endif %}
+
+        <hr/>
+    </body>
+</html>

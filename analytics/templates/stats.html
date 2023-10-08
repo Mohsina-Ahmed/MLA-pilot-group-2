@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>User Statistics</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container">
+    <h1 class="my-4">Weekly exercise Statistics for {{ user }}</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Exercise Type</th>
+                <th scope="col">Total Duration (minutes)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stat in stats %}
+            <tr>
+                <td>{{ stat._id }}</td>
+                <!-- <td>{{ stat.exerciseType }}</td> -->
+                <td>{{ stat.duration }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
