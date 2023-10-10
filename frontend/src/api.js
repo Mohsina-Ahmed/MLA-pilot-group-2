@@ -1,6 +1,14 @@
 import axios from 'axios';
 
-const baseURL = process.env.BASE_URL || 'http://localhost:5300';
+function getUrl() {
+    if (process.env.CODESPACES === "true") {
+        return `https://${process.env.CODESPACE_NAME}-5300.app.github.dev`;
+    } else {
+        return `http://localhost:5300`;
+    }
+}
+
+const baseURL = getUrl();
 
 const api = axios.create({
     baseURL

@@ -1,0 +1,29 @@
+{
+	"name": "Node.js & Python & Java",
+	"build": { "dockerfile": "Dockerfile" },
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:1": {
+			"version": "latest",
+			"moby": true
+		}
+	},
+	"customizations": {
+		"vscode": {
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash",
+				"python.pythonPath": "/usr/local/bin/python"
+            },
+			"extensions": [
+				"streetsidesoftware.code-spell-checker",
+                "dbaeumer.vscode-eslint", 
+                "ms-python.python", 
+                "vscjava.vscode-java-pack",
+                "mongodb.mongodb-vscode",
+				"ms-azuretools.vscode-docker"
+			]
+		}
+	},
+
+	"postCreateCommand": "npm install"
+
+}
