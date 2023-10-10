@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavbarComponent from './components/navbar';
@@ -12,6 +12,14 @@ import Signup from './components/signup';
 function App() {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
+  const handleLogout = () => {
+    setIsLoggedIn(false); 
+  };
+
+  const onNavigate = (route) => {
+    console.log('Navigating to', route);
+  };
+
   return (
     <div className="App">
       <Router>
@@ -19,7 +27,7 @@ function App() {
           <h1>CFG Fitness App</h1>
         </div>
 
-        {isLoggedIn && <NavbarComponent />}
+        {isLoggedIn && <NavbarComponent onLogout={handleLogout} onNavigate={onNavigate} />} {/* Passed onNavigate as prop here */}
 
         <div className="componentContainer">
           <Routes>
@@ -37,4 +45,3 @@ function App() {
 }
 
 export default App;
-
