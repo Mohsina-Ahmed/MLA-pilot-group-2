@@ -3,5 +3,8 @@
     "editor.defaultFormatter": "ms-python.autopep8"
   },
   "python.formatting.provider": "none",
-  "cSpell.words": ["jsonify"]
+  "cSpell.words": [
+    "jsonify"
+  ],
+  "java.compile.nullAnalysis.mode": "automatic"
 }

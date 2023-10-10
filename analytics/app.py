@@ -6,6 +6,7 @@ from flask_cors import CORS
 from urllib.parse import quote_plus
 from bson import json_util
 import os
+import config
 
 app = Flask(__name__)
 CORS(app)
@@ -14,8 +15,9 @@ load_dotenv()
 title = "Weekly Exercise Tracker Statistics"
 heading = "MLA Flask Microservice"
 user = "testuser"
+mongo_uri = config.MONGO_URI
 
-client = MongoClient(os.getenv('MONGODB_URI'))
+client = MongoClient(os.getenv(mongo_uri))
 db = client.test
 
 

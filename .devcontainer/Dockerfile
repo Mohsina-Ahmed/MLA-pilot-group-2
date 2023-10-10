@@ -17,8 +17,8 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 # Npm packages installation
 RUN npm install -g cors axios express create-react-app
 
-# Install Flask using pip (optional if you need Python/Flask)
-RUN pip3 install flask
+# Install Python requirements
+RUN pip3 install Flask pymongo gunicorn python-dotenv Flask-PyMongo Flask-CORS
 
 # Clean up
 RUN rm -rf /var/lib/apt/lists/*

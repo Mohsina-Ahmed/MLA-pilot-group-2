@@ -17,7 +17,7 @@ const Signup = ({ onSignup }) => {
     setError('');
 
     try {
-      const response = await axios.post('/api/auth/signup', formData);
+      const response = await axios.post('http://localhost:8080/api/auth/signup', formData);
 
       if (response.status === 200) {
         console.log('User registered successfully');

@@ -5,7 +5,7 @@ const Statistics = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    const url = 'http://127.0.0.1:5000/stats';
+    const url = 'http://127.0.0.1:6000/stats';
 
     axios.get(url)
       .then(response => {
