@@ -12,6 +12,7 @@ const NavbarComponent = ({ onNavigate }) => {
       <Nav.Link className="custom-nav-link" onClick={() => onNavigate('TrackExercise')}>Track New Exercise</Nav.Link>
       <Nav.Link className="custom-nav-link" onClick={() => onNavigate('Statistics')}>Statistics</Nav.Link>
       <Nav.Link className="custom-nav-link" onClick={() => onNavigate('GoalSetting')}>Goal Setting</Nav.Link>
+      <Nav.Link className="custom-nav-link" onClick={handleLogout}>Logout</Nav.Link>
         </Nav>
         </Nav>
       </Navbar.Collapse>
