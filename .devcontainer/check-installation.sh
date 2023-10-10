@@ -42,4 +42,4 @@ for lib in cors axios express create-react-app; do
     fi
 done
 
-echo "Done checking installations
+echo "Done checking installations."

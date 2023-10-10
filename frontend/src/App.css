@@ -114,3 +114,7 @@ input#duration {
 .custom-nav-link {
   margin-right: 40px; /* Adjust this value as needed */
 }
+
+.signup {
+  margin: 20px;
+}

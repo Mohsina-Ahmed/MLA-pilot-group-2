@@ -30,7 +30,7 @@ cd MLA-Pilot
 
 ### Building with Docker
 
-```s
+```sh
 docker-compose up
 ```
 
