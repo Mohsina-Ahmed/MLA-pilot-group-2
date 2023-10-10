@@ -1,7 +1,24 @@
 import React from 'react';
 import { Navbar, Nav } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
-const NavbarComponent = ({ onLogout, onNavigate }) => {
+const NavbarComponent = ({ onLogout }) => {
+  const navigate = useNavigate();
+
+  const onNavigate = (route) => {
+    console.log('Navigating to:', route);  
+    switch(route) {
+      case 'TrackExercise':
+        navigate('/trackExercise');
+        break;
+      case 'Statistics':
+        navigate('/statistics');
+        break;
+      default:
+        console.error('Invalid route:', route);
+    }
+  };
+
   return (
     <Navbar className="nav-back" expand="lg">
       {/* <Navbar.Brand href="#">CFG Fitness App</Navbar.Brand> */}

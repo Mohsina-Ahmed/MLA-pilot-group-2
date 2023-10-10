@@ -16,10 +16,6 @@ function App() {
     setIsLoggedIn(false); 
   };
 
-  const onNavigate = (route) => {
-    console.log('Navigating to', route);
-  };
-
   return (
     <div className="App">
       <Router>
@@ -27,7 +23,7 @@ function App() {
           <h1>CFG Fitness App</h1>
         </div>
 
-        {isLoggedIn && <NavbarComponent onLogout={handleLogout} onNavigate={onNavigate} />} {/* Passed onNavigate as prop here */}
+        {isLoggedIn && <NavbarComponent onLogout={handleLogout} />}
 
         <div className="componentContainer">
           <Routes>
