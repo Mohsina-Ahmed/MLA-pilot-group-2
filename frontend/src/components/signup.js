@@ -17,20 +17,20 @@ const Signup = ({ onSignup }) => {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:8080/api/auth/signup', formData);
+        const response = await axios.post('http://localhost:8080/api/auth/signup', formData);
 
-      if (response.status === 200) {
-        console.log('User registered successfully');
-        onSignup();
-      } else {
-        console.error('Failed to register user');
-        setError('Failed to register. Please try again.');
-      }
+        if (response.data === 'User registered successfully!') {
+            console.log('User registered successfully');
+            onSignup();
+        } else {
+            setError(response.data);
+        }
     } catch (error) {
-      console.error('Error during registration', error);
-      setError('An error occurred during registration. Please try again.');
+        console.error('Error during registration', error);
+        setError(error.response?.data || 'An error occurred during registration. Please try again.');
     }
-  };
+};
+
 
   return (
     <div>
