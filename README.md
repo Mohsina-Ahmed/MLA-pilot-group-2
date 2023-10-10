@@ -70,3 +70,14 @@ show registered users:
 ```
 db.users.find()
 ```
+
+### Running Flask application
+```
+flask run
+```
+
+### Running Java application
+```
+./gradlew clean build
+./gradlew bootRun
+```

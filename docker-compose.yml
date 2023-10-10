@@ -18,6 +18,17 @@ services:
     depends_on:
       - mongodb
 
+  authservice:
+    build:
+      context: ./authservice
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "5800:5800"
+    depends_on:
+      - mongodb
+
   mongodb:
     image: mongo:latest
     environment:
