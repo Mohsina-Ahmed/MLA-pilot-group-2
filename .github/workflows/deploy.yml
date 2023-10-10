@@ -2,6 +2,8 @@ name: Deploy to AWS ECR
 
 on:
   push:
+    branches:
+      - main
 
 jobs:
   build:
@@ -37,8 +39,28 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: mla-fitnessapp-activity
-          IMAGE_TAG: latest # change this to use git sha, if needed, with ${{ github.sha }}
+          IMAGE_TAG: latest
         run: |
           cd activity-tracking
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Build, tag, and push image to Amazon ECR (AuthService)
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: mla-fitnessapp-authservice
+          IMAGE_TAG: latest
+        run: |
+          cd authservice
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Build, tag, and push image to Amazon ECR (Analytics)
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: mla-fitnessapp-analytics
+          IMAGE_TAG: latest
+        run: |
+          cd analytics
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
