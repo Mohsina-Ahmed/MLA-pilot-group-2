@@ -24,35 +24,55 @@ The Activity Tracking functionality uses the MERN stack (MongoDB, Express.js, Re
 ### Clone the repository
 
 ```sh
-git clone git@github.com:nadinedelia/mla-fitnessapp.git
-cd mla-fitnessapp
+git clone git@github.com:CodeFirstGirls/MLA-pilot.git
+cd MLA-Pilot
 ```
-
-### Install dependencies
-
-```sh
-cd activity-tracking
-npm install
-cd ../frontend
-npm install
-```
-
-### Start the development servers
-
-```sh
-cd activity-tracking
-nodemon server
-cd ../frontend
-npm start
-```
-
-### Deployment
-The application is containerized using Docker and can be deployed on any platform that supports Docker containers. For AWS deployment, a GitHub Actions pipeline is configured for CI/CD.
 
 ### Building with Docker
 
-```
+```s
 docker-compose up
+```
+
+## Local Development without using Docker-Compose
+
+#### Check needed packages are installed:
+```sh
+sh .devcontainer/check-installation.sh 
+```
+
+#### spin up MongoDB:
+```
+docker run --name mymongo -d -p 27017:27017 -v mongodbdata:/data/db mongo:latest
+```
+
+#### Running Node.js Activity Tracker
+
+```sh
+cd activity-tracking
+npm install
+nodemon server
+```
+
+#### Running Flask application
+```sh
+cd analytics
+flask run
+```
+
+#### Running Java application
+```sh
+cd authservice
+./gradlew clean build
+./gradlew bootRun
+```
+
+#### Start the Frontend 
+
+```sh
+cd frontend
+npm install
+npm start
 ```
 
 ### Connect to MongoDB
@@ -71,13 +91,5 @@ show registered users:
 db.users.find()
 ```
 
-### Running Flask application
-```
-flask run
-```
-
-### Running Java application
-```
-./gradlew clean build
-./gradlew bootRun
-```
+## Deployment
+The application is containerized using Docker and can be deployed on any platform that supports Docker containers. For AWS deployment, a GitHub Actions pipeline is configured for CI/CD.
