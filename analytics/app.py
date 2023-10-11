@@ -33,11 +33,33 @@ def index():
 @app.route('/stats')
 def stats():
     pipeline = [
-        {"$match": {"username": user}},
-        {"$group": {
-            "_id": "$exerciseType",
-            "duration": {"$sum": "$duration"}
-        }}
+        {
+            "$group": {
+                "_id": {
+                    "username": "$username",
+                    "exerciseType": "$exerciseType"
+                },
+                "totalDuration": {"$sum": "$duration"}
+            }
+        },
+        {
+            "$group": {
+                "_id": "$_id.username",
+                "exercises": {
+                    "$push": {
+                        "exerciseType": "$_id.exerciseType",
+                        "totalDuration": "$totalDuration"
+                    }
+                }
+            }
+        },
+        {
+            "$project": {
+                "username": "$_id",
+                "exercises": 1,
+                "_id": 0
+            }
+        }
     ]
 
     stats = list(db.exercises.aggregate(pipeline))
