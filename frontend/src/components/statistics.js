@@ -21,7 +21,7 @@ const Statistics = ({ currentUser }) => {
 
   return (
     <div className="stats-container">
-      <h4>Well done, {currentUser}! Here are your stats:</h4>
+      <h4>Well done, {currentUser}! This is your overall effort:</h4>
       {currentUserData ? (
         currentUserData.exercises.map((item, index) => (
           <div key={index} className="exercise-data">

@@ -12,6 +12,7 @@ const Signup = ({ onSignup }) => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+
   const handleSignup = async (e) => {
     e.preventDefault();
     setError('');
@@ -21,7 +22,7 @@ const Signup = ({ onSignup }) => {
 
         if (response.data === 'User registered successfully!') {
             console.log('User registered successfully');
-            onSignup();
+            onSignup(formData.username);  // Pass the username to the onSignup callback
         } else {
             setError(response.data);
         }
@@ -29,7 +30,7 @@ const Signup = ({ onSignup }) => {
         console.error('Error during registration', error);
         setError(error.response?.data || 'An error occurred during registration. Please try again.');
     }
-};
+  };
 
 
   return (

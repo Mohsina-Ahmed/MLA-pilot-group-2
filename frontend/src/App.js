@@ -9,6 +9,7 @@ import Statistics from './components/statistics';
 import Footer from './components/footer';
 import Login from './components/login';
 import Signup from './components/signup';
+import Journal from './components/journal';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -36,9 +37,13 @@ function App() {
         <div className="componentContainer">
           <Routes>
             <Route path="/login" element={isLoggedIn ? <Navigate to="/" /> : <Login onLogin={handleLogin} />} />
-            <Route path="/signup" element={isLoggedIn ? <Navigate to="/" /> : <Signup onSignup={() => setIsLoggedIn(true)} />} />
+            <Route path="/signup" element={isLoggedIn ? <Navigate to="/" /> : <Signup onSignup={(username) => {
+              setIsLoggedIn(true);
+              setCurrentUser(username);
+            }} />} />
             <Route path="/trackExercise" element={isLoggedIn ? <TrackExercise currentUser={currentUser} /> : <Navigate to="/login" />} />
             <Route path="/statistics" element={isLoggedIn ? <Statistics currentUser={currentUser} /> : <Navigate to="/login" />} />
+            <Route path="/journal" element={isLoggedIn ? <Journal currentUser={currentUser} /> : <Navigate to="/login" />} />
             <Route path="/" element={isLoggedIn ? <Navigate to="/trackExercise" /> : <Navigate to="/login" />} />
           </Routes>
         </div>

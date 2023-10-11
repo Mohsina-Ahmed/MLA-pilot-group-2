@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 from pymongo import MongoClient
 from flask_pymongo import PyMongo
 from flask_cors import CORS
@@ -7,6 +7,7 @@ from urllib.parse import quote_plus
 from bson import json_util
 import traceback
 import os
+from datetime import datetime, timedelta
 # import config
 
 app = Flask(__name__)
@@ -71,6 +72,60 @@ def user_stats(username):
     pipeline = [
         {
             "$match": {"username": username}
+        },
+        {
+            "$group": {
+                "_id": {
+                    "username": "$username",
+                    "exerciseType": "$exerciseType"
+                },
+                "totalDuration": {"$sum": "$duration"}
+            }
+        },
+        {
+            "$group": {
+                "_id": "$_id.username",
+                "exercises": {
+                    "$push": {
+                        "exerciseType": "$_id.exerciseType",
+                        "totalDuration": "$totalDuration"
+                    }
+                }
+            }
+        },
+        {
+            "$project": {
+                "username": "$_id",
+                "exercises": 1,
+                "_id": 0
+            }
+        }
+    ]
+
+    stats = list(db.exercises.aggregate(pipeline))
+    return jsonify(stats=stats)
+
+
+@app.route('/api/stats/weekly/', methods=['GET'])
+def weekly_user_stats():
+    username = request.args.get('user')
+    start_date_str = request.args.get('start')
+    end_date_str = request.args.get('end')
+
+    # Parse the dates
+    date_format = "%Y-%m-%d"
+    start_date = datetime.strptime(start_date_str, date_format)
+    end_date = datetime.strptime(end_date_str, date_format)
+
+    pipeline = [
+        {
+            "$match": {
+                "username": username,
+                "date": {
+                    "$gte": start_date,
+                    "$lte": end_date
+                }
+            }
         },
         {
             "$group": {
