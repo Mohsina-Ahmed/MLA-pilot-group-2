@@ -41,10 +41,8 @@ services:
       context: ./authservice
       dockerfile: Dockerfile
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=cfgmla23
-      - MONGO_REPLICA_HOST=host.docker.internal
-      - MONGO_REPLICA_PORT=27017
+      - SPRING_DATA_MONGODB_DATABASE=test
+      - SPRING_DATA_MONGODB_URI=mongodb://root:cfgmla23@mongodb:27017
     ports:
       - "8080:8080"
     depends_on:
