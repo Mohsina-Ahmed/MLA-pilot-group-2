@@ -10,6 +10,7 @@ The Activity Tracking functionality uses the MERN stack (MongoDB, Express.js, Re
 
 - User registration for personalized tracking
 - Log various types of exercises with descriptions, duration, and date
+- See weekly and overall statistics
 - Interactive UI with Material-UI components
 - Real-time data persistence with MongoDB
 
@@ -18,6 +19,9 @@ The Activity Tracking functionality uses the MERN stack (MongoDB, Express.js, Re
 - Node.js
 - MongoDB
 - npm or yarn
+- Python Flask
+- Java 8
+(all already installed in the devcontainer)
 
 ## Local Development
 
@@ -33,6 +37,12 @@ cd MLA-Pilot
 ```sh
 docker-compose up
 ```
+
+#### Spinning up a single service
+```sh
+docker-compose up servicename
+```
+
 
 ## Local Development without using Docker-Compose
 
@@ -86,10 +96,10 @@ show registered activities:
 db.exercises.find()
 ```
 
-show registered users:
-```
-db.users.find()
-```
+Currently there is just one database for the entire application. This will be changed in the microservices lab.
+
 
 ## Deployment
 The application is containerized using Docker and can be deployed on any platform that supports Docker containers. For AWS deployment, a GitHub Actions pipeline is configured for CI/CD.
+
+Currently there is only one pipeline deploying all services. This will be changed in the CI/CD lab.
