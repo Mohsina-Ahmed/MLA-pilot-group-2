@@ -66,10 +66,43 @@ def stats():
     return jsonify(stats=stats)
 
 
-@app.route("/list")
-def lists():
-    exercises = db.exercises.find()
-    return render_template('index.html', activities=exercises, t=title, h=heading)
+@app.route('/stats/<username>', methods=['GET'])
+def user_stats(username):
+    pipeline = [
+        {
+            "$match": {"username": username}
+        },
+        {
+            "$group": {
+                "_id": {
+                    "username": "$username",
+                    "exerciseType": "$exerciseType"
+                },
+                "totalDuration": {"$sum": "$duration"}
+            }
+        },
+        {
+            "$group": {
+                "_id": "$_id.username",
+                "exercises": {
+                    "$push": {
+                        "exerciseType": "$_id.exerciseType",
+                        "totalDuration": "$totalDuration"
+                    }
+                }
+            }
+        },
+        {
+            "$project": {
+                "username": "$_id",
+                "exercises": 1,
+                "_id": 0
+            }
+        }
+    ]
+
+    stats = list(db.exercises.aggregate(pipeline))
+    return jsonify(stats=stats)
 
 
 @app.errorhandler(Exception)

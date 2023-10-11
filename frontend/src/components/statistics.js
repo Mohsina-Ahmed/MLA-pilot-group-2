@@ -1,33 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './statistics.css';
 
 const Statistics = ({ currentUser }) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    const url = 'http://localhost:5050/stats';
+    const url = `http://localhost:5050/stats/${currentUser}`;
 
     axios.get(url)
       .then(response => {
-        const userData = response.data.stats.find(user => user.username === currentUser);
-        setData(userData ? userData.exercises : []);
+        setData(response.data.stats);
       })
       .catch(error => {
         console.error('There was an error fetching the data!', error);
       });
   }, [currentUser]);
 
+  const currentUserData = data.find(item => item.username === currentUser);
+
   return (
-    <div>
-      {data && data.length > 0 ? (
-        data.map((item, index) => (
-          <div key={index}>
-            <p>Exercise Type: {item.exerciseType}</p>
-            <p>Total Duration: {item.totalDuration}</p>
+    <div className="stats-container">
+      <h4>Well done, {currentUser}! Here are your stats:</h4>
+      {currentUserData ? (
+        currentUserData.exercises.map((item, index) => (
+          <div key={index} className="exercise-data">
+            <div><strong>{item.exerciseType}</strong></div>
+            <div>Total Duration: {item.totalDuration} min</div>
           </div>
         ))
       ) : (
-        <p>No data available for {currentUser}</p>
+        <p>No data available</p>
       )}
     </div>
   );

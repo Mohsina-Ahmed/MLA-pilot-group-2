@@ -25,7 +25,7 @@ const Login = ({ onLogin }) => {
     } catch (err) {
       setError('Failed to login');
     }
-  };
+};
 
   return (
     <div className="login-container">

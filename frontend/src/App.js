@@ -1,4 +1,5 @@
 import React from 'react';
+import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -10,17 +11,17 @@ import Login from './components/login';
 import Signup from './components/signup';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-  const [currentUser, setCurrentUser] = React.useState('');  // Added state for current user
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState(''); 
 
   const handleLogout = () => {
     setIsLoggedIn(false); 
-    setCurrentUser('');  // Clear the current user on logout
+    setCurrentUser(''); 
   };
 
-  const handleLogin = (username) => {  // Modified to accept a username parameter
+  const handleLogin = (username) => { 
     setIsLoggedIn(true);
-    setCurrentUser(username);  // Set the current user on login
+    setCurrentUser(username);
   };
 
   return (
