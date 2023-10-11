@@ -7,7 +7,7 @@ from urllib.parse import quote_plus
 from bson import json_util
 import traceback
 import os
-import config
+# import config
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}},
@@ -17,8 +17,9 @@ load_dotenv()
 title = "Weekly Exercise Tracker Statistics"
 heading = "MLA Flask Microservice"
 user = "testuser"
+mongo_uri = os.getenv('MONGO_URI')
 
-client = MongoClient(config.MONGO_URI)
+client = MongoClient(mongo_uri)
 db = client.test
 
 
@@ -26,7 +27,6 @@ db = client.test
 def index():
     exercises = db.exercises.find()
     exercises_list = list(exercises)
-
     return json_util.dumps(exercises_list)
 
 
