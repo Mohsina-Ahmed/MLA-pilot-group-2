@@ -8,10 +8,11 @@ import BikeIcon from '@material-ui/icons/DirectionsBike';
 import PoolIcon from '@material-ui/icons/Pool';
 import FitnessCenterIcon from '@material-ui/icons/FitnessCenter';
 import OtherIcon from '@material-ui/icons/HelpOutline';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
-const TrackExercise = () => {
+const TrackExercise = ({ currentUser }) => {
   const [state, setState] = useState({
-    username: '',
     exerciseType: '',
     description: '',
     duration: 0,
@@ -22,12 +23,16 @@ const TrackExercise = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
 
+    const dataToSubmit = {
+      username: currentUser,
+      ...state,
+    };
+
     try {
-      const response = await trackExercise(state);
+      const response = await trackExercise(dataToSubmit);
       console.log(response.data);
 
       setState({
-        username: '',
         exerciseType: '',
         description: '',
         duration: 0,
@@ -46,13 +51,13 @@ const TrackExercise = () => {
     <div>
       <h3>Track exercise</h3>
       <Form onSubmit={onSubmit} style={{ maxWidth: '400px', margin: 'auto' }}>
-        <Form.Group controlId="username" className="form-margin">
-          <Form.Label>Username:</Form.Label>
-          <Form.Control 
-            type="text" 
-            required 
-            value={state.username} 
-            onChange={(e) => setState({ ...state, username: e.target.value })}
+        
+        <Form.Group controlId="formDate" className="form-margin">
+          <Form.Label>Date:</Form.Label>
+          <DatePicker 
+            selected={state.date}
+            onChange={(date) => setState({ ...state, date })}
+            dateFormat="yyyy/MM/dd"
           />
         </Form.Group>
         <div style={{ marginBottom: '20px' }}>

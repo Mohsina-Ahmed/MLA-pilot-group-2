@@ -37,7 +37,7 @@ function App() {
           <Routes>
             <Route path="/login" element={isLoggedIn ? <Navigate to="/" /> : <Login onLogin={handleLogin} />} />
             <Route path="/signup" element={isLoggedIn ? <Navigate to="/" /> : <Signup onSignup={() => setIsLoggedIn(true)} />} />
-            <Route path="/trackExercise" element={isLoggedIn ? <TrackExercise /> : <Navigate to="/login" />} />
+            <Route path="/trackExercise" element={isLoggedIn ? <TrackExercise currentUser={currentUser} /> : <Navigate to="/login" />} />
             <Route path="/statistics" element={isLoggedIn ? <Statistics currentUser={currentUser} /> : <Navigate to="/login" />} />
             <Route path="/" element={isLoggedIn ? <Navigate to="/trackExercise" /> : <Navigate to="/login" />} />
           </Routes>
