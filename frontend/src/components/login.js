@@ -18,7 +18,7 @@ const Login = ({ onLogin }) => {
       });
 
       if (response.status === 200) {
-        onLogin();
+        onLogin(username);
       } else {
         setError('Invalid credentials');
       }
