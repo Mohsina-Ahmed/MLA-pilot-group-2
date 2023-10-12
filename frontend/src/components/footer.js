@@ -3,7 +3,7 @@ import React from 'react';
 const Footer = () => {
   return (
     <div className="footer">
-      © Copyright by Nadine for CFG 2023
+      © Copyright by CFG 2023
     </div>
   );
 }

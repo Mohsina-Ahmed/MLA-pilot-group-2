@@ -4,7 +4,7 @@ A simple and interactive fitness tracking application built with multiple micros
 
 The Activity Tracking functionality uses the MERN stack (MongoDB, Express.js, React, Node.js), the Analytics service uses Python/Flask and the Authentication Microservice using Java.
 
-![Screenshot](frontpage.png)  
+![Screenshot](screenshots/frontpage.png)  
 
 ## Current Features
 
