@@ -31,8 +31,14 @@ The Activity Tracking functionality uses the MERN stack (MongoDB, Express.js, Re
 1. Click on "Code"
 2. Switch to the "Codespaces" tab
 3. Create new Codespace from main
-
 ![Screenshot](screenshots/codespaces.png)
+
+4. Open Codespace in VS code for best experience:
+![Screenshot](screenshots/codespaces2.png)
+
+Walktrough:
+
+https://docs.github.com/en/codespaces/developing-in-a-codespace/using-github-codespaces-in-visual-studio-code
 
 
 #### Check needed packages are installed:
