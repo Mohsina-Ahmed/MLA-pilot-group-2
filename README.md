@@ -31,10 +31,12 @@ The Activity Tracking functionality uses the MERN stack (MongoDB, Express.js, Re
 1. Click on "Code"
 2. Switch to the "Codespaces" tab
 3. Create new Codespace from main
-![Screenshot](screenshots/codespaces.png)
+<img src="screenshots/codespaces.png" width="300"/>
+
 
 4. Open Codespace in VS code for best experience:
-![Screenshot](screenshots/codespaces2.png)
+<img src="screenshots/codespaces2.png" width="300"/>
+
 
 Walktrough:
 
