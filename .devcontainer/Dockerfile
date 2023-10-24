@@ -4,8 +4,9 @@ FROM mcr.microsoft.com/devcontainers/javascript-node:0-18
 # Install OpenJDK 8
 RUN apt-get update && \
     apt-get install -y wget apt-transport-https gnupg && \
-    wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add - && \
-    echo "deb https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/adoptopenjdk.list && \
+    wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public > /tmp/adoptopenjdk-archive-keyring.gpg && \
+    mv /tmp/adoptopenjdk-archive-keyring.gpg /etc/apt/trusted.gpg.d/ && \
+    echo "deb [signed-by=/etc/apt/trusted.gpg.d/adoptopenjdk-archive-keyring.gpg] https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/adoptopenjdk.list && \
     apt-get update && \
     apt-get install -y adoptopenjdk-8-hotspot && \
     apt-get clean;
