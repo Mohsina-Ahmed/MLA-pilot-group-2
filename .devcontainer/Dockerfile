@@ -1,15 +1,23 @@
 # Using Node.js base image
 FROM mcr.microsoft.com/devcontainers/javascript-node:0-18
 
-# Install OpenJDK 8
-RUN apt-get update && \
-    apt-get install -y wget apt-transport-https gnupg && \
-    wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public > /tmp/adoptopenjdk-archive-keyring.gpg && \
-    mv /tmp/adoptopenjdk-archive-keyring.gpg /etc/apt/trusted.gpg.d/ && \
-    echo "deb [signed-by=/etc/apt/trusted.gpg.d/adoptopenjdk-archive-keyring.gpg] https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/adoptopenjdk.list && \
-    apt-get update && \
-    apt-get install -y adoptopenjdk-8-hotspot && \
-    apt-get clean;
+# Install essential packages
+RUN apt-get update && apt-get install -y wget apt-transport-https gnupg
+
+# Download the GPG key and save it
+RUN wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public > /tmp/adoptopenjdk-archive-keyring.gpg
+
+# Move the key to the trusted directory
+RUN mv /tmp/adoptopenjdk-archive-keyring.gpg /etc/apt/trusted.gpg.d/
+
+# Add the repository information
+RUN echo "deb [signed-by=/etc/apt/trusted.gpg.d/adoptopenjdk-archive-keyring.gpg] https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/adoptopenjdk.list
+
+# Update package list and install OpenJDK 8
+RUN apt-get update && apt-get install -y adoptopenjdk-8-hotspot
+
+# Clean up
+RUN apt-get clean;
 
 # Install git, Python, pip, Gradle
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
