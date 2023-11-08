@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 router.post('/add', async (req, res) => {
   console.log(req.body)
   try {
-    const { username, exerciseType, description, duration, date } = req.body;  // Added exerciseType here
+    const { username, exerciseType, description, duration, date } = req.body;
 
     const newExercise = new Exercise({
       username,
