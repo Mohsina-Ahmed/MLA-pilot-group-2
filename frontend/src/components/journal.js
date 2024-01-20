@@ -11,10 +11,15 @@ const Journal = ({ currentUser }) => {
 
   const fetchExercises = async () => {
     try {
-      const url = `http://localhost:5050/api/stats/weekly/?user=${currentUser}&start=${moment(startDate).format('YYYY-MM-DD')}&end=${moment(endDate).format('YYYY-MM-DD')}`;
+      const url = `http://localhost:5050/stats/weekly/?user=${currentUser}&start=${moment(startDate).format('YYYY-MM-DD')}&end=${moment(endDate).format('YYYY-MM-DD')}`;
       const response = await axios.get(url);
-      console.log('API Response:', response.data); 
-      setExercises(response.data.stats);
+      console.log('API Response:', response.data);
+      if (response.data.stats && Array.isArray(response.data.stats)) {
+        setExercises(response.data.stats);
+      } else {
+        console.error('Unexpected response structure:', response.data);
+        setExercises([]);
+      }
     } catch (error) {
       console.error('Failed to fetch exercises', error);
     }
@@ -42,16 +47,20 @@ const Journal = ({ currentUser }) => {
         <Button className="button-small" onClick={goToPreviousWeek}>&larr; Previous</Button>
         <span>{moment(startDate).format('YYYY-MM-DD')} to {moment(endDate).format('YYYY-MM-DD')}</span>
         <Button className="button-small" onClick={goToNextWeek}>Next &rarr;</Button>
-      </div>
+        </div>
       <ul>
-        {exercises && exercises.length > 0 && exercises[0].exercises.map((exercise, index) => (
-          <li key={index} className="exercise-journal-data">
-            {exercise.exerciseType} - {exercise.totalDuration} minutes
-          </li>
-        ))}
+        {exercises && exercises.length > 0 ? (
+          exercises.map((exercise, index) => (
+            <li key={index} className="exercise-journal-data">
+              {exercise.exerciseType} - {exercise.totalDuration} minutes
+            </li>
+          ))
+        ) : (
+          <li>No exercises found for this period.</li>
+        )}
       </ul>
     </div>
-);
+  );
 };
 
 export default Journal;

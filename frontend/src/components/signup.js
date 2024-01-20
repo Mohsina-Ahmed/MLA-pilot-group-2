@@ -22,7 +22,7 @@ const Signup = ({ onSignup }) => {
 
         if (response.data === 'User registered successfully!') {
             console.log('User registered successfully');
-            onSignup(formData.username);  // Pass the username to the onSignup callback
+            onSignup(formData.username); 
         } else {
             setError(response.data);
         }

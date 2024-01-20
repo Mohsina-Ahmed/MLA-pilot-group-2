@@ -62,16 +62,6 @@ services:
     networks:
       - app-network
 
-  # cypress:
-  #   build:
-  #     context: ./activity-tracking 
-  #     dockerfile: ./cypress/Dockerfile  
-  #   depends_on:
-  #     - frontend
-  #     - activity-tracking
-  #   networks:
-  #     - app-network
-
 networks:
   app-network:
     driver: bridge
