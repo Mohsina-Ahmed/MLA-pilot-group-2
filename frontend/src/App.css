@@ -69,6 +69,10 @@ p.successMessage {
   border-radius: 5px; 
 }
 
+.custom-nav-link:active {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
 .btn-primary {
   background-color: #F54996 !important;
   border-color: #F54996ff !important;

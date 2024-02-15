@@ -77,6 +77,15 @@ const TrackExercise = ({ currentUser }) => {
             <OtherIcon fontSize="large" /> 
           </IconButton>
         </div>
+        <Form.Group controlId="duration" style={{ marginBottom: '40px' }}>
+          <Form.Label>Duration (in minutes):</Form.Label>
+          <Form.Control 
+            type="number" 
+            required 
+            value={state.duration} 
+            onChange={(e) => setState({ ...state, duration: e.target.value })}
+          />
+        </Form.Group>
         <Form.Group controlId="description" style={{ marginBottom: '20px' }}>
           <Form.Label>Description:</Form.Label>
           <Form.Control 
