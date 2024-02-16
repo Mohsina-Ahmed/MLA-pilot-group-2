@@ -19,7 +19,17 @@ const exerciseSchema = new Schema(
         },
         min: [1, 'Duration should be positive.']
     },
+    distance: { 
+      type: Number, 
+      required: false,
+      min: [0, 'Duration should be positive.']
+    },
     date: { type: Date, required: true },
+    mood: {
+      type: String,
+      required: true,
+      enum: ['Happy', 'Neutral', 'Difficult', 'Painful', 'Tiring']
+    },
   },
   { timestamps: true }
 );
