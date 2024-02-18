@@ -85,8 +85,6 @@ const TrackExercise = ({ currentUser }) => {
             <OtherIcon fontSize="large" /> 
           </IconButton>  
         </div>
-        <Form.Group controlId="description" style={{ maxWidth: '200px', marginBottom: '20px' }}>
-          <Form.Label>Title your activity:</Form.Label>
           <Form.Control 
             as="textarea"
             fontSize="large"
