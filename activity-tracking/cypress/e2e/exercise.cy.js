@@ -1,10 +1,14 @@
+const config = {
+  apiUrl: process.env.REACT_APP_API_GATEWAY_URL || 'http://localhost'
+};
+
 describe('Exercise API', () => {
   let id;
 
   it('Add a new exercise', () => {
     cy.request({
       method: 'POST',
-      url: 'http://localhost:5300/exercises/add',
+      url: `${config.apiUrl}/exercises/add`,
       body: {
         username: 'testuser',
         exerciseType: 'Running',
@@ -18,9 +22,8 @@ describe('Exercise API', () => {
       id = response.body._id; 
     });
   });
-
   it('Retrieve all exercises', () => {
-    cy.request('http://localhost:5300/exercises').then((response) => {
+    cy.request({url: `${config.apiUrl}/exercises`}).then((response) => {
       expect(response.status).to.eq(200);
       expect(response.body).to.have.length.greaterThan(0);
     });
