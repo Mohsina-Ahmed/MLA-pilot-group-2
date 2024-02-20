@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 router.post('/add', async (req, res) => {
   console.log(req.body)
   try {
-    const { username, exerciseType, description, duration, distance, date, mood } = req.body;
+    const { username, exerciseType, description, duration, distance, sets, reps, date, mood } = req.body;
 
     const newExercise = new Exercise({
       username,
@@ -25,6 +25,8 @@ router.post('/add', async (req, res) => {
       description,
       duration: Number(duration),
       distance: Number(distance),
+      sets: Number(sets),
+      reps: Number(reps),
       date: Date.parse(date),
       mood,
     });
@@ -67,7 +69,7 @@ router.delete('/:id', async (req, res) => {
 // PUT: Update an exercise by ID
 router.put('/update/:id', async (req, res) => {
     try {
-      const { username, description, duration, date, mood } = req.body;
+      const { username, description, duration, distance, sets, reps, date, mood } = req.body;
   
       if (!username || !description || !duration || !date || !mood) {
         res.status(400).json({ error: 'All fields are required' });
@@ -85,6 +87,8 @@ router.put('/update/:id', async (req, res) => {
       exercise.description = description;
       exercise.duration = Number(duration);
       exercise.distance = Number(distance);
+      exercise.sets = Number(sets);
+      exercise.reps = Number(reps);
       exercise.date = new Date(date);
       exercise.mood = mood;
   
