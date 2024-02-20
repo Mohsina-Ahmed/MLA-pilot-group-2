@@ -3,6 +3,7 @@ import { Button, Form } from 'react-bootstrap';
 import { trackExercise } from '../api';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
 import DirectionsRunIcon from '@material-ui/icons/DirectionsRun';
 import BikeIcon from '@material-ui/icons/DirectionsBike';
 import PoolIcon from '@material-ui/icons/Pool';
@@ -22,18 +23,12 @@ const TrackExercise = ({ currentUser }) => {
     description: '',
     duration: 0,
     distance: 0,
+    sets: 0,
+    reps: 0,
     date: new Date(),
     mood: '',
   });
   const [message, setMessage] = useState(''); 
-
-// Attempt to listen to icon choice to adapt a title prompt.
-//  const runIcon = document.getElementById("run");
-//  runIcon.addEventListener('click', onActivityChoice)
-
-//  const onActivityChoice = () => {
-//    console.log("Run button clicked!")  
-//  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -52,6 +47,8 @@ const TrackExercise = ({ currentUser }) => {
         description: '',
         duration: 0,
         distance: 0,
+        sets: 0,
+        reps: 0,
         date: new Date(),
         mood: '',
       });
@@ -63,27 +60,36 @@ const TrackExercise = ({ currentUser }) => {
       console.error('There was an error logging your activity!', error);
     }
   };
-
   return (
     <div>
       <h3>Track exercise</h3>
       <Form onSubmit={onSubmit} style={{ maxWidth: '400px', margin: 'auto' }}>
         <div style={{ marginBottom: '20px' }}>
+          <Tooltip title="Running">
           <IconButton color={state.exerciseType === 'Running' ? "primary" : "default"} onClick={() => setState({ ...state, exerciseType: 'Running' })}>
             <DirectionsRunIcon fontSize="large" />
           </IconButton>
+          </Tooltip>
+          <Tooltip title="Cycling">
           <IconButton color={state.exerciseType === 'Cycling' ? "primary" : "default"} onClick={() => setState({ ...state, exerciseType: 'Cycling' })}>
             <BikeIcon fontSize="large" />
           </IconButton>
+          </Tooltip>
+          <Tooltip title="Swimming">
           <IconButton color={state.exerciseType === 'Swimming' ? "primary" : "default"} onClick={() => setState({ ...state, exerciseType: 'Swimming' })}>
             <PoolIcon fontSize="large" />
           </IconButton>
+          </Tooltip>
+          <Tooltip title="Workout">
           <IconButton color={state.exerciseType === 'Gym' ? "primary" : "default"} onClick={() => setState({ ...state, exerciseType: 'Gym' })}>
             <FitnessCenterIcon fontSize="large" />
           </IconButton>
+          </Tooltip>
+          <Tooltip title="Other Acitivity">
           <IconButton color={state.exerciseType === 'Other' ? "primary" : "default"} onClick={() => setState({ ...state, exerciseType: 'Other' })}>
             <OtherIcon fontSize="large" /> 
           </IconButton>  
+          </Tooltip>
         </div>
           <Form.Control 
             as="textarea"
@@ -93,7 +99,6 @@ const TrackExercise = ({ currentUser }) => {
             value={state.description} 
             onChange={(e) => setState({ ...state, description: e.target.value })}
           />
-        </Form.Group>
         <Form.Group controlId="formDate" className="form-margin">
           <Form.Label>Date:</Form.Label>
           <DatePicker 
@@ -102,7 +107,7 @@ const TrackExercise = ({ currentUser }) => {
             dateFormat="yyyy/MM/dd"
           />
         </Form.Group>
-        <Form.Group controlId="duration" style={{ maxWidth: '50px', marginBottom: '40px' }}>
+        <Form.Group controlId="duration" style={{ marginBottom: '40px' }}>
           <Form.Label>Duration (in minutes):</Form.Label>
           <Form.Control 
             type="number" 
@@ -111,7 +116,7 @@ const TrackExercise = ({ currentUser }) => {
             onChange={(e) => setState({ ...state, duration: e.target.value })}
           />
         </Form.Group>
-        <Form.Group controlId="distance" style={{ maxWidth: '50px', marginBottom: '40px' }}>
+        <Form.Group controlId="distance" class={state.exerciseType === 'Gym' ? "invisible" : "default"} style={{ marginBottom: '40px' }}>
           <Form.Label>Distance (in kilometers):</Form.Label>
           <Form.Control 
             type="number"
@@ -119,23 +124,49 @@ const TrackExercise = ({ currentUser }) => {
             onChange={(e) => setState({ ...state, distance: e.target.value })}
           />
         </Form.Group>
+        <Form.Group controlId="sets" class={state.exerciseType === 'Gym' ? "default" : "invisible"} style={{ marginBottom: '40px' }}>
+          <Form.Label>Number of Sets:</Form.Label>
+          <Form.Control 
+            type="number"
+            value={state.sets} 
+            onChange={(e) => setState({ ...state, sets: e.target.value })}
+          />
+        </Form.Group>
+        <Form.Group controlId="reps" class={state.exerciseType === 'Gym' ? "default" : "invisible"} style={{ marginBottom: '40px' }}>
+          <Form.Label>Number of Reps per set:</Form.Label>
+          <Form.Control 
+            type="number"
+            value={state.reps} 
+            onChange={(e) => setState({ ...state, reps: e.target.value })}
+          />
+        </Form.Group>
       <div style={{ marginBottom: '40px' }}>
         <p fontSize="medium" style={{ marginBottom: '10px' }}>How did it feel?</p>
-        <IconButton color={state.mood === 'Happy' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Happy' })}>
-          <HappyIcon fontSize="large" />
-        </IconButton>
-        <IconButton color={state.mood === 'Neutral' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Neutral' })}>
-          <NeutralIcon fontSize="large" />
-        </IconButton>
-        <IconButton color={state.mood === 'Difficult' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Difficult' })}>
-          <UnhappyIcon fontSize="large" />
-        </IconButton>
-        <IconButton color={state.mood === 'Painful' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Painful' })}>
-          <PainfulIcon fontSize="large" />
-        </IconButton>
-        <IconButton color={state.mood === 'Tiring' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Tiring' })}>
-          <TiredIcon fontSize="large" />
-        </IconButton>
+        <Tooltip title="That felt good / easy - yay!">
+          <IconButton color={state.mood === 'Happy' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Happy' })}>
+            <HappyIcon fontSize="large" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="That felt OK - could have been better!">
+          <IconButton color={state.mood === 'Neutral' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Neutral' })}>
+            <NeutralIcon fontSize="large" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="That was difficult - glad it's over!">
+          <IconButton color={state.mood === 'Difficult' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Difficult' })}>
+            <UnhappyIcon fontSize="large" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Ouch - that was painful.">
+          <IconButton color={state.mood === 'Painful' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Painful' })}>
+            <PainfulIcon fontSize="large" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="That was tiring - no energy.">
+          <IconButton color={state.mood === 'Tiring' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Tiring' })}>
+            <TiredIcon fontSize="large" />
+          </IconButton>
+        </Tooltip>
       </div>
       <Button variant="success" type="submit">
         Save activity

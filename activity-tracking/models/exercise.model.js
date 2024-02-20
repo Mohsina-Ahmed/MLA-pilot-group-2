@@ -22,7 +22,17 @@ const exerciseSchema = new Schema(
     distance: { 
       type: Number, 
       required: false,
-      min: [0, 'Duration should be positive.']
+      min: [0, 'Distance should be positive.']
+    },
+    sets: { 
+      type: Number, 
+      required: false,
+      min: [0, 'Sets should be positive.']
+    },
+    reps: { 
+      type: Number, 
+      required: false,
+      min: [0, 'Reps should be positive.']
     },
     date: { type: Date, required: true },
     mood: {
