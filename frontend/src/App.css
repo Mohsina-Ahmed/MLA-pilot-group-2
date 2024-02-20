@@ -93,8 +93,34 @@ p.successMessage {
   border-color: #F54996ff !important; 
 }
 
+.invisible {
+  display: none;
+  max-height: none;
+  margin: 0%;
+}
+
 input#duration {
   width: 20%; 
+  margin: auto; 
+}
+
+input#distance {
+  width: 20%; 
+  margin: auto; 
+}
+
+input#sets {
+  width: 20%; 
+  margin: auto; 
+}
+
+input#reps {
+  width: 20%; 
+  margin: auto; 
+}
+
+input#description {
+  width: 50%; 
   margin: auto; 
 }
 
