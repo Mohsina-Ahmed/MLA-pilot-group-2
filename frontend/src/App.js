@@ -5,7 +5,7 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavbarComponent from './components/navbar';
 import TrackExercise from './components/trackExercise';
-import Statistics from './components/statistics';
+import Statistics from './components/statisticsGraphQL';
 import Footer from './components/footer';
 import Login from './components/login';
 import Signup from './components/signup';
@@ -44,7 +44,7 @@ function App() {
               setCurrentUser(username);
             }} />} />
             <Route path="/trackExercise" element={isLoggedIn ? <TrackExercise currentUser={currentUser} /> : <Navigate to="/login" />} />
-            <Route path="/statistics" element={isLoggedIn ? <Statistics currentUser={currentUser} /> : <Navigate to="/login" />} />
+            <Route path="/statisticsGraphQL" element={isLoggedIn ? <Statistics currentUser={currentUser} /> : <Navigate to="/login" />} />
             <Route path="/journal" element={isLoggedIn ? <Journal currentUser={currentUser} /> : <Navigate to="/login" />} />
             <Route path="/" element={isLoggedIn ? <Navigate to="/trackExercise" /> : <Navigate to="/login" />} />
           </Routes>
