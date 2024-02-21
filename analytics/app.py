@@ -7,6 +7,7 @@ from urllib.parse import quote_plus
 from bson import json_util
 import traceback
 import os
+import logging
 from datetime import datetime, timedelta
 from ariadne import load_schema_from_path, make_executable_schema, graphql_sync, ObjectType, QueryType
 from ariadne.constants import PLAYGROUND_HTML
