@@ -108,6 +108,13 @@ input#distance {
   margin: auto; 
 }
 
+input#speed {
+  width: 20%; 
+  margin: auto;
+  background-color: #d3d3d3;
+  outline-color: #6c757d;
+}
+
 input#sets {
   width: 20%; 
   margin: auto; 

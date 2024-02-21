@@ -23,12 +23,23 @@ const TrackExercise = ({ currentUser }) => {
     description: '',
     duration: 0,
     distance: 0,
+    speed: 0,
     sets: 0,
     reps: 0,
     date: new Date(),
     mood: '',
   });
   const [message, setMessage] = useState(''); 
+
+  const calculateSpeed = () => {
+    if (state.distance > 0) {
+      state.speed = (state.distance / (state.duration / 60)).toFixed(2);
+      return state.speed;
+    } else {
+      state.speed = 0;
+      return state.speed;
+    };
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -47,6 +58,7 @@ const TrackExercise = ({ currentUser }) => {
         description: '',
         duration: 0,
         distance: 0,
+        speed: 0,
         sets: 0,
         reps: 0,
         date: new Date(),
@@ -143,6 +155,16 @@ const TrackExercise = ({ currentUser }) => {
             onChange={(e) => setState({ ...state, distance: e.target.value })}
           />
         </Form.Group>
+        <Tooltip title="Auto-calculated.">
+        <Form.Group controlId="speed" class={state.exerciseType === 'Gym' ? "invisible" : "default"} style={{ marginBottom: '40px' }}>
+          <Form.Label>Speed (km/hr):</Form.Label>
+          <Form.Control 
+            type="number"
+            value={calculateSpeed()} 
+            onChange={(e) => setState({ ...state, speed: e.target.value })}
+          />
+        </Form.Group>
+        </Tooltip>
         <Form.Group controlId="sets" class={state.exerciseType === 'Gym' ? "default" : "invisible"} style={{ marginBottom: '40px' }}>
           <Form.Label>Number of Sets:</Form.Label>
           <Form.Control 
