@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Form } from 'react-bootstrap';
+import { Button, Form, Dropdown, DropdownButton } from 'react-bootstrap';
 import { trackExercise } from '../api';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import IconButton from '@material-ui/core/IconButton';
@@ -102,6 +102,24 @@ const TrackExercise = ({ currentUser }) => {
           </IconButton>  
           </Tooltip>
         </div>
+        <div id="div-other" class={state.exerciseType === 'Other' ? "div-other" : "invisible"}>            
+          <Dropdown style={{ marginBottom: '40px' }}>
+            <DropdownButton title="Which activity would you like to track?">
+              <Dropdown.Item onClick={() => setState({ ...state, exerciseType: 'Rowing' })}>Rowing &#128675;</Dropdown.Item>
+              <Dropdown.Item onClick={() => setState({ ...state, exerciseType: 'Football' })}>Football &#9917;</Dropdown.Item>
+              <Dropdown.Item onClick={() => setState({ ...state, exerciseType: 'Skiing' })}>Skiing &#9975;</Dropdown.Item>
+              <Dropdown.Item onClick={() => setState({ ...state, exerciseType: 'Golf' })}>Golf &#9971;</Dropdown.Item>
+              <Dropdown.Item onClick={() => setState({ ...state, exerciseType: 'Horse Riding' })}>Horse Riding &#127943;</Dropdown.Item>
+              <Dropdown.Item onClick={() => setState({ ...state, exerciseType: 'Climbing' })}>Climbing &#129495;</Dropdown.Item>
+              <Dropdown.Item onClick={() => setState({ ...state, exerciseType: 'Surfing' })}>Surfing &#127940;</Dropdown.Item>
+            </DropdownButton>
+          </Dropdown>
+        </div>
+        <div id="other-label" class={state.exerciseType === 'Rowing' || state.exerciseType === 'Football' || state.exerciseType === 'Skiing' || state.exerciseType === 'Golf' || state.exerciseType === 'Horse Riding' || state.exerciseType === 'Climbing' || state.exerciseType === 'Surfing'? "other-label" : "invisible"}>
+          <p id="other-exercise">Activity: {state.exerciseType}</p>
+        </div>
+        <Form.Group controlId="description" style={{ marginBottom: '40px' }}>
+          <Form.Label>Title your activity:</Form.Label>
           <Form.Control 
             as="textarea"
             fontSize="large"
@@ -110,6 +128,7 @@ const TrackExercise = ({ currentUser }) => {
             value={state.description} 
             onChange={(e) => setState({ ...state, description: e.target.value })}
           />
+        </Form.Group>
         <Form.Group controlId="formDate" className="form-margin">
           <Form.Label>Date:</Form.Label>
           <DatePicker 
