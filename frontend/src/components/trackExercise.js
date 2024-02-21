@@ -30,6 +30,16 @@ const TrackExercise = ({ currentUser }) => {
   });
   const [message, setMessage] = useState(''); 
 
+  const calculateSpeed = () => {
+    if (state.distance > 0) {
+      state.speed = state.distance / (state.duration / 60);
+      return state.speed;
+    } else {
+      state.speed = 0;
+      return state.speed;
+    };
+  };
+
   const onSubmit = async (e) => {
     e.preventDefault();
 
@@ -47,6 +57,7 @@ const TrackExercise = ({ currentUser }) => {
         description: '',
         duration: 0,
         distance: 0,
+        speed: 0,
         sets: 0,
         reps: 0,
         date: new Date(),
@@ -85,7 +96,7 @@ const TrackExercise = ({ currentUser }) => {
             <FitnessCenterIcon fontSize="large" />
           </IconButton>
           </Tooltip>
-          <Tooltip title="Other Acitivity">
+          <Tooltip title="Other Activity">
           <IconButton color={state.exerciseType === 'Other' ? "primary" : "default"} onClick={() => setState({ ...state, exerciseType: 'Other' })}>
             <OtherIcon fontSize="large" /> 
           </IconButton>  
@@ -122,6 +133,14 @@ const TrackExercise = ({ currentUser }) => {
             type="number"
             value={state.distance} 
             onChange={(e) => setState({ ...state, distance: e.target.value })}
+          />
+        </Form.Group>
+        <Form.Group controlId="speed" class={state.exerciseType === 'Gym' ? "invisible" : "default"} style={{ marginBottom: '40px' }}>
+          <Form.Label>Speed (km/hr):</Form.Label>
+          <Form.Control 
+            type="number"
+            value={calculateSpeed()} 
+            onChange={(e) => setState({ ...state, speed: e.target.value })}
           />
         </Form.Group>
         <Form.Group controlId="sets" class={state.exerciseType === 'Gym' ? "default" : "invisible"} style={{ marginBottom: '40px' }}>

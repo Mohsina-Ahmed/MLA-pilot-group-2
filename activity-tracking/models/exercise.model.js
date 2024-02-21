@@ -24,6 +24,11 @@ const exerciseSchema = new Schema(
       required: false,
       min: [0, 'Distance should be positive.']
     },
+    speed: { 
+      type: Number, 
+      required: false,
+      min: [0]
+    },
     sets: { 
       type: Number, 
       required: false,
