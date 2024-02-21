@@ -27,7 +27,7 @@ const exerciseSchema = new Schema(
     speed: { 
       type: Number, 
       required: false,
-      min: [0]
+      min: [0, 'Speed should be positive.']
     },
     sets: { 
       type: Number, 
