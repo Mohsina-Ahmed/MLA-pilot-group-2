@@ -24,7 +24,6 @@ db = client[mongo_db]
 
 query = QueryType()
 type_defs = load_schema_from_path("schema.graphql")
-schema = make_executable_schema(type_defs, query)
 
 @app.route('/api/graphql', methods=['GET'])
 def graphql_playground():
@@ -159,6 +158,7 @@ def user_stats(username):
     stats = list(db.exercises.aggregate(pipeline))
     return stats
 
+schema = make_executable_schema(type_defs, query)
 
 @app.route('/stats/weekly/', methods=['GET'])
 def weekly_user_stats():
