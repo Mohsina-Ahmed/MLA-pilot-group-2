@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import axios from 'axios';
 import './statistics.css';
-import { ApolloClient, InMemoryCache, ApolloProvider, useQuery, gql } from '@apollo/client';
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
 
 console.log('on the statistics graphQL page')
 
@@ -32,7 +32,6 @@ const Statistics = ({currentUser}) => {
 
   useEffect(() => {
     // const url = 'http://localhost:5050/api/graphql';
-    // axios.post(url, {query: STATS_QUERY, variables: {name: currentUser}})
     client.query({query: STATS_QUERY, variables: {name: currentUser}})
       .then(response => {
         setData(response.data.filteredStats);
@@ -44,13 +43,13 @@ const Statistics = ({currentUser}) => {
 
   // const fetchStats = async () => {
   //   try {
-  //     const url = `http://localhost:5050/api/graphql`;
-  //     const response = await axios.post(url, {query: STATS_QUERY, variables: {name: currentUser}});
-  //     console.log('API Response:', response.data.data);
-  //     if (response.data.data.filteredStats.success) {
-  //       setData(response.data.data.filteredStats);
+  //     // const url = `http://localhost:5050/api/graphql`;
+  //     const response = await client.query({query: STATS_QUERY, variables: {name: currentUser}});
+  //     console.log('API Response:', response.data);
+  //     if (response.data.filteredStats.success) {
+  //       setData(response.data.filteredStats);
   //     } else {
-  //       console.error('There was an error fetching the data: ', response.data.data.filteredStats.errors);
+  //       console.error('There was an error fetching the data: ', response.data.filteredStats.errors);
   //       setData([]);
   //     }
   //   } catch (error) {
