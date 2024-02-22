@@ -41,28 +41,6 @@ const Statistics = ({currentUser}) => {
       });
   }, [currentUser]);
 
-  // const fetchStats = async () => {
-  //   try {
-  //     // const url = `http://localhost:5050/api/graphql`;
-  //     const response = await client.query({query: STATS_QUERY, variables: {name: currentUser}});
-  //     console.log('API Response:', response.data);
-  //     if (response.data.filteredStats.success) {
-  //       setData(response.data.filteredStats);
-  //     } else {
-  //       console.error('There was an error fetching the data: ', response.data.filteredStats.errors);
-  //       setData([]);
-  //     }
-  //   } catch (error) {
-  //     console.error('Failed to fetch exercises', error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchStats();
-  // }, [currentUser]);
-
-  console.log(data);
-
   return (
     <div className="stats-container">
       <h4>Well done, {currentUser}! This is your overall effort:</h4>
