@@ -135,7 +135,7 @@ const TrackExercise = ({ currentUser }) => {
           <DatePicker 
             selected={state.date}
             onChange={(date) => setState({ ...state, date })}
-            dateFormat="yyyy/MM/dd"
+            dateFormat="dd/MM/yyyy"
           />
         </Form.Group>
         <Form.Group controlId="duration" style={{ marginBottom: '40px' }}>
