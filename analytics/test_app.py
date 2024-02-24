@@ -1,3 +1,7 @@
+# the magic command!
+# docker compose up --build -d analytics
+# docker compose run analytics pytest . --setup-show
+
 import pytest
 from flask import Flask
 from flask.testing import FlaskClient
@@ -28,42 +32,42 @@ def mongo_client():
     
     # check the connection
     # Insert some test data into the MongoDB test database before testing
-    # client.test_database.exercises.insert_one({
-    #     "username": "test_user",
-    #     "exerciseType": "running",
-    #     "duration": 30,
-    #     "date": "2022-01-01"
-    # })
+    client.test_database.exercises.insert_one({
+        "username": "test_user",
+        "exerciseType": "running",
+        "duration": 30,
+        "date": "2022-01-01"
+    })
 
     return client
 
     client.drop_database('test-database')  # Clean up the test database after tests
 
-# @pytest.fixture
-# def rollback_session(mongo_client):
-#     session = mongo_client.start_session()
-#     session.start_transaction()
-#     database = mongo_client.list_database_names()
-#     for name in database:
-#         print(name)
+@pytest.fixture
+def rollback_session(mongo_client):
+    session = mongo_client.start_session()
+    session.start_transaction()
 
-#     try: 
-#         yield session
-#     finally: 
-#         session.abort_transaction()
+    try: 
+        yield session
+    finally: 
+        session.abort_transaction()
 
 def test_mongo_connection(mongo_client):
     assert mongo_client.admin.command("ping")["ok"] == 1.0
 
 # def test_update_mongo(mongo_client, rollback_session):
-#     mongo_client.test_database.exercises.insert_one(
-#         {"_id": "bad_document",
-#         "description": "If this still exists, then transactions aren't working."},
+#     mongo_client.test_database.exercises.insert_one({
+#       "username": "test_bad_user",
+#         "exerciseType": "running",
+#         "duration": 30,
+#         "date": "2022-01-01", 
+#         "description": "this should be deleted"}, 
 #         session=rollback_session,
 #         )
 #     assert(
 #         mongo_client.test_database.exercises.find_one(
-#             {'_id': 'bad_document'}, session=rollback_session
+#             {'username': 'test_bad_user'}, session=rollback_session
 #         )
 #         != None
 #     )
