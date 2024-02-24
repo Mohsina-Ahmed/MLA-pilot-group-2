@@ -24,11 +24,11 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
-        //Code by Namrata
+
         if (signUpService.validatePassword(user.getPassword())) {
             return ResponseEntity.badRequest().body("Password not valid as per format");
         }
-        //Code finishes
+
         if (userRepository.existsByUsername(user.getUsername())) {
             return ResponseEntity.badRequest().body("User already exists - please log in");
         }
