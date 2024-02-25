@@ -10,29 +10,32 @@ import logging
 import os
 from datetime import datetime, timedelta
 
-def create_app():
+def create_app(test=False):
     app = Flask(__name__)
     CORS(app, resources={r"/*": {"origins": "*"}},
         methods="GET,HEAD,POST,OPTIONS,PUT,PATCH,DELETE")
 
     load_dotenv()
     mongo_uri = os.getenv('MONGO_URI')
+    app.config['MONGO_URI'] = mongo_uri
     # configure database for pytest if needed - TODO: resolve
-    if app.config['TESTING']:
+    if test:
         mongo_db = 'test_database'
-        app.config['MONGO_URI'] = mongo_uri + '/' + mongo_db
         print('i am here')
     else: 
-        mongo_db = os.getenv('MONGO_DB')
-        app.config['MONGO_URI'] = mongo_uri + '/' + mongo_db   
+        mongo_db = os.getenv('MONGO_DB') 
 
     # connect to mongo client
-    mongo = PyMongo()
-    mongo.init_app(app)
+    mongo = MongoClient(mongo_uri)
+    db = mongo[mongo_db]
+
+    # mongo = PyMongo()
+    # mongo.init_app(app, connect=True)
     
-    print(app.config['MONGO_URI'])
-    print(mongo.db)
-    db = mongo.db[mongo_db]
+    # print(app.config['MONGO_URI'])
+    print(mongo_db)
+    # db = mongo.cx.get_database(mongo_db)
+    print(db)
 
     return app, db
 
@@ -174,4 +177,5 @@ def weekly_user_stats():
 
 
 if __name__ == "__main__":
+    # app, db = create_app()
     app.run(debug=True, host='0.0.0.0', port=5050)
