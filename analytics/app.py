@@ -12,17 +12,33 @@ from datetime import datetime, timedelta
 from ariadne import load_schema_from_path, make_executable_schema, graphql_sync, ObjectType, QueryType
 from ariadne.constants import PLAYGROUND_HTML
 
-app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}},
-     methods="GET,HEAD,POST,OPTIONS,PUT,PATCH,DELETE")
+def create_app():
+    app = Flask(__name__)
+    CORS(app, resources={r"/*": {"origins": "*"}},
+        methods="GET,HEAD,POST,OPTIONS,PUT,PATCH,DELETE")
 
-load_dotenv()
-mongo_uri = os.getenv('MONGO_URI')
-mongo_db = os.getenv('MONGO_DB')
+    load_dotenv()
+    mongo_uri = os.getenv('MONGO_URI')
+    # configure database for pytest if needed - TODO: resolve
+    if app.config['TESTING']:
+        mongo_db = 'test_database'
+        app.config['MONGO_URI'] = mongo_uri + '/' + mongo_db
+        print('i am here')
+    else: 
+        mongo_db = os.getenv('MONGO_DB')
+        app.config['MONGO_URI'] = mongo_uri + '/' + mongo_db   
 
-client = MongoClient(mongo_uri)
-db = client[mongo_db]
+    # connect to mongo client
+    mongo = PyMongo()
+    mongo.init_app(app)
+    
+    print(app.config['MONGO_URI'])
+    print(mongo.db)
+    db = mongo.db[mongo_db]
 
+    return app, db
+
+app, db = create_app()
 query = QueryType()
 type_defs = load_schema_from_path("schema.graphql")
 
