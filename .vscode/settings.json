@@ -4,7 +4,15 @@
   },
   "python.formatting.provider": "none",
   "cSpell.words": [
-    "jsonify"
+    "bson",
+    "dotenv",
+    "jsonify",
+    "pymongo"
   ],
-  "java.compile.nullAnalysis.mode": "automatic"
+  "java.compile.nullAnalysis.mode": "automatic",
+  "python.testing.pytestArgs": [
+    "analytics"
+  ],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
 }
