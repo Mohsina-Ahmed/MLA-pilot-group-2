@@ -4,16 +4,18 @@
 # https://doc.pytest.org/en/latest/reference/reference.html#command-line-flags
 
 import pytest
-from flask import Flask
-from flask.testing import FlaskClient
 from pymongo import MongoClient
 from flask_pymongo import PyMongo
-import os
-from app import app
+import datetime
+from app import create_app
+from bson import json_util
+
+# TODO: config testing off config > variable 
+# TODO: update to graphQL
 
 @pytest.fixture(scope='session')
 def test_client():
-    # app, db = create_app(test=True)
+    app = create_app(test=True)
     app.testing = True
     app.config['MONGO_DB'] = 'test_database'
     # Create a test client using the Flask application configured for testing
@@ -24,89 +26,96 @@ def test_client():
     
 
 @pytest.fixture(scope='session')
-def mongo_client():
+def mongo_client(test_client):
     
-    # mongo = PyMongo()
+    mongo = PyMongo()
     # print(test_client.application.config['MONGO_URI'])
-    # mongo.init_app(test_client.application, connect=True)
+    mongo.init_app(test_client.application, connect=True)
+    db = mongo.cx.get_database('test_database')
     # print(mongo.db)
-    client = MongoClient(os.getenv('MONGO_URI') + '/?timeoutMS=1000')  # Use a test database  
-    print(client.admin.command('ping'))
-    db = client['test_database']
-    print(db)
+    # client = MongoClient(os.getenv('MONGO_URI') + '/?timeoutMS=1000')  # Use a test database  
+    # print(client.admin.command('ping'))
+    # db = client['test_database']
+    # print(db)
     # Insert some test data into the MongoDB test database before testing
     # print(mongo.db.test_database)
-    # db = mongo.cx.get_database('test_database')
     # collection = db['exercises']
     db.exercises.insert_many(
     [{
         "username": "test_user",
         "exerciseType": "running",
         "duration": 30,
-        "date": "2022-01-01"
+        "date":  datetime.datetime(2022, 1, 1)
     }, 
     {
         "username": "test_user",
-        "exerciseType": "running",
-        "duration": 30,
-        "date": "2022-01-02"
+        "exerciseType": "swimming",
+        "duration": 15,
+        "date": datetime.datetime(2022, 1, 2)
     }, 
     {
         "username": "test_user",
         "exerciseType": "cycling",
+        "duration": 25,
+        "date": datetime.datetime(2022, 1, 3)
+    },
+    {
+        "username": "test_user",
+        "exerciseType": "running",
         "duration": 30,
-        "date": "2022-01-03"
+        "date":  datetime.datetime(2022, 1,8)
+    },  
+    {
+        "username": "stats_user",
+        "exerciseType": "swimming",
+        "duration": 20,
+        "date": datetime.datetime(2022, 1, 4)
     }])
 
-    yield client
+    yield mongo
 
     # Clean up the test database after tests
-    # client.drop_database('test_database')  
-    # client.close()
+    mongo.cx.drop_database('test_database')  
+    mongo.cx.close()
 
 # check the connection to the mongo client 
 def test_mongo_connection(mongo_client):
-    assert mongo_client.admin.command("ping")["ok"] == 1.0
+    assert mongo_client.cx.admin.command("ping")["ok"] == 1.0
 
 # check the index route of the Flask App - get all exercises from mongo 
-# for now just want to check there is a response... 
-# TODO: test route and data from test_database
 def test_index_route(test_client):
     response = test_client.get('/')
-    print(response.data)
+    res = json_util.loads(response.data)
+    print(res)
     assert response.status_code == 200
+    assert type(res) == list
+    assert type(res[0]) == dict
+    assert res[0]['username'] == 'test_user'
+    assert len(res) == 5
 
-
-def test_stats_route(test_client, mongo_client):
+def test_stats_route(test_client):
     response = test_client.get('/stats')
+    res = json_util.loads(response.data)['stats']
+    test_user = [user for user in res if user['username'] == 'test_user'][0]
+    test_exercises = test_user['exercises']
+    # print(test_exercises)
     assert response.status_code == 200
-#     assert b'test_user' in response.data
-#     assert b'running' in response.data
+    assert len(res) == 2  # 2 test users
+    assert test_exercises[0]['exerciseType'] == 'running'
+    assert test_exercises[0]['totalDuration'] == 60
+    
+def test_user_stats_route(test_client):
+    response = test_client.get('/stats/stats_user')
+    res = json_util.loads(response.data)
+    print(res)
+    assert response.status_code == 200
+    assert res['stats'][0]['username'] == 'stats_user'
+    assert res['stats'][0]['exercises'][0]['exerciseType'] == 'swimming'
 
-# def test_user_stats_route(client, mongo_client):
-#     # Insert some more test data into the MongoDB test database before testing
-#     mongo_client.test_database.exercises.insert_one({
-#         "username": "test_user",
-#         "exerciseType": "cycling",
-#         "duration": 45,
-#         "date": "2022-01-02"
-#     })
-
-#     response = client.get('/stats/test_user')
-#     assert response.status_code == 200
-#     assert b'test_user' in response.data
-#     assert b'cycling' in response.data
-
-# def test_weekly_user_stats_route(client, mongo_client):
-#     # Insert some test data into the MongoDB test database before testing
-#     mongo_client.test_database.exercises.insert_one({
-#         "username": "test_user",
-#         "exerciseType": "swimming",
-#         "duration": 60,
-#         "date": "2022-01-03"
-#     })
-
-#     response = client.get('/stats/weekly/?user=test_user&start=01-01-2022&end=07-01-2022')
-#     assert response.status_code == 200
-#     assert b'test_user' in response.data
-#     assert b'swimming' in response.data
+def test_weekly_user_stats_route(test_client):
+    # Insert some test data into the MongoDB test database before testing
+    response = test_client.get('/stats/weekly/?user=test_user&start=01-01-2022&end=07-01-2022')
+    res = json_util.loads(response.data)
+    print(res)
+    assert response.status_code == 200
+    assert len(res['stats']) == 3
