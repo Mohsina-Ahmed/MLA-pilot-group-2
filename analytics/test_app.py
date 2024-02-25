@@ -25,14 +25,19 @@ def test_client():
     
 
 @pytest.fixture(scope='session')
-def mongo_client():
+def mongo_client(test_client):
     
     mongo = PyMongo()
     mongo.init_app(test_client.application, connect=True)
     db = mongo.cx.get_database(test_client.application.config['MONGO_DB'])
     # print(mongo.db)
-   
-    # Insert some data into the test database
+    # client = MongoClient(os.getenv('MONGO_URI') + '/?timeoutMS=1000')  # Use a test database  
+    # print(client.admin.command('ping'))
+    # db = client['test_database']
+    # print(db)
+    # Insert some test data into the MongoDB test database before testing
+    # print(mongo.db.test_database)
+    # collection = db['exercises']
     db.exercises.insert_many(
     [{
         "username": "test_user",
@@ -71,7 +76,7 @@ def mongo_client():
         "date": datetime.datetime(2022, 1, 5)
     }])
 
-    yield client
+    yield mongo
 
     # Clean up the test database after tests
     mongo.cx.drop_database('test_database')  
