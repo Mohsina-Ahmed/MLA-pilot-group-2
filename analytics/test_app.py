@@ -37,9 +37,10 @@ def mongo_client(test_client):
     # print(client.admin.command('ping'))
     # db = client['test_database']
     # print(db)
-    # Insert some test data into the MongoDB test database before testing
     # print(mongo.db.test_database)
     # collection = db['exercises']
+   
+    # Insert some test data into the MongoDB test database
     db.exercises.insert_many(
     [{
         "username": "test_user",
