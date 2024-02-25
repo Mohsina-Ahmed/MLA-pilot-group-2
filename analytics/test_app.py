@@ -25,7 +25,7 @@ def test_client():
     
 
 @pytest.fixture(scope='session')
-def mongo_client(test_client):
+def mongo_client():
     
     mongo = PyMongo()
     mongo.init_app(test_client.application, connect=True)
@@ -71,7 +71,7 @@ def mongo_client(test_client):
         "date": datetime.datetime(2022, 1, 5)
     }])
 
-    yield mongo
+    yield client
 
     # Clean up the test database after tests
     mongo.cx.drop_database('test_database')  
