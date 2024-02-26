@@ -8,5 +8,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 6000
 
-CMD ["gunicorn", "-b", "0.0.0.0:5050", "app:create_app(False)"]
+CMD ["gunicorn", "-b", "0.0.0.0:5050", "app:create_app()"]
 
