@@ -9,15 +9,14 @@ from flask_pymongo import PyMongo
 import datetime
 from app import create_app
 from bson import json_util
+from config_settings import TestConfig
 
-# TODO: config testing off config > variable 
 # TODO: update to graphQL
 
 @pytest.fixture(scope='session')
 def test_client():
-    app = create_app(test=True)
-    app.testing = True
-    app.config['MONGO_DB'] = 'test_database'
+    app = create_app(TestConfig)
+
     # Create a test client using the Flask application configured for testing
     with app.test_client() as testing_client: 
         # # Establish an application context
@@ -29,18 +28,11 @@ def test_client():
 def mongo_client(test_client):
     
     mongo = PyMongo()
-    # print(test_client.application.config['MONGO_URI'])
     mongo.init_app(test_client.application, connect=True)
-    db = mongo.cx.get_database('test_database')
+    db = mongo.cx.get_database(test_client.application.config['MONGO_DB'])
     # print(mongo.db)
-    # client = MongoClient(os.getenv('MONGO_URI') + '/?timeoutMS=1000')  # Use a test database  
-    # print(client.admin.command('ping'))
-    # db = client['test_database']
-    # print(db)
-    # print(mongo.db.test_database)
-    # collection = db['exercises']
    
-    # Insert some test data into the MongoDB test database
+    # Insert some data into the test database
     db.exercises.insert_many(
     [{
         "username": "test_user",
@@ -100,6 +92,7 @@ def test_index_route(test_client):
     assert res[0]['username'] == 'test_user'
     assert len(res) == 6
 
+# check the stats route 
 def test_stats_route(test_client):
     response = test_client.get('/stats')
     res = json_util.loads(response.data).get('stats')
@@ -110,6 +103,7 @@ def test_stats_route(test_client):
     assert type(res) == list
     assert type(res[0]) == dict
     
+# check the stats route on a specific user
 def test_user_stats_route(test_client):
     response = test_client.get('/stats/stats_user')
     res = json_util.loads(response.data).get('stats')
@@ -119,6 +113,7 @@ def test_user_stats_route(test_client):
     assert res[0]['exercises'][0]['exerciseType'] == 'swimming'
     assert res[0]['exercises'][0]['totalDuration'] == 35
 
+# check the stats route for a specific week 
 def test_weekly_user_stats_route(test_client):
     # Insert some test data into the MongoDB test database before testing
     response = test_client.get('/stats/weekly/?user=test_user&start=01-01-2022&end=07-01-2022')
