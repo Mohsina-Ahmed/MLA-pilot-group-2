@@ -1,4 +1,4 @@
-from dotenv import load_dotenv
+
 from flask import Flask, render_template, jsonify, request
 from pymongo import MongoClient
 from flask_pymongo import PyMongo
@@ -11,25 +11,24 @@ import logging
 from datetime import datetime, timedelta
 from ariadne import load_schema_from_path, make_executable_schema, graphql_sync, ObjectType, QueryType
 from ariadne.constants import PLAYGROUND_HTML
+from config_settings import Config
 
-def create_app(test=False):
+# flask app wrapped into a function call, required to be able to have alternate  
+# configuration options for dev and test setups
+
+def create_app(config_object=Config):
     app = Flask(__name__)
     CORS(app, resources={r"/*": {"origins": "*"}},
         methods="GET,HEAD,POST,OPTIONS,PUT,PATCH,DELETE")
 
-    load_dotenv()
-    mongo_uri = os.getenv('MONGO_URI')
-    app.config['MONGO_URI'] = mongo_uri
-    # configure using app config - TODO: resolve
-    if test:
-        mongo_db = 'test_database'
-    else: 
-        mongo_db = os.getenv('MONGO_DB') 
+    # link config settings from config_settings.py
+    app.config.from_object(config_object)
 
-    # connect to mongo client
-    # mongo = MongoClient(mongo_uri)
-    # db = mongo[mongo_db]
-
+    # get database name
+    mongo_db = app.config['MONGO_DB']
+    
+    # connect to mongoDB through Flask wrapper PyMongo
+    # reads the MONGO URI from the app config
     mongo = PyMongo()
     mongo.init_app(app, connect=True)
     
@@ -259,6 +258,6 @@ def create_app(test=False):
     return app
 
 
-if __name__ == "__main__":
-    app = create_app()
-    app.run(debug=True, host='0.0.0.0', port=5050)
+# if __name__ == "__main__":
+#     app = create_app()
+#     app.run(debug=True, host='0.0.0.0', port=5050)
