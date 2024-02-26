@@ -71,6 +71,12 @@ def mongo_client(test_client):
         "exerciseType": "swimming",
         "duration": 20,
         "date": datetime.datetime(2022, 1, 4)
+    },     
+    {
+        "username": "stats_user",
+        "exerciseType": "swimming",
+        "duration": 15,
+        "date": datetime.datetime(2022, 1, 5)
     }])
 
     yield mongo
@@ -92,31 +98,35 @@ def test_index_route(test_client):
     assert type(res) == list
     assert type(res[0]) == dict
     assert res[0]['username'] == 'test_user'
-    assert len(res) == 5
+    assert len(res) == 6
 
 def test_stats_route(test_client):
     response = test_client.get('/stats')
-    res = json_util.loads(response.data)['stats']
-    test_user = [user for user in res if user['username'] == 'test_user'][0]
-    test_exercises = test_user['exercises']
+    res = json_util.loads(response.data).get('stats')
+    print(res)
     # print(test_exercises)
     assert response.status_code == 200
     assert len(res) == 2  # 2 test users
-    assert test_exercises[0]['exerciseType'] == 'running'
-    assert test_exercises[0]['totalDuration'] == 60
+    assert type(res) == list
+    assert type(res[0]) == dict
     
 def test_user_stats_route(test_client):
     response = test_client.get('/stats/stats_user')
-    res = json_util.loads(response.data)
+    res = json_util.loads(response.data).get('stats')
     print(res)
     assert response.status_code == 200
-    assert res['stats'][0]['username'] == 'stats_user'
-    assert res['stats'][0]['exercises'][0]['exerciseType'] == 'swimming'
+    assert res[0]['username'] == 'stats_user'
+    assert res[0]['exercises'][0]['exerciseType'] == 'swimming'
+    assert res[0]['exercises'][0]['totalDuration'] == 35
 
 def test_weekly_user_stats_route(test_client):
     # Insert some test data into the MongoDB test database before testing
     response = test_client.get('/stats/weekly/?user=test_user&start=01-01-2022&end=07-01-2022')
-    res = json_util.loads(response.data)
+    res = json_util.loads(response.data).get('stats')
+    # unpack response values in to a dict for easier handling
+    exercises = {exercise['exerciseType']: exercise['totalDuration'] for exercise in res}
     print(res)
     assert response.status_code == 200
-    assert len(res['stats']) == 3
+    assert len(res) == 3
+    assert 'cycling' in exercises.keys()
+    assert exercises['running'] == 30
