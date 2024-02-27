@@ -9,7 +9,7 @@ import Statistics from './components/statisticsGraphQL';
 import Footer from './components/footer';
 import Login from './components/login';
 import Signup from './components/signup';
-import Journal from './components/journal';
+import Journal from './components/journalGraphQL';
 import logo from './img/CFG_logo.png'; // Update the path to your logo file
 
 function App() {
@@ -45,7 +45,7 @@ function App() {
             }} />} />
             <Route path="/trackExercise" element={isLoggedIn ? <TrackExercise currentUser={currentUser} /> : <Navigate to="/login" />} />
             <Route path="/statisticsGraphQL" element={isLoggedIn ? <Statistics currentUser={currentUser} /> : <Navigate to="/login" />} />
-            <Route path="/journal" element={isLoggedIn ? <Journal currentUser={currentUser} /> : <Navigate to="/login" />} />
+            <Route path="/journalGraphQL" element={isLoggedIn ? <Journal currentUser={currentUser} /> : <Navigate to="/login" />} />
             <Route path="/" element={isLoggedIn ? <Navigate to="/trackExercise" /> : <Navigate to="/login" />} />
           </Routes>
         </div>

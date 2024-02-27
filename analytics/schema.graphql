@@ -21,4 +21,5 @@ type StatsResult{
 type Query{
     stats: StatsResult
     filteredStats(name: String): StatsResult
+    weeklyStats(name: String, start_date: String, end_date: String): StatsResult
 }
