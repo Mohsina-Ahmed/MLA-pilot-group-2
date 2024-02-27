@@ -15,7 +15,7 @@ const NavbarComponent = ({ onLogout }) => {
         navigate('/statisticsGraphQL');
         break;
       case 'Journal':
-        navigate('/journal');
+        navigate('/journalGraphQL');
         break;
       default:
         console.error('Invalid route:', route);
