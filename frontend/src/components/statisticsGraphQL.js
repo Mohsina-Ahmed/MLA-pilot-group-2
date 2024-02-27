@@ -33,8 +33,9 @@ const Statistics = ({currentUser}) => {
   useEffect(() => {
     // const url = 'http://localhost:5050/api/graphql';
     client.query({query: STATS_QUERY, variables: {name: currentUser}})
-      .then(response => {
-        setData(response.data.filteredStats);
+      .then(response => {(response.data.filteredStats.results.length > 0) 
+        ? setData(response.data.filteredStats)
+        : setData({success: false});
       })
       .catch(error => {
         console.error('There was an error fetching the data!', error);
