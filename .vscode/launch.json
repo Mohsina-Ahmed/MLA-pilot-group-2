@@ -5,12 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: Current File",
-            "type": "debugpy",
+            "type": "chrome",
             "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal", 
-            "env": {"PYDEVD_WARN_SLOW_RESOLVE_TIMEOUT": "45"}
+            "name": "Launch Chrome against localhost",
+            "url": "http://localhost:80",
+            "webRoot": "${workspaceFolder}"
         }
     ]
 }
