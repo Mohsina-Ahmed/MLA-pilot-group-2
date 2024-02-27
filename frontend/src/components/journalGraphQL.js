@@ -58,10 +58,14 @@ const Journal = ({ currentUser }) => {
                       {name: currentUser, 
                         start_date: moment(startDate).format('DD-MM-YYYY'), 
                         end_date: moment(endDate).format('DD-MM-YYYY')}})
-                        .then((response) => setExercises(response.data.weeklyStats))
+                        // check response length and save as required
+                        .then((response) => {(response.data.weeklyStats.results.length > 0) 
+                                              ? setExercises(response.data.weeklyStats)
+                                              : setExercises({success: false})})
+                        // .then((response) => setExercises(response.data))
                         .catch(error => {
                           console.error('There was an error fetching the data!', error);
-                        }, setExercises([]))
+                        })
 
       // if (response.data.stats && Array.isArray(response.data.stats)) {
       //   setExercises(response.data.stats);
