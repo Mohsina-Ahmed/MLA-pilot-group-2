@@ -12,7 +12,7 @@ const NavbarComponent = ({ onLogout }) => {
         navigate('/trackExercise');
         break;
       case 'Statistics':
-        navigate('/statistics');
+        navigate('/statisticsGraphQL');
         break;
       case 'Journal':
         navigate('/journal');
