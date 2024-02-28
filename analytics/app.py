@@ -92,11 +92,33 @@ def create_app(config_object=Config):
             }
         return payload
 
+    @query.field("weeklyStats")
+    def resolve_weeklyStats(*_, name=None, start_date=None, end_date=None):
+        try:
+            print("Resolving the list stats info")
+            loadedStats = weekly_user_stats(name, start_date, end_date)
+            print(loadedStats)
+            payload = {
+                "success": True,
+                "results": loadedStats
+            }
+        except Exception as error:
+            payload = {
+                "success": False,
+                "errors": [str(error)]
+            }
+        return payload
+
     @app.route('/')
     def index():
         exercises = db.exercises.find()
         exercises_list = list(exercises)
         return json_util.dumps(exercises_list)
+        @app.route('/')
+        def index():
+            exercises = db.exercises.find()
+            exercises_list = list(exercises)
+            return json_util.dumps(exercises_list)
 
 
     @app.route('/stats')
@@ -176,10 +198,10 @@ def create_app(config_object=Config):
     schema = make_executable_schema(type_defs, query)
 
     @app.route('/stats/weekly/', methods=['GET'])
-    def weekly_user_stats():
-        username = request.args.get('user')
-        start_date_str = request.args.get('start')
-        end_date_str = request.args.get('end')
+    def weekly_user_stats(username, start_date_str, end_date_str):
+        # username = request.args.get('user')
+        # start_date_str = request.args.get('start')
+        # end_date_str = request.args.get('end')
 
         date_format = "%d-%m-%Y"
         try:
@@ -204,15 +226,27 @@ def create_app(config_object=Config):
             {
                 "$group": {
                     "_id": {
-                        "exerciseType": "$exerciseType"
+                    "username": "$username",
+                    "exerciseType": "$exerciseType"
                     },
                     "totalDuration": {"$sum": "$duration"}
                 }
             },
             {
+                "$group": {
+                    "_id": "$_id.username",
+                    "exercises": {
+                        "$push": {
+                            "exerciseType": "$_id.exerciseType",
+                            "totalDuration": "$totalDuration"
+                        }
+                    }
+                }
+            },
+            {
                 "$project": {
-                    "exerciseType": "$_id.exerciseType",
-                    "totalDuration": 1,
+                    "username": "$_id",
+                    "exercises": 1,
                     "_id": 0
                 }
             }
@@ -220,7 +254,8 @@ def create_app(config_object=Config):
 
         try:
             stats = list(db.exercises.aggregate(pipeline))
-            return jsonify(stats=stats)
+            print(stats)
+            return stats
         except Exception as e:
             app.logger.error(f"An error occurred while querying MongoDB: {e}")
             traceback.print_exc()
