@@ -33,19 +33,15 @@ const Statistics = ({currentUser}) => {
   useEffect(() => {
     // const url = 'http://localhost:5050/api/graphql';
     client.query({query: STATS_QUERY, variables: {name: currentUser}})
-      .then(response => {(response.data.filteredStats.results.length > 0) 
-        ? setData(response.data.filteredStats)
-        : setData({success: false});
-      })
+      .then(response => {setData(response.data.filteredStats)})
       .catch(error => {
         console.error('There was an error fetching the data!', error);
       });
   }, [currentUser]);
 
-  return (
-    <div className="stats-container">
-      <h4>Well done, {currentUser}! This is your overall effort:</h4>
-      {data.success? (
+  const makeStatsList = () => {
+    if (data.hasOwnProperty('results')) {
+      return (data.success && data.results.length > 0) ? (
         data.results[0].exercises.map((item, index) => (
           <div key={index} className="exercise-data">
             <div><strong>{item.exerciseType}</strong></div>
@@ -53,8 +49,17 @@ const Statistics = ({currentUser}) => {
           </div>
         ))
       ) : (
-        <p>No data available</p>
-      )}
+        <li>No data available.</li>
+      );
+    } else {
+      return <li>No data available.</li>;
+    }
+  }
+
+  return (
+    <div className="stats-container">
+      <h4>Well done, {currentUser}! This is your overall effort:</h4>
+      <ul> {makeStatsList()} </ul>
     </div>
   );
 };
