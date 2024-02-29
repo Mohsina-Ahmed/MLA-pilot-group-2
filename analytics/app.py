@@ -81,7 +81,7 @@ def resolve_filteredStats(*_, name=None):
 @query.field("weeklyStats")
 def resolve_weeklyStats(*_, name=None, start_date=None, end_date=None):
     try:
-        print("Resolving the list stats info")
+        print("Resolving the weekly stats info")
         loadedStats = weekly_user_stats(name, start_date, end_date)
         print(loadedStats)
         payload = {
@@ -234,7 +234,6 @@ def weekly_user_stats(username, start_date_str, end_date_str):
     ]
 
     stats = list(db.exercises.aggregate(pipeline))
-    print(stats)
     return stats
 
 
