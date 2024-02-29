@@ -81,6 +81,7 @@ def mongo_client(test_client):
 def test_mongo_connection(mongo_client):
     assert mongo_client.cx.admin.command("ping")["ok"] == 1.0
 
+# check the graphql server
 def test_graphql_playground_connection(test_client):
     response = test_client.get('/api/graphql')
     assert response.status_code == 200
@@ -90,61 +91,91 @@ def test_graphql_playground_connection(test_client):
 def test_index_route(test_client):
     response = test_client.get('/')
     res = json_util.loads(response.data)
-    print(res)
+    # print(res)
     assert response.status_code == 200
     assert type(res) == list
     assert type(res[0]) == dict
     assert res[0]['username'] == 'test_user'
     assert len(res) == 6
 
-def test_graphql_server_stats_username_only(test_client):
-    STATS_QUERY = """
-        query Stats {
-            Stats {
-            success
-            errors
-            results {
-                username 
-                exercises {
-                exerciseType
-                totalDuration
-                }
-            }
+# test the stats query 
+def test_graphql_server_stats(test_client):
+    stats_query = """
+    query {
+        stats {
+        success
+        errors
+        results {
+            username
+            exercises {
+            exerciseType
+            totalDuration
             }
         }
-        """
-    response = test_client.post('/api/graphql', STATS_QUERY)
-
-# check the stats route 
-def test_stats_route(test_client):
-    response = test_client.get('/stats')
-    res = json_util.loads(response.data).get('stats')
-    print(res)
-    # print(test_exercises)
+        }
+    }
+    """
+    response = test_client.post('/api/graphql', json={'query': stats_query})
+    res = json_util.loads(response.data)['data']['stats']
+    # print(res)
     assert response.status_code == 200
-    assert len(res) == 2  # 2 test users
-    assert type(res) == list
-    assert type(res[0]) == dict
+    assert res['success'] == True
+    assert len(res['results']) == 2  # 2 test users
+    assert type(res['results']) == list
+    assert type(res['results'][0]) == dict
+
+# test the user query 
+def test_graphql_user_stats(test_client):
+    filtered_stats_query = """
+    query FilteredStats($name: String) {
+        filteredStats(name: $name) {
+        success
+        errors
+        results {
+            username
+            exercises {
+            exerciseType
+            totalDuration
+            }
+        }
+        }
+    }
+    """
+
+    response = test_client.post('/api/graphql', json={'query': filtered_stats_query, 'variables': {'name': 'stats_user'}})
+    res = json_util.loads(response.data)['data']['filteredStats']
+    # print(res)
+    assert response.status_code == 200
+    assert res['success'] == True
+    assert res['results'][0]['username'] == 'stats_user'
+    assert res['results'][0]['exercises'][0]['exerciseType'] == 'swimming'
+    assert res['results'][0]['exercises'][0]['totalDuration'] == 35
     
-# check the stats route on a specific user
-def test_user_stats_route(test_client):
-    response = test_client.get('/stats/stats_user')
-    res = json_util.loads(response.data).get('stats')
-    print(res)
-    assert response.status_code == 200
-    assert res[0]['username'] == 'stats_user'
-    assert res[0]['exercises'][0]['exerciseType'] == 'swimming'
-    assert res[0]['exercises'][0]['totalDuration'] == 35
-
-# check the stats route for a specific week 
-def test_weekly_user_stats_route(test_client):
-    # Insert some test data into the MongoDB test database before testing
-    response = test_client.get('/stats/weekly/?user=test_user&start=01-01-2022&end=07-01-2022')
-    res = json_util.loads(response.data).get('stats')
+def test_graphql_weekly_user_stats(test_client):
+    weekly_stats_query = """
+    query WeeklyStats($name: String, $start_date: String, $end_date: String)  {
+        weeklyStats(name: $name, start_date: $start_date, end_date: $end_date) {
+        success
+        errors
+        results {
+            username
+            exercises {
+            exerciseType
+            totalDuration
+            }
+        }
+        }
+    }
+    """
+    variables = {'name': 'test_user', 'start_date': '01-01-2022', 'end_date': '07-01-2022'}
+    response = test_client.post('/api/graphql', json={'query': weekly_stats_query, 'variables': variables})
+    res = json_util.loads(response.data)['data']['weeklyStats']
+    # print(res)
     # unpack response values in to a dict for easier handling
-    exercises = {exercise['exerciseType']: exercise['totalDuration'] for exercise in res}
-    print(res)
+    exerciseList = res['results'][0]['exercises']
+    exercises = {exercise['exerciseType']: exercise['totalDuration'] for exercise in exerciseList}   
     assert response.status_code == 200
-    assert len(res) == 3
+    assert len(exerciseList) == 3
     assert 'cycling' in exercises.keys()
     assert exercises['running'] == 30
+    
