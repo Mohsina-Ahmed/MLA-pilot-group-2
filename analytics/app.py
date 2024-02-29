@@ -95,7 +95,7 @@ def create_app(config_object=Config):
     @query.field("weeklyStats")
     def resolve_weeklyStats(*_, name=None, start_date=None, end_date=None):
         try:
-            print("Resolving the list stats info")
+            print("Resolving the weekly stats info")
             loadedStats = weekly_user_stats(name, start_date, end_date)
             print(loadedStats)
             payload = {
@@ -252,14 +252,15 @@ def create_app(config_object=Config):
             }
         ]
 
-        try:
-            stats = list(db.exercises.aggregate(pipeline))
-            print(stats)
-            return stats
-        except Exception as e:
-            app.logger.error(f"An error occurred while querying MongoDB: {e}")
-            traceback.print_exc()
-            return jsonify(error="An internal error occurred"), 500
+    stats = list(db.exercises.aggregate(pipeline))
+    return stats
+
+
+    @app.errorhandler(Exception)
+    def handle_error(e):
+        app.logger.error(f"An error occurred: {e}")
+        traceback.print_exc()
+        return jsonify(error="An internal error occurred"), 500
 
     return app
 
