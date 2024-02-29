@@ -81,6 +81,11 @@ def mongo_client(test_client):
 def test_mongo_connection(mongo_client):
     assert mongo_client.cx.admin.command("ping")["ok"] == 1.0
 
+def test_graphql_playground_connection(test_client):
+    response = test_client.get('/api/graphql')
+    assert response.status_code == 200
+    assert b'GraphQL Playground' in response.data
+
 # check the index route of the Flask App - get all exercises from mongo 
 def test_index_route(test_client):
     response = test_client.get('/')
@@ -91,6 +96,24 @@ def test_index_route(test_client):
     assert type(res[0]) == dict
     assert res[0]['username'] == 'test_user'
     assert len(res) == 6
+
+def test_graphql_server_stats_username_only(test_client):
+    STATS_QUERY = """
+        query Stats {
+            Stats {
+            success
+            errors
+            results {
+                username 
+                exercises {
+                exerciseType
+                totalDuration
+                }
+            }
+            }
+        }
+        """
+    response = test_client.post('/api/graphql', STATS_QUERY)
 
 # check the stats route 
 def test_stats_route(test_client):

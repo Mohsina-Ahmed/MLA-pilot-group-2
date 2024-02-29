@@ -112,9 +112,8 @@ def create_app(config_object=Config):
         exercises = db.exercises.find()
         exercises_list = list(exercises)
         return json_util.dumps(exercises_list)
-
-
-    @app.route('/stats')
+    
+    # @app.route('/stats')
     def stats():
         pipeline = [
             {
@@ -150,7 +149,7 @@ def create_app(config_object=Config):
         return stats
 
 
-    @app.route('/stats/<username>', methods=['GET'])
+    # @app.route('/stats/<username>', methods=['GET'])
     def user_stats(username):
         pipeline = [
             {
@@ -190,7 +189,7 @@ def create_app(config_object=Config):
 
     schema = make_executable_schema(type_defs, query)
 
-    @app.route('/stats/weekly/', methods=['GET'])
+    # @app.route('/stats/weekly/', methods=['GET'])
     def weekly_user_stats(username, start_date_str, end_date_str):
         # username = request.args.get('user')
         # start_date_str = request.args.get('start')
