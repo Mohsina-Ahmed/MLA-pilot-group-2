@@ -7,11 +7,13 @@ import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
 
 console.log('on the journal graphQL page')
 
+// set up apollo client for graphql 
 const client = new ApolloClient({
   uri: 'http://localhost:5050/api/graphql',
   cache: new InMemoryCache(),
 });
 
+// setup schema query 
 const JOURNAL_QUERY = gql
   `query weeklyStats($name: String, $start_date: String, $end_date: String) {
     weeklyStats(name: $name, start_date: $start_date, end_date: $end_date) {
@@ -34,6 +36,7 @@ const Journal = ({ currentUser }) => {
   const [endDate, setEndDate] = useState(moment().endOf('week').toDate());
   const [exercises, setExercises] = useState([]);
 
+  // make graphql request
   const fetchExercises = async () => {
     try {
       const response = await client.query({
@@ -64,6 +67,8 @@ const Journal = ({ currentUser }) => {
     setEndDate(moment(endDate).add(1, 'weeks').endOf('week').toDate());
   };
 
+  // generate exercise list - use of separate function call makes it easier to 
+  // check if exercise results exist to avoid access errors
   const makeExerciseList = () => {
     if (exercises.hasOwnProperty('results')) {
       return (exercises.success && exercises.results.length > 0) ? (
