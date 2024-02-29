@@ -6,11 +6,13 @@ import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
 
 console.log('on the statistics graphQL page')
 
+// setup the apollo client for graphql 
 const client = new ApolloClient({
   uri: 'http://localhost:5050/api/graphql',
   cache: new InMemoryCache(),
 });
 
+// setup the graphql query 
 const STATS_QUERY = gql
   `query filteredStats($name: String) {
     filteredStats(name: $name) {
@@ -30,6 +32,7 @@ const STATS_QUERY = gql
 const Statistics = ({currentUser}) => {
   const [data, setData] = useState([]);
 
+  // make graphql request
   useEffect(() => {
     // const url = 'http://localhost:5050/api/graphql';
     client.query({query: STATS_QUERY, variables: {name: currentUser}})
@@ -39,6 +42,8 @@ const Statistics = ({currentUser}) => {
       });
   }, [currentUser]);
 
+  // generate exercise list - use of separate function call makes it easier to 
+  // check if exercise results exist to avoid access errors
   const makeStatsList = () => {
     if (data.hasOwnProperty('results')) {
       return (data.success && data.results.length > 0) ? (
