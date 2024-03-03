@@ -32,6 +32,7 @@ services:
       - NODE_ENV=development
       - MONGO_DB=activitydb
       - MONGO_URI=mongodb://root:cfgmla23@mongodb:27017
+      - PYTHONUNBUFFERED=1 # to make print statements visible
     ports:
       - "5050:5050"
     depends_on:
