@@ -12,10 +12,10 @@ const NavbarComponent = ({ onLogout }) => {
         navigate('/trackExercise');
         break;
       case 'Statistics':
-        navigate('/statistics');
+        navigate('/statistics_v2');
         break;
       case 'Journal':
-        navigate('/journal');
+        navigate('/journal_v2');
         break;
       default:
         console.error('Invalid route:', route);
