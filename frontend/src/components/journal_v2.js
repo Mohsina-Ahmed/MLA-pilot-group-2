@@ -4,12 +4,13 @@ import { Button } from 'react-bootstrap';
 import moment from 'moment';
 import './journal.css';
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
+import config from '../config';
 
 console.log('on the journal graphQL page')
 
 // set up apollo client for graphql 
 const client = new ApolloClient({
-  uri: 'http://localhost:5050/api/graphql',
+  uri: `${config.apiUrl}/api/graphql`,
   cache: new InMemoryCache(),
 });
 
