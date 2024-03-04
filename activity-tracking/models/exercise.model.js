@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
+const maxDate = new Date();
+maxDate.setDate(maxDate.getDate() + 1);
+
 const exerciseSchema = new Schema(
   {
     username: { type: String, required: true },
@@ -39,7 +42,11 @@ const exerciseSchema = new Schema(
       required: false,
       min: [0, 'Reps should be positive.']
     },
-    date: { type: Date, required: true },
+    date: { 
+      type: Date, 
+      required: true,
+      max: [maxDate, 'Cannot track exercises in the future.'] 
+    },
     mood: {
       type: String,
       required: true,

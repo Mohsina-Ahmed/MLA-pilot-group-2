@@ -104,24 +104,24 @@ input#duration {
 }
 
 input#distance {
-  width: 20%; 
+  width: 40%; 
   margin: auto; 
 }
 
 input#speed {
-  width: 20%; 
+  width: 40%; 
   margin: auto;
   background-color: #d3d3d3;
   outline-color: #6c757d;
 }
 
 input#sets {
-  width: 20%; 
+  width: 40%; 
   margin: auto; 
 }
 
 input#reps {
-  width: 20%; 
+  width: 40%; 
   margin: auto; 
 }
 
@@ -175,4 +175,9 @@ p#other-exercise {
 
 .signup {
   margin: 20px;
+}
+
+.row.invisible {
+  display: none;
+  max-height: none;
 }
