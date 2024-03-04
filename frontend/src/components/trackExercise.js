@@ -41,6 +41,16 @@ const TrackExercise = ({ currentUser }) => {
     };
   };
 
+  const calculatePace = () => {
+    if (state.distance > 0) {
+      state.pace = (state.duration / state.distance).toFixed(2);
+      return state.pace;
+    } else {
+      state.pace = 0;
+      return state.pace;
+    };
+  };
+
   const onSubmit = async (e) => {
     e.preventDefault();
 
@@ -187,6 +197,18 @@ const TrackExercise = ({ currentUser }) => {
               type="number"
               value={calculateSpeed()} 
               onChange={(e) => setState({ ...state, speed: e.target.value })}
+            />
+          </Form.Group>
+          </Tooltip>
+          </Col>
+          <Col>
+          <Tooltip title="Auto-calculated.">
+          <Form.Group controlId="pace" class={state.exerciseType === 'Gym' ? "invisible" : "row"} style={{ marginBottom: '40px' }}>
+            <Form.Label>Pace (min/km):</Form.Label>
+            <Form.Control 
+              type="number"
+              value={calculatePace()} 
+              onChange={(e) => setState({ ...state, pace: e.target.value })}
             />
           </Form.Group>
           </Tooltip>

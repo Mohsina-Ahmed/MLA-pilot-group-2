@@ -115,6 +115,13 @@ input#speed {
   outline-color: #6c757d;
 }
 
+input#pace {
+  width: 40%; 
+  margin: auto;
+  background-color: #d3d3d3;
+  outline-color: #6c757d;
+}
+
 input#sets {
   width: 40%; 
   margin: auto; 
