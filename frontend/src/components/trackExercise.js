@@ -55,10 +55,20 @@ const TrackExercise = ({ currentUser }) => {
     e.preventDefault();
 
     const currDate = new Date();
-    if (state.date > currDate) {
+    if (state.exerciseType === '') {
+      setMessage("Please check you have selected an exercise!");
+    } else if (state.date > currDate) {
       setMessage("Please check the date and try again.");
       return;
-    }
+    } else if (state.duration < 0) {
+      setMessage("Please check the duration is a positive value!");
+      return;
+    } else if (state.distance < 0) {
+      setMessage("Please check the distance is a positive value!");
+      return;
+    } else if (state.mood === '') {
+      setMessage("Don't forget to log how the activity felt!");
+    };
 
     const dataToSubmit = {
       username: currentUser,
@@ -142,7 +152,7 @@ const TrackExercise = ({ currentUser }) => {
         </div>
         </Row>
         <Row>
-        <Form.Group controlId="description" style={{ marginBottom: '40px' }}>
+          <Form.Group controlId="description" style={{ marginBottom: '40px' }}>
           <Form.Label>Title your activity:</Form.Label>
           <Form.Control
             placeholder={state.exerciseType} 
@@ -153,17 +163,17 @@ const TrackExercise = ({ currentUser }) => {
             value={state.description} 
             onChange={(e) => setState({ ...state, description: e.target.value })}
           />
-        </Form.Group>
+          </Form.Group>
         </Row>
         <Row>
-        <Form.Group controlId="formDate" className="form-margin">
+          <Form.Group controlId="formDate" className="form-margin">
           <Form.Label>Date:</Form.Label>
           <DatePicker 
             selected={state.date}
             onChange={(date) => setState({ ...state, date })}
             dateFormat="dd/MM/yyyy"
           />
-        </Form.Group>
+          </Form.Group>
         </Row>
         <Row>
           <Col>
@@ -177,8 +187,8 @@ const TrackExercise = ({ currentUser }) => {
             />
           </Form.Group>
           </Col>
-          <Col class={state.exerciseType === 'Gym' ? "invisible" : "row"}>
-          <Form.Group controlId="distance" class={state.exerciseType === 'Gym' ? "invisible" : "row"} style={{ marginBottom: '40px' }}>
+          <Col class={state.exerciseType === 'Gym' ? "invisible" : "col"}>
+          <Form.Group controlId="distance" class={state.exerciseType === 'Gym' ? "invisible" : "col"} style={{ marginBottom: '40px' }}>
             <Form.Label>Distance (in kilometers):</Form.Label>
             <Form.Control 
               type="number"
@@ -187,8 +197,8 @@ const TrackExercise = ({ currentUser }) => {
             />
           </Form.Group>
           </Col>
-          </Row>
-          <Row class={state.exerciseType === 'Gym' ? "invisible" : "row"}>
+        </Row>
+        <Row class={state.exerciseType === 'Gym' ? "invisible" : "row"}>
           <Col>
           <Tooltip title="Auto-calculated.">
           <Form.Group controlId="speed" class={state.exerciseType === 'Gym' ? "invisible" : "row"} style={{ marginBottom: '40px' }}>
@@ -236,41 +246,41 @@ const TrackExercise = ({ currentUser }) => {
           </Form.Group>
           </Col>
         </Row>
-      <Row>
-        <div style={{ marginBottom: '40px' }}>
-          <p fontSize="medium" style={{ marginBottom: '10px' }}>How did it feel?</p>
-          <Tooltip title="That felt good / easy - yay!">
-            <IconButton color={state.mood === 'Happy' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Happy' })}>
-              <HappyIcon fontSize="large" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="That felt OK - could have been better!">
-            <IconButton color={state.mood === 'Neutral' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Neutral' })}>
-              <NeutralIcon fontSize="large" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="That was difficult - glad it's over!">
-            <IconButton color={state.mood === 'Difficult' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Difficult' })}>
-              <UnhappyIcon fontSize="large" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Ouch - that was painful.">
-            <IconButton color={state.mood === 'Painful' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Painful' })}>
-              <PainfulIcon fontSize="large" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="That was tiring - no energy.">
-            <IconButton color={state.mood === 'Tiring' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Tiring' })}>
-              <TiredIcon fontSize="large" />
-            </IconButton>
-          </Tooltip>
-        </div>
-      </Row>
-      <Button variant="success" type="submit">
-        Save activity
-      </Button>
-    </Form>
-    {message && <p style={message === 'Activity logged successfully! Well done!' ? {color: 'green'} : {color: 'red'} }>{message}</p>}
+        <Row>
+          <div style={{ marginBottom: '40px' }}>
+            <p fontSize="medium" style={{ marginBottom: '10px' }}>How did it feel?</p>
+            <Tooltip title="That felt good / easy - yay!">
+              <IconButton color={state.mood === 'Happy' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Happy' })}>
+                <HappyIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="That felt OK - could have been better!">
+              <IconButton color={state.mood === 'Neutral' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Neutral' })}>
+                <NeutralIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="That was difficult - glad it's over!">
+              <IconButton color={state.mood === 'Difficult' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Difficult' })}>
+                <UnhappyIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Ouch - that was painful.">
+              <IconButton color={state.mood === 'Painful' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Painful' })}>
+                <PainfulIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="That was tiring - no energy.">
+              <IconButton color={state.mood === 'Tiring' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Tiring' })}>
+                <TiredIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
+          </div>
+        </Row>
+        <Button variant="success" type="submit">
+          Save activity
+        </Button>
+      </Form>
+      {message && <p style={message === 'Activity logged successfully! Well done!' ? {color: 'green'} : {color: 'red'} }>{message}</p>}
     </div>
   );
 };
