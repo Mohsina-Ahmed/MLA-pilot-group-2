@@ -27,11 +27,6 @@ The Activity Tracking functionality uses the MERN stack (MongoDB, Express.js, Re
 - 21/02/24 - re-adding of 'Title your exercise:' label in form - branch gbTask3 - PR9 - trackExercise.js
 - 21/02/24 - addition of auto-calculated speed field, calculates when duration and distance added - branch gbTask4 - PR10 - files updated: trackExercise.js, exercises.js, exercise.model.js
 - 23/02/24 - MongoDB split into 2 databases - authdb and activitydb - exercises now stored in activitydb - branch maTask2 - PR13 - files updated: docker-compose.yml, config.json, server.js, .env, application.properties
-- 04/03/2024 - branch ma_Task3 - AWS ECR connected - updated GitHub repositories with AWS secrets and now all the workflows are working.
-
-# AWS ECR:
-<img width="865" alt="image" src="https://github.com/Mohsina-Ahmed/MLA-pilot-group-2/assets/122023111/888e33be-ad42-469e-aea5-ae1237bc05f2">
-
 
 # Current Page View:
 
