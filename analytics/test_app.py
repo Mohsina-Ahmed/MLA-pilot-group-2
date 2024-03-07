@@ -10,7 +10,6 @@ import datetime
 from app import create_app
 from bson import json_util
 from config_settings import TestConfig
-from config_settings import TestConfig
 
 # TODO: update to graphQL
 
@@ -99,30 +98,26 @@ def test_index_route(test_client):
     assert res[0]['username'] == 'test_user'
     assert len(res) == 6
 
-def test_graphql_server_stats_username_only(test_client):
-    STATS_QUERY = """
-        query Stats {
-            Stats {
-            success
-            errors
-            results {
-                username 
-                exercises {
-                exerciseType
-                totalDuration
-                }
-            }
+# test the stats query 
+def test_graphql_server_stats(test_client):
+    stats_query = """
+    query {
+        stats {
+        success
+        errors
+        results {
+            username
+            exercises {
+            exerciseType
+            totalDuration
             }
         }
-        """
-    response = test_client.post('/api/graphql', STATS_QUERY)
-
-# check the stats route 
-def test_stats_route(test_client):
-    response = test_client.get('/stats')
-    res = json_util.loads(response.data).get('stats')
-    print(res)
-    # print(test_exercises)
+        }
+    }
+    """
+    response = test_client.post('/api/graphql', json={'query': stats_query})
+    res = json_util.loads(response.data)['data']['stats']
+    # print(res)
     assert response.status_code == 200
     assert res['success'] == True
     assert len(res['results']) == 2  # 2 test users
