@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - main
-    paths: 
+      - ma_Task3
+    paths:
       - "analytics/**"
 
 jobs:
