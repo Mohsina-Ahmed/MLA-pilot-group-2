@@ -1,10 +1,11 @@
 name: Deploy to AWS ECR
 
 on:
-  push:
+  pull_request:
+    types:
+      - closed
     branches:
       - main
-      - ma_Task3
     paths:
       - "frontend/**"
 
