@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - ma_Task3
     paths:
       - "activity-tracking/**"
 

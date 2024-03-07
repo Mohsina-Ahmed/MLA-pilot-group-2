@@ -1,10 +1,12 @@
 name: Deploy to AWS ECR
 
 on:
-  push:
+  pull_request:
+    types:
+      - closed
     branches:
       - main
-    paths: 
+    paths:
       - "frontend/**"
 
 jobs:
