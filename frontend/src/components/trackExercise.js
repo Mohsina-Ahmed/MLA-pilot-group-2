@@ -2,18 +2,18 @@ import React, { useState } from 'react';
 import { Button, Form, Col, Row, Dropdown, DropdownButton } from 'react-bootstrap';
 import { trackExercise } from '../api';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import DirectionsRunIcon from '@material-ui/icons/DirectionsRun';
-import BikeIcon from '@material-ui/icons/DirectionsBike';
-import PoolIcon from '@material-ui/icons/Pool';
-import FitnessCenterIcon from '@material-ui/icons/FitnessCenter';
-import OtherIcon from '@material-ui/icons/HelpOutline';
-import HappyIcon from '@material-ui/icons/SentimentVerySatisfied';
-import PainfulIcon from "@material-ui/icons/MoodBad";
-import UnhappyIcon from "@material-ui/icons/SentimentVeryDissatisfied";
-import NeutralIcon from "@material-ui/icons/SentimentSatisfied";
-import TiredIcon from "@material-ui/icons/BatteryAlert";
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
+import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike';
+import PoolIcon from '@mui/icons-material/Pool';
+import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
+import OtherIcon from '@mui/icons-material/HelpOutline';
+import HappyIcon from '@mui/icons-material/SentimentVerySatisfied';
+import PainfulIcon from "@mui/icons-material/MoodBad";
+import UnhappyIcon from "@mui/icons-material/SentimentVeryDissatisfied";
+import NeutralIcon from "@mui/icons-material/SentimentSatisfied";
+import TiredIcon from "@mui/icons-material/BatteryAlert";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -105,13 +105,13 @@ const TrackExercise = ({ currentUser }) => {
         <Row>
         <div style={{ marginBottom: '20px' }}>
           <Tooltip title="Running">
-          <IconButton color={state.exerciseType === 'Running' ? "primary" : "default"} onClick={() => setState({ ...state, exerciseType: 'Running' })}>
+          <IconButton data-testid="Run Icon" color={state.exerciseType === 'Running' ? "primary" : "default"} onClick={() => setState({ ...state, exerciseType: 'Running' })}>
             <DirectionsRunIcon fontSize="large" />
           </IconButton>
           </Tooltip>
           <Tooltip title="Cycling">
           <IconButton color={state.exerciseType === 'Cycling' ? "primary" : "default"} onClick={() => setState({ ...state, exerciseType: 'Cycling' })}>
-            <BikeIcon fontSize="large" />
+            <DirectionsBikeIcon fontSize="large" />
           </IconButton>
           </Tooltip>
           <Tooltip title="Swimming">
@@ -120,7 +120,7 @@ const TrackExercise = ({ currentUser }) => {
           </IconButton>
           </Tooltip>
           <Tooltip title="Workout">
-          <IconButton color={state.exerciseType === 'Gym' ? "primary" : "default"} onClick={() => setState({ ...state, exerciseType: 'Gym' })}>
+          <IconButton data-testid="Gym Icon" color={state.exerciseType === 'Gym' ? "primary" : "default"} onClick={() => setState({ ...state, exerciseType: 'Gym' })}>
             <FitnessCenterIcon fontSize="large" />
           </IconButton>
           </Tooltip>
@@ -132,7 +132,7 @@ const TrackExercise = ({ currentUser }) => {
         </div>
         </Row>
         <Row>
-        <div id="div-other" class={state.exerciseType === 'Other' ? "div-other" : "invisible"}>            
+        <div id="div-other" className={state.exerciseType === 'Other' ? "div-other" : "invisible"}>            
           <Dropdown style={{ marginBottom: '40px' }}>
             <DropdownButton title="Which activity would you like to track?">
               <Dropdown.Item onClick={() => setState({ ...state, exerciseType: 'Rowing' })}>Rowing &#128675;</Dropdown.Item>
@@ -147,12 +147,12 @@ const TrackExercise = ({ currentUser }) => {
         </div>
         </Row>
         <Row>
-        <div id="other-label" class={state.exerciseType === 'Rowing' || state.exerciseType === 'Football' || state.exerciseType === 'Skiing' || state.exerciseType === 'Golf' || state.exerciseType === 'Horse Riding' || state.exerciseType === 'Climbing' || state.exerciseType === 'Surfing'? "other-label" : "invisible"}>
+        <div id="other-label" className={state.exerciseType === 'Rowing' || state.exerciseType === 'Football' || state.exerciseType === 'Skiing' || state.exerciseType === 'Golf' || state.exerciseType === 'Horse Riding' || state.exerciseType === 'Climbing' || state.exerciseType === 'Surfing'? "other-label" : "invisible"}>
           <p id="other-exercise">Activity: {state.exerciseType}</p>
         </div>
         </Row>
         <Row>
-          <Form.Group controlId="description" style={{ marginBottom: '40px' }}>
+          <Form.Group controlId="description" data-testid="title" style={{ marginBottom: '40px' }}>
           <Form.Label>Title your activity:</Form.Label>
           <Form.Control
             placeholder={state.exerciseType} 
@@ -177,7 +177,7 @@ const TrackExercise = ({ currentUser }) => {
         </Row>
         <Row>
           <Col>
-          <Form.Group controlId="duration" style={{ marginBottom: '40px' }}>
+          <Form.Group controlId="duration" data-testid="duration" style={{ marginBottom: '40px' }}>
             <Form.Label>Duration (in minutes):</Form.Label>
             <Form.Control 
               type="number" 
@@ -187,8 +187,8 @@ const TrackExercise = ({ currentUser }) => {
             />
           </Form.Group>
           </Col>
-          <Col class={state.exerciseType === 'Gym' ? "invisible" : "col"}>
-          <Form.Group controlId="distance" class={state.exerciseType === 'Gym' ? "invisible" : "col"} style={{ marginBottom: '40px' }}>
+          <Col className={state.exerciseType === 'Gym' ? "invisible" : "col"}>
+          <Form.Group controlId="distance" data-testid="distance" class={state.exerciseType === 'Gym' ? "invisible" : "col"} style={{ marginBottom: '40px' }}>
             <Form.Label>Distance (in kilometers):</Form.Label>
             <Form.Control 
               type="number"
@@ -198,10 +198,10 @@ const TrackExercise = ({ currentUser }) => {
           </Form.Group>
           </Col>
         </Row>
-        <Row class={state.exerciseType === 'Gym' ? "invisible" : "row"}>
+        <Row className={state.exerciseType === 'Gym' ? "invisible" : "row"}>
           <Col>
           <Tooltip title="Auto-calculated.">
-          <Form.Group controlId="speed" class={state.exerciseType === 'Gym' ? "invisible" : "row"} style={{ marginBottom: '40px' }}>
+          <Form.Group controlId="speed" data-testid="speed" class={state.exerciseType === 'Gym' ? "invisible" : "row"} style={{ marginBottom: '40px' }}>
             <Form.Label>Speed (km/hr):</Form.Label>
             <Form.Control 
               type="number"
@@ -213,7 +213,7 @@ const TrackExercise = ({ currentUser }) => {
           </Col>
           <Col>
           <Tooltip title="Auto-calculated.">
-          <Form.Group controlId="pace" class={state.exerciseType === 'Gym' ? "invisible" : "row"} style={{ marginBottom: '40px' }}>
+          <Form.Group controlId="pace" data-testid="pace" className={state.exerciseType === 'Gym' ? "invisible" : "row"} style={{ marginBottom: '40px' }}>
             <Form.Label>Pace (min/km):</Form.Label>
             <Form.Control 
               type="number"
@@ -224,9 +224,9 @@ const TrackExercise = ({ currentUser }) => {
           </Tooltip>
           </Col>
         </Row>
-        <Row class={state.exerciseType === 'Gym' ? "row" : "invisible"}>
+        <Row className={state.exerciseType === 'Gym' ? "row" : "invisible"}>
           <Col>
-          <Form.Group controlId="sets" class={state.exerciseType === 'Gym' ? "row" : "invisible"} style={{ marginBottom: '40px' }}>
+          <Form.Group controlId="sets" data-testid="sets" className={state.exerciseType === 'Gym' ? "row" : "invisible"} style={{ marginBottom: '40px' }}>
             <Form.Label>Number of Sets:</Form.Label>
             <Form.Control 
               type="number"
@@ -236,7 +236,7 @@ const TrackExercise = ({ currentUser }) => {
           </Form.Group>
           </Col>
           <Col>
-          <Form.Group controlId="reps" class={state.exerciseType === 'Gym' ? "row" : "invisible"} style={{ marginBottom: '40px' }}>
+          <Form.Group controlId="reps" data-testid="reps" className={state.exerciseType === 'Gym' ? "row" : "invisible"} style={{ marginBottom: '40px' }}>
             <Form.Label>Number of Reps per set:</Form.Label>
             <Form.Control 
               type="number"
@@ -250,7 +250,7 @@ const TrackExercise = ({ currentUser }) => {
           <div style={{ marginBottom: '40px' }}>
             <p fontSize="medium" style={{ marginBottom: '10px' }}>How did it feel?</p>
             <Tooltip title="That felt good / easy - yay!">
-              <IconButton color={state.mood === 'Happy' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Happy' })}>
+              <IconButton data-testid="Happy" color={state.mood === 'Happy' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Happy' })}>
                 <HappyIcon fontSize="large" />
               </IconButton>
             </Tooltip>
@@ -276,7 +276,7 @@ const TrackExercise = ({ currentUser }) => {
             </Tooltip>
           </div>
         </Row>
-        <Button variant="success" type="submit">
+        <Button data-testid="submit btn" variant="success" type="submit">
           Save activity
         </Button>
       </Form>
