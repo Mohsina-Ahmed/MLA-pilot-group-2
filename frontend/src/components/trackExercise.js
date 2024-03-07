@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Form, Dropdown, DropdownButton } from 'react-bootstrap';
+import { Button, Form, Col, Row, Dropdown, DropdownButton } from 'react-bootstrap';
 import { trackExercise } from '../api';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import IconButton from '@mui/material/IconButton';
@@ -41,8 +41,34 @@ const TrackExercise = ({ currentUser }) => {
     };
   };
 
+  const calculatePace = () => {
+    if (state.distance > 0) {
+      state.pace = (state.duration / state.distance).toFixed(2);
+      return state.pace;
+    } else {
+      state.pace = 0;
+      return state.pace;
+    };
+  };
+
   const onSubmit = async (e) => {
     e.preventDefault();
+
+    const currDate = new Date();
+    if (state.exerciseType === '') {
+      setMessage("Please check you have selected an exercise!");
+    } else if (state.date > currDate) {
+      setMessage("Please check the date and try again.");
+      return;
+    } else if (state.duration < 0) {
+      setMessage("Please check the duration is a positive value!");
+      return;
+    } else if (state.distance < 0) {
+      setMessage("Please check the distance is a positive value!");
+      return;
+    } else if (state.mood === '') {
+      setMessage("Don't forget to log how the activity felt!");
+    };
 
     const dataToSubmit = {
       username: currentUser,
@@ -76,6 +102,7 @@ const TrackExercise = ({ currentUser }) => {
     <div>
       <h3>Track exercise</h3>
       <Form onSubmit={onSubmit} style={{ maxWidth: '400px', margin: 'auto' }}>
+        <Row>
         <div style={{ marginBottom: '20px' }}>
           <Tooltip title="Running">
           <IconButton data-testid="Run Icon" color={state.exerciseType === 'Running' ? "primary" : "default"} onClick={() => setState({ ...state, exerciseType: 'Running' })}>
@@ -103,6 +130,8 @@ const TrackExercise = ({ currentUser }) => {
           </IconButton>  
           </Tooltip>
         </div>
+        </Row>
+        <Row>
         <div id="div-other" className={state.exerciseType === 'Other' ? "div-other" : "invisible"}>            
           <Dropdown style={{ marginBottom: '40px' }}>
             <DropdownButton title="Which activity would you like to track?">
@@ -116,12 +145,17 @@ const TrackExercise = ({ currentUser }) => {
             </DropdownButton>
           </Dropdown>
         </div>
+        </Row>
+        <Row>
         <div id="other-label" className={state.exerciseType === 'Rowing' || state.exerciseType === 'Football' || state.exerciseType === 'Skiing' || state.exerciseType === 'Golf' || state.exerciseType === 'Horse Riding' || state.exerciseType === 'Climbing' || state.exerciseType === 'Surfing'? "other-label" : "invisible"}>
           <p id="other-exercise">Activity: {state.exerciseType}</p>
         </div>
-        <Form.Group controlId="description" data-testid="title" style={{ marginBottom: '40px' }}>
+        </Row>
+        <Row>
+          <Form.Group controlId="description" data-testid="title" style={{ marginBottom: '40px' }}>
           <Form.Label>Title your activity:</Form.Label>
-          <Form.Control 
+          <Form.Control
+            placeholder={state.exerciseType} 
             as="textarea"
             fontSize="large"
             rows={1}
@@ -129,8 +163,10 @@ const TrackExercise = ({ currentUser }) => {
             value={state.description} 
             onChange={(e) => setState({ ...state, description: e.target.value })}
           />
-        </Form.Group>
-        <Form.Group controlId="formDate" className="form-margin">
+          </Form.Group>
+        </Row>
+        <Row>
+          <Form.Group controlId="formDate" className="form-margin">
           <Form.Label>Date:</Form.Label>
           <DatePicker 
             selected={state.date}
@@ -138,82 +174,113 @@ const TrackExercise = ({ currentUser }) => {
             dateFormat="dd/MM/yyyy"
           />
         </Form.Group>
-        <Form.Group controlId="duration" data-testid="duration" style={{ marginBottom: '40px' }}>
-          <Form.Label>Duration (in minutes):</Form.Label>
-          <Form.Control 
-            type="number" 
-            required 
-            value={state.duration} 
-            onChange={(e) => setState({ ...state, duration: e.target.value })}
-          />
-        </Form.Group>
-        <Form.Group controlId="distance" data-testid="distance" className={state.exerciseType === 'Gym' ? "invisible" : "default"} style={{ marginBottom: '40px' }}>
-          <Form.Label>Distance (in kilometers):</Form.Label>
-          <Form.Control 
-            type="number"
-            value={state.distance} 
-            onChange={(e) => setState({ ...state, distance: e.target.value })}
-          />
-        </Form.Group>
-        <Tooltip title="Auto-calculated.">
-        <Form.Group controlId="speed" data-testid="speed" className={state.exerciseType === 'Gym' ? "invisible" : "default"} style={{ marginBottom: '40px' }}>
-          <Form.Label>Speed (km/hr):</Form.Label>
-          <Form.Control 
-            type="number"
-            value={calculateSpeed()} 
-            onChange={(e) => setState({ ...state, speed: e.target.value })}
-          />
-        </Form.Group>
-        </Tooltip>
-        <Form.Group controlId="sets" data-testid="sets" className={state.exerciseType === 'Gym' ? "default" : "invisible"} style={{ marginBottom: '40px' }}>
-          <Form.Label>Number of Sets:</Form.Label>
-          <Form.Control 
-            type="number"
-            value={state.sets} 
-            onChange={(e) => setState({ ...state, sets: e.target.value })}
-          />
-        </Form.Group>
-        <Form.Group controlId="reps" data-testid="reps" className={state.exerciseType === 'Gym' ? "default" : "invisible"} style={{ marginBottom: '40px' }}>
-          <Form.Label>Number of Reps per set:</Form.Label>
-          <Form.Control 
-            type="number"
-            value={state.reps} 
-            onChange={(e) => setState({ ...state, reps: e.target.value })}
-          />
-        </Form.Group>
-      <div style={{ marginBottom: '40px' }}>
-        <p fontSize="medium" style={{ marginBottom: '10px' }}>How did it feel?</p>
-        <Tooltip title="That felt good / easy - yay!">
-          <IconButton data-testid="Happy" color={state.mood === 'Happy' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Happy' })}>
-            <HappyIcon fontSize="large" />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="That felt OK - could have been better!">
-          <IconButton color={state.mood === 'Neutral' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Neutral' })}>
-            <NeutralIcon fontSize="large" />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="That was difficult - glad it's over!">
-          <IconButton color={state.mood === 'Difficult' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Difficult' })}>
-            <UnhappyIcon fontSize="large" />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Ouch - that was painful.">
-          <IconButton color={state.mood === 'Painful' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Painful' })}>
-            <PainfulIcon fontSize="large" />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="That was tiring - no energy.">
-          <IconButton color={state.mood === 'Tiring' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Tiring' })}>
-            <TiredIcon fontSize="large" />
-          </IconButton>
-        </Tooltip>
-      </div>
-      <Button data-testid="submit btn" variant="success" type="submit">
-        Save activity
-      </Button>
-    </Form>
-    {message && <p style={{color: 'green'}}>{message}</p>}
+        </Row>
+        <Row>
+          <Col>
+          <Form.Group controlId="duration" data-testid="duration" style={{ marginBottom: '40px' }}>
+            <Form.Label>Duration (in minutes):</Form.Label>
+            <Form.Control 
+              type="number" 
+              required 
+              value={state.duration} 
+              onChange={(e) => setState({ ...state, duration: e.target.value })}
+            />
+          </Form.Group>
+          </Col>
+          <Col className={state.exerciseType === 'Gym' ? "invisible" : "col"}>
+          <Form.Group controlId="distance" data-testid="distance" className={state.exerciseType === 'Gym' ? "invisible" : "default"} style={{ marginBottom: '40px' }}>
+            <Form.Label>Distance (in kilometers):</Form.Label>
+            <Form.Control 
+              type="number"
+              value={state.distance} 
+              onChange={(e) => setState({ ...state, distance: e.target.value })}
+            />
+          </Form.Group>
+          </Col>
+        </Row>
+        <Row className={state.exerciseType === 'Gym' ? "invisible" : "row"}>
+          <Col>
+          <Tooltip title="Auto-calculated.">
+          <Form.Group controlId="speed" data-testid="speed" className={state.exerciseType === 'Gym' ? "invisible" : "default"} style={{ marginBottom: '40px' }}>
+            <Form.Label>Speed (km/hr):</Form.Label>
+            <Form.Control 
+              type="number"
+              value={calculateSpeed()} 
+              onChange={(e) => setState({ ...state, speed: e.target.value })}
+            />
+          </Form.Group>
+          </Tooltip>
+          </Col>
+          <Col>
+          <Tooltip title="Auto-calculated.">
+          <Form.Group controlId="pace" data-testid="pace" className={state.exerciseType === 'Gym' ? "invisible" : "row"} style={{ marginBottom: '40px' }}>
+            <Form.Label>Pace (min/km):</Form.Label>
+            <Form.Control 
+              type="number"
+              value={calculatePace()} 
+              onChange={(e) => setState({ ...state, pace: e.target.value })}
+            />
+          </Form.Group>
+          </Tooltip>
+          </Col>
+        </Row>
+        <Row className={state.exerciseType === 'Gym' ? "row" : "invisible"}>
+          <Col>
+          <Form.Group controlId="sets" data-testid="sets" className={state.exerciseType === 'Gym' ? "default" : "invisible"} style={{ marginBottom: '40px' }}>
+            <Form.Label>Number of Sets:</Form.Label>
+            <Form.Control 
+              type="number"
+              value={state.sets} 
+              onChange={(e) => setState({ ...state, sets: e.target.value })}
+            />
+          </Form.Group>
+          </Col>
+          <Col>
+          <Form.Group controlId="reps" data-testid="reps" className={state.exerciseType === 'Gym' ? "default" : "invisible"} style={{ marginBottom: '40px' }}>
+            <Form.Label>Number of Reps per set:</Form.Label>
+            <Form.Control 
+              type="number"
+              value={state.reps} 
+              onChange={(e) => setState({ ...state, reps: e.target.value })}
+            />
+          </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <div style={{ marginBottom: '40px' }}>
+            <p fontSize="medium" style={{ marginBottom: '10px' }}>How did it feel?</p>
+            <Tooltip title="That felt good / easy - yay!">
+              <IconButton data-testid="Happy" color={state.mood === 'Happy' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Happy' })}>
+                <HappyIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="That felt OK - could have been better!">
+              <IconButton color={state.mood === 'Neutral' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Neutral' })}>
+                <NeutralIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="That was difficult - glad it's over!">
+              <IconButton color={state.mood === 'Difficult' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Difficult' })}>
+                <UnhappyIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Ouch - that was painful.">
+              <IconButton color={state.mood === 'Painful' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Painful' })}>
+                <PainfulIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="That was tiring - no energy.">
+              <IconButton color={state.mood === 'Tiring' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Tiring' })}>
+                <TiredIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
+          </div>
+        </Row>
+        <Button data-testid="submit btn" variant="success" type="submit">
+          Save activity
+        </Button>
+      </Form>
+      {message && <p style={message === 'Activity logged successfully! Well done!' ? {color: 'green'} : {color: 'red'} }>{message}</p>}
     </div>
   );
 };
