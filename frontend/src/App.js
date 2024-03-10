@@ -10,6 +10,7 @@ import Footer from './components/footer';
 import Login from './components/login';
 import Signup from './components/signup';
 import Journal from './components/journal_v2';
+import Homepage from './components/homepage';
 import logo from './img/CFG_logo.png'; // Update the path to your logo file
 
 function App() {
@@ -30,7 +31,7 @@ function App() {
     <div className="App">
       <Router>
         <div className="appTitle">
-          <h1>MLA Fitness App</h1>
+          <h1>MLA Fitness App Group 2 Welcome</h1>
           <img src={logo} alt="CFG Fitness App Logo" id="appLogo" />
         </div>
 
@@ -43,10 +44,11 @@ function App() {
               setIsLoggedIn(true);
               setCurrentUser(username);
             }} />} />
+            <Route path="/homepage" element={isLoggedIn ? <Homepage currentUser={currentUser} /> : <Navigate to="/login" />} />
             <Route path="/trackExercise" element={isLoggedIn ? <TrackExercise currentUser={currentUser} /> : <Navigate to="/login" />} />
             <Route path="/statistics_v2" element={isLoggedIn ? <Statistics currentUser={currentUser} /> : <Navigate to="/login" />} />
             <Route path="/journal_v2" element={isLoggedIn ? <Journal currentUser={currentUser} /> : <Navigate to="/login" />} />
-            <Route path="/" element={isLoggedIn ? <Navigate to="/trackExercise" /> : <Navigate to="/login" />} />
+            <Route path="/" element={isLoggedIn ? <Navigate to="/homepage" /> : <Navigate to="/login" />} />
           </Routes>
         </div>
         <Footer />

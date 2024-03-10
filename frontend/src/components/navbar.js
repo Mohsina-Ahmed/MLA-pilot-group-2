@@ -8,6 +8,9 @@ const NavbarComponent = ({ onLogout }) => {
   const onNavigate = (route) => {
     console.log('Navigating to:', route);  
     switch(route) {
+      case 'Homepage':
+        navigate('/homepage');
+        break;
       case 'TrackExercise':
         navigate('/trackExercise');
         break;
@@ -23,11 +26,12 @@ const NavbarComponent = ({ onLogout }) => {
   };
 
   return (
-    <Navbar className="nav-back custom-navbar" expand="lg">
+    <Navbar className="nav-back custom-navbar" expand="lg" activeKey=""> 
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
         <Nav>
+          <Nav.Link className="custom-nav-link" onClick={() => onNavigate('Homepage')}>Homepage</Nav.Link>
           <Nav.Link className="custom-nav-link" onClick={() => onNavigate('TrackExercise')}>Track New Exercise</Nav.Link>
           <Nav.Link className="custom-nav-link" onClick={() => onNavigate('Statistics')}>Statistics</Nav.Link>
           <Nav.Link className="custom-nav-link" onClick={() => onNavigate('Journal')}>Weekly Journal</Nav.Link>
