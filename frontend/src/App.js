@@ -10,7 +10,7 @@ import Footer from './components/footer';
 import Login from './components/login';
 import Signup from './components/signup';
 import Journal from './components/journal_v2';
-import Homepage from './components/homepage';
+import Homepage from './components/homepage'; // New Component for Homepage
 import logo from './img/CFG_logo.png'; // Update the path to your logo file
 
 function App() {
