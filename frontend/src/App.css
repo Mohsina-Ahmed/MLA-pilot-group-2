@@ -180,6 +180,11 @@ p#other-exercise {
   margin-right: 40px;
 }
 
+.active {
+  color: blue !important;
+  font-weight: bold;
+}
+
 .signup {
   margin: 20px;
 }
