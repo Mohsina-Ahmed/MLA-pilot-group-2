@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Form, Col, Row, Dropdown, DropdownButton } from 'react-bootstrap';
-import { trackExercise } from '../api';
+import { trackExercise } from '../config';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
