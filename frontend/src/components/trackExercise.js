@@ -17,6 +17,7 @@ import TiredIcon from "@mui/icons-material/BatteryAlert";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
+
 const TrackExercise = ({ currentUser }) => {
   const [state, setState] = useState({
     exerciseType: '',

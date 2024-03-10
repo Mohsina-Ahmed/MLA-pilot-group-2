@@ -2,23 +2,24 @@ import React, { useState } from 'react';
 import { Button, Form, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import config from '../config';
 
 const Signup = ({ onSignup }) => {
   const [formData, setFormData] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
+const handleInputChange = (e) => {
+  const { name, value } = e.target;
+  setFormData((prevData) => ({ ...prevData, [name]: value }));
+};
 
-
-  const handleSignup = async (e) => {
-    e.preventDefault();
-    setError('');
+const handleSignup = async (e) => {
+  e.preventDefault();
+  setError('');
 
     try {
-        const response = await axios.post('http://localhost:8080/api/auth/signup', formData);
+        
+        const response = await axios.post(`${config.apiUrl}/auth/signup`, formData);
 
         if (response.data === 'User registered successfully!') {
             console.log('User registered successfully');

@@ -3,14 +3,17 @@ import * as ReactDOM from 'react-dom/client';
 import axios from 'axios';
 import './statistics.css';
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
+import config from '../config';
 
 console.log('on the statistics graphQL page')
 
 // setup the apollo client for graphql 
 const client = new ApolloClient({
-  uri: 'http://localhost:5050/api/graphql',
+  uri: `${config.apiUrl}/api/graphql`,
   cache: new InMemoryCache(),
 });
+
+console.log(`${config.apiUrl}/api/graphql`)
 
 // setup the graphql query 
 const STATS_QUERY = gql

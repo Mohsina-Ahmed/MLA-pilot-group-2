@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './statistics.css';
+import config from '../config';
 
 const Statistics = ({ currentUser }) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    const url = `http://localhost:5050/stats/${currentUser}`;
+    const url = `${config.apiUrl}/stats/${currentUser}`;
 
     axios.get(url)
       .then(response => {
