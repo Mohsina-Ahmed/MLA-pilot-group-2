@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
-import { Button, Form, Alert } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
 import config from '../config';
 
 const Homepage = ({ currentUser }) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    const url = `${config.apiUrl}/stats/${currentUser}`;
-
-    axios.get(url)
-      .then(response => {
+    const fetchData = async () => {
+      try {
+        const url = `${config.apiUrl}/stats/${currentUser}`;
+        const response = await axios.get(url);
         setData(response.data.stats);
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('There was an error fetching the data!', error);
-      });
+      }
+    };
+
+    fetchData();
   }, [currentUser]);
 
   const currentUserData = data.find(item => item.username === currentUser);
