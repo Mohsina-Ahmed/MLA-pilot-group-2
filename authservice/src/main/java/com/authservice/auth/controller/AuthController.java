@@ -20,6 +20,8 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
+        //add more authentications...
+        
         if (userRepository.existsByUsername(user.getUsername())) {
             return ResponseEntity.badRequest().body("User already exists - please log in");
         }
