@@ -30,8 +30,9 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         //Code by Namrata
-        if (signUpService.validatePassword(user.getPassword())) {
-            return ResponseEntity.badRequest().body("Password not valid as per format");
+        //updated by Mohsina
+        if (!signUpService.validatePassword(user.getPassword())) {
+            return ResponseEntity.badRequest().body("Password must be 6-12 characters long and contain at least one uppercase letter, one digit and one special character");
         }
         //Code finishes
         if (userRepository.existsByUsername(user.getUsername())) {
