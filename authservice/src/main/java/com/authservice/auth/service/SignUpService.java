@@ -3,11 +3,10 @@ package com.authservice.auth.service;
 import org.springframework.stereotype.Service;
 
 @Service
-class SignUpService{
+public class SignUpService{
 
     public boolean validatePassword(String userPassword){
-        String pattern = "^(?=.*[a-zA-Z])(?=.*\d)(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?/~\-])[a-zA-Z\d!@#$%^&*()_+{}\[\]:;<>,.?/~\-]{6,}$";
-
+        String pattern = "";//"^(?=.*[a-zA-Z])(?=.*\d)(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?/~\-])[a-zA-Z\d!@#$%^&*()_+{}\[\]:;<>,.?/~\-]{6,}$";
         // Check if the string matches the pattern
             return userPassword.matches(userPassword);
             
