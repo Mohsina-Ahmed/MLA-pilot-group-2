@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "dependencies": {},
+  "dependencies": {
+    "mongoose": "^7.5.4"
+  },
   "devDependencies": {
-    "cypress": "^13.6.6"
+    "cypress": "^13.7.0",
+    "mongodb-memory-server": "^9.0.0"
   },
   "scripts": {
     "cypress:open": "cypress open"
