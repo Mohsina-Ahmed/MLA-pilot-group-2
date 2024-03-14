@@ -68,6 +68,10 @@ const Journal = ({ currentUser }) => {
     setEndDate(moment(endDate).add(1, 'weeks').endOf('week').toDate());
   };
 
+  const getExerciseCount = () => {
+
+  };
+  
   // generate exercise list - use of separate function call makes it easier to 
   // check if exercise results exist to avoid access errors
   const makeExerciseList = () => {

@@ -5,9 +5,12 @@ schema {
 type Stats{
     username: String!
     exercises: [Exercise]
+    totalCount: Int
+    totalDuration: Int
 }
 
 type Exercise{
+    date: String
     exerciseType: String
     totalDuration: Int
 }
