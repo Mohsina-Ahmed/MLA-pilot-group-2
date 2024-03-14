@@ -219,29 +219,40 @@ def create_app(config_object=Config):
                 "$group": {
                     "_id": {
                         "username": "$username",
+                        "date": "$date",
                         "exerciseType": "$exerciseType"
                     },
-                    "totalDuration": {"$sum": "$duration"}
+                    "count": {"$sum": 1}, # counting occurrence of each exercise for each day
+                    "totalDuration": {"$sum": "$duration"} # total duration of exercises each day
                 }
             },
-                    {
+            {
                 "$group": {
                     "_id": "$_id.username",
                     "exercises": {
                         "$push": {
+                            "date": "$_id.date",
                             "exerciseType": "$_id.exerciseType",
                             "totalDuration": "$totalDuration"
-                        }
-                    }
+                        }                       
+                    }, 
+                    "totalCount": {"$sum": "$count"}, # total count of all exercises each day
+                    "totalDuration": {"$sum": "$totalDuration"} # total count of all exercises each day
                 }
             },
             {
                 "$project": {
                     "username": "$_id",
                     "exercises": 1,
+                    "totalCount": 1,
+                    "totalDuration": 1,
                     "_id": 0
                 }
+            },
+            {
+                "$sort": {"date": 1}  # Sort by date in ascending order
             }
+
         ]
 
         stats = list(db.exercises.aggregate(pipeline))
