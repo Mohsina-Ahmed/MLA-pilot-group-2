@@ -5,14 +5,18 @@ schema {
 type Stats{
     username: String!
     exercises: [Exercise]
-    totalCount: Int
+    exerciseCount: [DailyCount]
     totalDuration: Int
 }
 
+type DailyCount{
+    dayOfWeek: String
+    count: Int
+}
+
 type Exercise{
-    date: String
     exerciseType: String
-    totalDuration: Int
+    exerciseDuration: Int
 }
 
 type StatsResult{

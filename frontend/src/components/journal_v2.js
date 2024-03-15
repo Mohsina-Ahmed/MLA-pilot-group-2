@@ -22,15 +22,15 @@ const JOURNAL_QUERY = gql
       errors
       results {
         username 
+        totalDuration
         exercises {
           exerciseType
-          totalDuration
+          exerciseDuration
         }
       }
     }
   }
   `;
-
 
 const Journal = ({ currentUser }) => {
   const [startDate, setStartDate] = useState(moment().startOf('week').toDate());
@@ -38,7 +38,7 @@ const Journal = ({ currentUser }) => {
   const [exercises, setExercises] = useState([]);
 
   // make graphql request
-  const fetchExercises = async () => {
+  const fetchExercises = async() => {
     try {
       const response = await client.query({
         query: JOURNAL_QUERY,
@@ -68,9 +68,6 @@ const Journal = ({ currentUser }) => {
     setEndDate(moment(endDate).add(1, 'weeks').endOf('week').toDate());
   };
 
-  const getExerciseCount = () => {
-
-  };
   
   // generate exercise list - use of separate function call makes it easier to 
   // check if exercise results exist to avoid access errors
@@ -79,7 +76,7 @@ const Journal = ({ currentUser }) => {
       return (exercises.success && exercises.results.length > 0) ? (
         exercises.results[0].exercises.map((item, index) => (
           <li key={index} className="exercise-journal-data">
-            {item.exerciseType} - {item.totalDuration} minutes
+            {item.exerciseType} - {item.exerciseDuration} minutes
           </li>
         ))
       ) : (

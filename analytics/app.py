@@ -206,54 +206,48 @@ def create_app(config_object=Config):
             return jsonify(error="Invalid date format"), 400
 
         pipeline = [
-            {
-                "$match": {
-                    "username": username,
-                    "date": {
-                        "$gte": start_date,
-                        "$lt": end_date
+                {
+                    "$match": {
+                        "username": username,
+                        "date": {
+                            "$gte": start_date,
+                            "$lt": end_date
+                        }
                     }
-                }
-            },
-            {
-                "$group": {
-                    "_id": {
-                        "username": "$username",
-                        "date": "$date",
-                        "exerciseType": "$exerciseType"
-                    },
-                    "count": {"$sum": 1}, # counting occurrence of each exercise for each day
-                    "totalDuration": {"$sum": "$duration"} # total duration of exercises each day
-                }
-            },
-            {
-                "$group": {
-                    "_id": "$_id.username",
-                    "exercises": {
-                        "$push": {
-                            "date": "$_id.date",
-                            "exerciseType": "$_id.exerciseType",
-                            "totalDuration": "$totalDuration"
-                        }                       
-                    }, 
-                    "totalCount": {"$sum": "$count"}, # total count of all exercises each day
-                    "totalDuration": {"$sum": "$totalDuration"} # total count of all exercises each day
-                }
-            },
-            {
-                "$project": {
-                    "username": "$_id",
-                    "exercises": 1,
-                    "totalCount": 1,
-                    "totalDuration": 1,
-                    "_id": 0
-                }
-            },
-            {
-                "$sort": {"date": 1}  # Sort by date in ascending order
-            }
-
-        ]
+                },
+                {
+                    "$group": {
+                        "_id": {
+                            "username": "$username",
+                            "exerciseType": "$exerciseType"
+                        },
+                        "exerciseDuration": {"$sum": "$duration"} # total duration of exercises each day
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": "$_id.username",
+                        "exercises": {
+                            "$push": {
+                                "exerciseType": "$_id.exerciseType",
+                                "exerciseDuration": "$exerciseDuration"
+                            }},
+                        "exerciseCount": {
+                            "$push": {"dayOfWeek": {"$dayOfWeek": {"date": "$date"}}, "count": {"$sum": 1}}}, 
+                        "totalDuration": {"$sum": "$exerciseDuration"}, # total count of all exercises each day
+                    }
+                },
+                {
+                    "$project": {
+                        "username": "$_id",
+                        "exercises": 1,
+                        "exerciseCount": 1,
+                        "totalDuration": 1,
+                        "_id": 0
+                    }
+                },
+            
+            ]
 
         stats = list(db.exercises.aggregate(pipeline))
         return stats
