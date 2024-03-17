@@ -20,6 +20,10 @@
     margin-bottom: 20px;
 }
 
+h5 {
+    text-align: center;
+}
+
 ul {
     padding-left: 0;
 }

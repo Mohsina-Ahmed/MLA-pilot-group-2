@@ -5,18 +5,23 @@ schema {
 type Stats{
     username: String!
     exercises: [Exercise]
-    exerciseCount: [DailyCount]
-    totalDuration: Int
 }
 
 type DailyCount{
-    dayOfWeek: String
-    count: Int
+    username: String
+    totalDuration: Int
+    exerciseCount: [ExerciseCount]
 }
 
 type Exercise{
     exerciseType: String
     exerciseDuration: Int
+}
+
+type ExerciseCount{
+    date: String
+    count: Int
+    dailyDuration: Int
 }
 
 type StatsResult{
@@ -25,8 +30,15 @@ type StatsResult{
     results: [Stats]
 }
 
+type DailyResult{
+    success: Boolean!
+    errors: [String]
+    results: [DailyCount]
+}
+
 type Query{
     stats: StatsResult
     filteredStats(name: String): StatsResult
     weeklyStats(name: String, start_date: String, end_date: String): StatsResult
+    dailyStats(name: String, start_date: String, end_date: String): DailyResult
 }

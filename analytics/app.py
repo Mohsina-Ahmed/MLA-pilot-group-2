@@ -106,6 +106,23 @@ def create_app(config_object=Config):
                 "errors": [str(error)]
             }
         return payload
+    
+    @query.field("dailyStats")
+    def resolve_dailyStats(*_, name=None, start_date=None, end_date=None):
+        try:
+            print("Resolving the daily stats info")
+            loadedStats = daily_exercise_user_stats(name, start_date, end_date)
+            print(loadedStats)
+            payload = {
+                "success": True,
+                "results": loadedStats
+            }
+        except Exception as error:
+            payload = {
+                "success": False,
+                "errors": [str(error)]
+            }
+        return payload
 
     @app.route('/')
     def index():
@@ -206,6 +223,63 @@ def create_app(config_object=Config):
             return jsonify(error="Invalid date format"), 400
 
         pipeline = [
+            {
+                "$match": {
+                    "username": username,
+                    "date": {
+                        "$gte": start_date,
+                        "$lt": end_date
+                    }
+                }
+            },
+            {
+                "$group": {
+                    "_id": {
+                    "username": "$username",
+                    "exerciseType": "$exerciseType"
+                    },
+                    "exerciseDuration": {"$sum": "$duration"}
+                }
+            },
+            {
+                "$group": {
+                    "_id": "$_id.username",
+                    "exercises": {
+                        "$push": {
+                            "exerciseType": "$_id.exerciseType",
+                            "exerciseDuration": "$exerciseDuration"
+                        }
+                    }
+                }
+            },
+            {
+                "$project": {
+                    "username": "$_id",
+                    "exercises": 1,
+                    "_id": 0
+                }
+            }
+        ]
+        
+        stats = list(db.exercises.aggregate(pipeline))
+        return stats
+    
+    def daily_exercise_user_stats(username, start_date_str, end_date_str):
+        # username = request.args.get('user')
+        # start_date_str = request.args.get('start')
+        # end_date_str = request.args.get('end')
+
+        date_format = "%d-%m-%Y"
+        try:
+            start_date = datetime.strptime(start_date_str, date_format)
+            end_date = datetime.strptime(end_date_str, date_format) + timedelta(days=1)  # Include the whole end day
+
+            logging.info(f"Fetching daily count for user: {username} from {start_date} to {end_date}")
+        except Exception as e:
+            logging.error(f"Error parsing dates: {e}")
+            return jsonify(error="Invalid date format"), 400
+
+        pipeline = [
                 {
                     "$match": {
                         "username": username,
@@ -218,40 +292,29 @@ def create_app(config_object=Config):
                 {
                     "$group": {
                         "_id": {
-                            "username": "$username",
-                            "exerciseType": "$exerciseType"
-                        },
-                        "exerciseDuration": {"$sum": "$duration"} # total duration of exercises each day
+							"username": "$username",
+                            "day": {"$dayOfWeek": {"date": "$date"}}}, 
+                            "count": {"$sum": 1},
+                            "dailyDuration": {"$sum": "$duration"}
                     }
-                },
-                {
-                    "$group": {
-                        "_id": "$_id.username",
-                        "exercises": {
-                            "$push": {
-                                "exerciseType": "$_id.exerciseType",
-                                "exerciseDuration": "$exerciseDuration"
-                            }},
-                        "exerciseCount": {
-                            "$push": {"dayOfWeek": {"$dayOfWeek": {"date": "$date"}}, "count": {"$sum": 1}}}, 
-                        "totalDuration": {"$sum": "$exerciseDuration"}, # total count of all exercises each day
-                    }
-                },
-                {
-                    "$project": {
-                        "username": "$_id",
-                        "exercises": 1,
-                        "exerciseCount": 1,
-                        "totalDuration": 1,
-                        "_id": 0
-                    }
-                },
-            
+				},
+				{ "$group": {
+						"_id": "$_id.username",
+						"exerciseCount": {
+                        "$push": {
+							"date": {"$toString": "$_id.day"},
+                            "count": "$count",
+                            "dailyDuration": "$dailyDuration"
+							}
+						},
+						"totalDuration": {"$sum": "$dailyDuration"}            
+					}
+				},
+				{ "$project": {"_id": 0, "username": "$_id", "exerciseCount": 1, "totalDuration": 1} }
             ]
-
+    
         stats = list(db.exercises.aggregate(pipeline))
         return stats
-
 
     @app.errorhandler(Exception)
     def handle_error(e):
@@ -261,7 +324,7 @@ def create_app(config_object=Config):
 
     return app
 
-
+            
 # if __name__ == "__main__":
 #     app = create_app()
 #     app.run(debug=True, host='0.0.0.0', port=5050)
