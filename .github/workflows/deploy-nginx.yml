@@ -1,4 +1,4 @@
-name: Deploy to AWS ECR
+name: Nginx ECR Deployment
 
 on:
   push:
@@ -6,10 +6,11 @@ on:
       - main
       - ma_task5
     paths:
-      - "activity-tracking/**"
+      - "nginx/**"
 
 jobs:
   build:
+    name: Deploy Nginx to ECR
     runs-on: ubuntu-latest
     steps:
       - run: |
@@ -28,12 +29,11 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build, tag, and push image to Amazon ECR (Activity Tracking)
+      - name: Build and Push Nginx Docker Image to ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: mla-fitnessapp-activity
+          ECR_REPOSITORY: mla-fitnessapp-nginx
           IMAGE_TAG: latest
         run: |
-          cd activity-tracking
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./nginx
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

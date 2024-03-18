@@ -6,7 +6,7 @@ on:
       - main
       - ma_task5
     paths:
-      - "activity-tracking/**"
+      - "authservice/**"
 
 jobs:
   build:
@@ -28,12 +28,12 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build, tag, and push image to Amazon ECR (Activity Tracking)
+      - name: Build, tag, and push image to Amazon ECR (AuthService)
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: mla-fitnessapp-activity
+          ECR_REPOSITORY: mla-fitnessapp-authservice
           IMAGE_TAG: latest
         run: |
-          cd activity-tracking
+          cd authservice
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
