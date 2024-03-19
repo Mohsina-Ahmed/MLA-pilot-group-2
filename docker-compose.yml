@@ -14,7 +14,7 @@ services:
       - analytics
       - authservice
     networks:
-      - app-network
+      - app_network
 
   frontend:
     build:
@@ -76,9 +76,6 @@ services:
     networks:
       - app_network
 
-  # access docker container docker-compose exec cypress sh
-  # npm run cypress:run
-
   prometheus:
     image: prom/prometheus:latest
     volumes:
@@ -86,7 +83,7 @@ services:
     ports:
       - "9090:9090"
     networks:
-      - app-network
+      - app_network
 
   grafana:
     image: grafana/grafana:latest
@@ -100,7 +97,7 @@ services:
     depends_on:
       - prometheus
     networks:
-      - app-network
+      - app_network
 
 networks:
   app_network:
