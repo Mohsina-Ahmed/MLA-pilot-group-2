@@ -73,7 +73,7 @@ services:
     volumes:
       - mongodb-data:/data/db
     networks:
-      - app_network
+      - app-network
 
   prometheus:
     image: prom/prometheus:latest
@@ -96,7 +96,7 @@ services:
     depends_on:
       - prometheus
     networks:
-      - app_network
+      - app-network
 
 networks:
   app_network:
