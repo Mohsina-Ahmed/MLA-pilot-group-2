@@ -1,0 +1,22 @@
+# docker-compose -f docker-compose-cypress.yaml up 
+version: "3.8"
+services:
+    
+  cypress:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    working_dir: /cypress-test 
+    volumes:
+      - ./:/cypress-test/
+    environment:
+      - MONGO_URI=mongodb://mongo:27017
+    # command: npx cypress run --config baseUrl=http://frontend:80
+    # command: ping 127.0.0.1
+    networks:
+      - proxy_net
+
+networks:
+  proxy_net:
+    external: 
+      name: mla_app_network
