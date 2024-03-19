@@ -21,7 +21,7 @@ services:
     environment:
       - REACT_APP_API_GATEWAY_URL=nginx
     networks:
-      - app-network
+      - app_network
 
   activity-tracking:
     build:
@@ -34,7 +34,7 @@ services:
     depends_on:
       - mongodb
     networks:
-      - app-network
+      - app_network
 
   analytics:
     build:
@@ -48,7 +48,7 @@ services:
     depends_on:
       - mongodb
     networks:
-      - app-network
+      - app_network
 
   authservice:
     build:
@@ -60,7 +60,7 @@ services:
     depends_on:
       - mongodb
     networks:
-      - app-network
+      - app_network
 
   mongodb:
     image: mongo:latest
@@ -71,6 +71,32 @@ services:
       - "27017:27017"
     volumes:
       - mongodb-data:/data/db
+    networks:
+      - app_network
+
+  # access docker container docker-compose exec cypress sh
+  # npm run cypress:run
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus:/etc/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - app-network
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=cfgmla23
+      - GF_USERS_ALLOW_SIGN_UP=false
+    depends_on:
+      - prometheus
     networks:
       - app-network
 
@@ -98,7 +124,8 @@ services:
       - app-network
 
 networks:
-  app-network:
+  app_network:
+    name: mla_app_network
     driver: bridge
 
 volumes:
