@@ -26,5 +26,5 @@ The Activity Tracking functionality uses the MERN stack (MongoDB, Express.js, Re
 ### NGINX
 
 Everything directed to frontend through Nginx now through port 80.
-Added workflow for nginx more amendments and adjustments.
+Added workflow for nginx more amendments and improvements.
 Added Dockerfile for workflow

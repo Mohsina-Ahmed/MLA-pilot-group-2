@@ -16,22 +16,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Pull Nginx image from Docker Hub
-        run: docker pull nginx:latest
-
-      - name: Tag Nginx image for ECR
-        run: docker tag nginx:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/mla-fitness-nginx:latest
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: eu-west-2
 
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Push Nginx image to ECR
-        run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/mla-fitness-nginx:latest
+      - name: Build and Tag Nginx Docker Image
+        run: |
+          cd nginx
+          docker build -t mla-fitness-nginx:latest .
+          docker tag mla-fitness-nginx:latest ${{ steps.login-ecr.outputs.registry }}/mla-fitness-nginx:latest
+
+      - name: Push Nginx Docker Image to ECR
+        run: docker push ${{ steps.login-ecr.outputs.registry }}/mla-fitness-nginx:latest
