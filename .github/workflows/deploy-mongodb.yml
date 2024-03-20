@@ -34,5 +34,9 @@ jobs:
             --build-arg MONGO_USERNAME=${{ secrets.MONGO_USERNAME }} \
             --build-arg MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }} .
 
+      - name: Tag MongoDB Docker Image
+        run: |
+          docker tag mla-fitness-mongodb:latest ${{ steps.login-ecr.outputs.registry }}/mla-fitness-mongodb:latest
+
       - name: Push MongoDB Docker Image to ECR
         run: docker push ${{ steps.login-ecr.outputs.registry }}/mla-fitness-mongodb:latest
