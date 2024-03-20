@@ -25,4 +25,4 @@ The Activity Tracking functionality uses the MERN stack (MongoDB, Express.js, Re
 
 ### MongoDB
 
-A Dockerfile has been added to push the docker container into the ECR repository mla-fitness-mongodb.
+A Dockerfile has been added to push the docker container into the ECR repository mla-fitness-mongodb
