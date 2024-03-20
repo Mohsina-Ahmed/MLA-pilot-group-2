@@ -1,13 +1,18 @@
 const mongoose = require("mongoose");
-const uri = "mongodb://root:cfgmla23@mongodb:27017"
+// IP address on mongo container on docker network??
+const uri = "mongodb://root:cfgmla23@172.26.0.3:27017"
+
 
 async function connect() {
-    const activity = mongoose.createConnection(uri, {useNewUrlParser: true, dbName: "activitydb" });
-    const auth = mongoose.createConnection(uri, {useNewUrlParser: true, dbName: "authdb" });
+    await mongoose.connect(uri, { useNewUrlParser: true})
 
-    console.log(mongoose.connection.readyState)
+    const activity = mongoose.connection.useDb('activitydb')
+    const auth = mongoose.connection.useDb('authdb')
+    
+    console.log(`Connection State: ${auth.readyState}`)
+
     return {activity: activity, 
-            auth: auth
+            auth: auth,
         };
 }
 
