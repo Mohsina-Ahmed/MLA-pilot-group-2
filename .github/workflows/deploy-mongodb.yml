@@ -30,7 +30,7 @@ jobs:
       - name: Build and Tag MongoDB Docker Image
         run: |
           cd mongodb
-          docker build -t mla-fitness-mongodb:latest ./mongodb \
+          docker build -t mla-fitness-mongodb:latest \
             --build-arg MONGO_USERNAME=${{ secrets.MONGO_USERNAME }} \
             --build-arg MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}
 
