@@ -32,7 +32,7 @@ jobs:
           cd mongodb
           docker build -t mla-fitness-mongodb:latest \
             --build-arg MONGO_USERNAME=${{ secrets.MONGO_USERNAME }} \
-            --build-arg MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}
+            --build-arg MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }} .
 
       - name: Push MongoDB Docker Image to ECR
         run: docker push ${{ steps.login-ecr.outputs.registry }}/mla-fitness-mongodb:latest
