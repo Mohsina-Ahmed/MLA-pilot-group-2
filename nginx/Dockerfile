@@ -2,7 +2,7 @@
 FROM nginx:latest
 
 # Copy custom Nginx configuration files from the local directory into the container
-COPY ./nginx /etc/nginx
+COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 80 to allow outside access to the Nginx server
 EXPOSE 80
