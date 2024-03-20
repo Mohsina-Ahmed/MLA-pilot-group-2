@@ -13,6 +13,8 @@ jobs:
     name: Deploy Nginx to ECR
     runs-on: ubuntu-latest
     steps:
+      - run: |
+          echo The PR was merged
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -21,7 +23,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-2
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
