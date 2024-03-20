@@ -8,9 +8,9 @@ describe('The login page', () => {
     // cy.visit('/')   
     cy.visit(Cypress.env('baseUrl'))   
   })
-  // before(() => {
-  //   cy.task('clearDB')
-  // })
+  before(() => {
+    cy.task('connectAndCleanDB')
+  })
   it('Loads the application', () => {
     cy.visit(Cypress.env('baseUrl'))
     // should connect to the login page 
