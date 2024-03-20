@@ -6,29 +6,32 @@ const config = {
 };
 
 module.exports = defineConfig({
-  // e2e: {
-  //   setupNodeEvents(on, config) {
-  //     on('task', {
-  //       async clearDB() {
-  // const { activity, auth } = await connect();
-  // const exercises = activity.collection('exercises');
-  // const users = auth.collection('users');
-  // console.log('Cleaning the database');
-  // await activity.dropCollection('exercises');
-  // await auth.dropCollection('user');
-  // await disconnect(); // Disconnect from the database after clearing
-  //         return null;
-  //       }
-  //     });
-  //   }
-  // }
-  env: {
-    baseUrl: config.apiUrl,
-  },
-
+  video: true,
   e2e: {
     setupNodeEvents(on, config) {
-      // implement node event listeners here
-    },
+      on('task', {
+        async connectAndCleanDB() {
+            const { activity, auth } = await connect();
+              activity.collection('exercises').deleteMany({username: 'testUser'})
+              auth.collection('users').deleteOne({username: 'testUser'})
+              
+            console.log('Removed testUser from database!!')
+            return null;
+        }, 
+        async disconnectDB() {
+          await disconnect()
+        }
+      });
+    }
   },
+  env: {
+    // IP address of docker compose network!!!!!!!
+    baseUrl: 'http://172.26.0.1',
+  },
+
+  // e2e: {
+  //   setupNodeEvents(on, config) {
+  //     // implement node event listeners here
+  //   },
+  // },
 });
