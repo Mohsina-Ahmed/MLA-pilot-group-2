@@ -2,7 +2,9 @@ import axios from "axios";
 
 // api config
 const config = {
-  apiUrl: process.env.REACT_APP_API_GATEWAY_URL || "http://127.0.0.1:80",
+    // apiUrl: process.env.REACT_APP_API_GATEWAY_URL || 'http://localhost'
+    // localhost of docker container for cypress tests....
+    apiUrl: "http://172.26.0.1"
 };
 export default config;
 

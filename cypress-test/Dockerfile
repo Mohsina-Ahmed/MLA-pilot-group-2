@@ -1,12 +1,15 @@
 # Use an official Node.js runtime as the base image
-FROM cypress/included:8.6.0
+FROM cypress/browsers:node14.19.0-chrome100-ff99-edge
 
 # Set the working directory in the container
 WORKDIR /app
 
 # Install mongoose dependencies
-RUN npm install mongoose@^7.5.4
-RUN npm install mongodb-memory-server@9.0.0
+COPY ./package.json .
+COPY ./cypress.config.js .
+COPY ./cypress ./cypress
+
+RUN npm install
 
 # verify the cypress installation
 RUN npx cypress verify
