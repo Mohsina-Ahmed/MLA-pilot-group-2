@@ -1,4 +1,4 @@
-name: Deploy to AWS ECR
+name: MongoDB ECR Deployment
 
 on:
   push:
@@ -6,14 +6,13 @@ on:
       - main
       - ma_task5
     paths:
-      - "authservice/**"
+      - "mongodb/**"
 
 jobs:
   build:
+    name: Deploy MongoDB to ECR
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          echo The PR was merged
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -22,18 +21,18 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-2
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build, tag, and push image to Amazon ECR (AuthService)
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: mla-fitnessapp-authservice
-          IMAGE_TAG: latest
+      - name: Build and Tag MongoDB Docker Image
         run: |
-          cd authservice
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          cd mongodb
+          docker build -t mla-fitness-mongodb:latest ./mongodb \
+            --build-arg MONGO_USERNAME=${{ secrets.MONGO_USERNAME }} \
+            --build-arg MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}
+
+      - name: Push MongoDB Docker Image to ECR
+        run: docker push ${{ steps.login-ecr.outputs.registry }}/mla-fitness-mongodb:latest

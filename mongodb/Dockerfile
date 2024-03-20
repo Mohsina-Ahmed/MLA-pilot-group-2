@@ -1,0 +1,11 @@
+# Use the official MongoDB image as the base image
+FROM mongo:latest
+
+ARG MONGO_USERNAME
+ARG MONGO_PASSWORD
+
+ENV MONGO_USERNAME=$MONGO_USERNAME
+ENV MONGO_PASSWORD=$MONGO_PASSWORD
+
+# Expose MongoDB default port
+EXPOSE 27017
