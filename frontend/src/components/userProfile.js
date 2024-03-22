@@ -121,11 +121,11 @@ const UserProfile = ({ currentUser }) => {
           console.log('No goal set by user, no request sent.')
         } else if (!state) {
           const addResponse = await axios.post(`${config.apiUrl}/goals/add`, goalDataToSubmit);
-          console.log(`Goal added: ${addResponse.data}`);
+          console.log(`Goal added`);
           setState(true);
         } else if (state) {
           const updateResponse = await axios.put(`${config.apiUrl}/goals/update/${goalData.username}`, goalDataToSubmit);
-          console.log(`Goal updated: ${updateResponse.data}`);
+          console.log(`Goal updated`);
         }
 
         setMessage(`Your profile has been updated successfully.`);
