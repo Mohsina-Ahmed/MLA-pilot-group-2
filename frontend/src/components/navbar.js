@@ -22,6 +22,9 @@ const NavbarComponent = ({ onLogout }) => {
       case 'Journal':
         navigate('/journal_v2');
         break;
+      case 'UserProfile':
+        navigate('/userProfile');
+        break;
       default:
         console.error('Invalid route:', route);
     }
@@ -36,6 +39,7 @@ const NavbarComponent = ({ onLogout }) => {
           <Nav.Link className={`custom-nav-link ${activeLink === 'TrackExercise' ? 'active' : ''}`} onClick={() => onNavigate('TrackExercise')}>Track New Exercise</Nav.Link>
           <Nav.Link className={`custom-nav-link ${activeLink === 'Statistics' ? 'active' : ''}`} onClick={() => onNavigate('Statistics')}>Statistics</Nav.Link>
           <Nav.Link className={`custom-nav-link ${activeLink === 'Journal' ? 'active' : ''}`} onClick={() => onNavigate('Journal')}>Weekly Journal</Nav.Link>
+          <Nav.Link className={`custom-nav-link ${activeLink === 'UserProfile' ? 'active' : ''}`} onClick={() => onNavigate('UserProfile')}>User Profile</Nav.Link>
           <Nav.Link className="custom-nav-link" onClick={onLogout}>Logout</Nav.Link>
         </Nav>
       </Navbar.Collapse>

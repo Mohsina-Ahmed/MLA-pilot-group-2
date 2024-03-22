@@ -39,4 +39,29 @@ public class AuthController {
             return ResponseEntity.status(401).body("Invalid credentials");
         }
     }
+
+    @GetMapping("/profile/{username}")
+    public User profileUser(@PathVariable("username") String username) {
+        System.out.println("Fetching user profile for username: " + username);
+        User existingUser = userRepository.findByUsername(username);
+
+        if (existingUser != null) {
+            System.out.println("User profile found: " + existingUser.toString());
+        } else {
+            System.out.println("User profile not found for username: " + username);
+        }
+        return existingUser;
+    }
+
+    @PostMapping("/profile")
+    public ResponseEntity<?> updateProfile(@RequestBody User user) {
+        User existingUser = userRepository.findByUsername(user.getUsername());
+        
+        if (userRepository.existsByUsername(user.getUsername())) {
+            userRepository.save(user);
+            return ResponseEntity.ok("User profile updated.");
+        } else {
+            return ResponseEntity.badRequest().body("User not found.");
+        }
+    }
 }

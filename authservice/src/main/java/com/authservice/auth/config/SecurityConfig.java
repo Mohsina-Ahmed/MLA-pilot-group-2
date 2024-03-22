@@ -17,7 +17,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors().and() // Enable CORS (configure this based on your requirements)
                 .csrf().disable() // Disable CSRF (enable and configure this in production)
                 .authorizeRequests()
-                .antMatchers("/api/auth/signup", "/api/auth/login").permitAll() // Public access to signup and login
+                // Remove auth.profile from permitAll() and implement auth token (JWT)
+                .antMatchers("/api/auth/signup", "/api/auth/login", "/api/auth/profile/**").permitAll() // Public access to signup and login // regex
                 .anyRequest().authenticated() // All other requests need authentication
                 .and()
                 .httpBasic();

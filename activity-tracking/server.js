@@ -28,9 +28,13 @@ connection.on("error", (error) => {
   console.error("MongoDB connection error:", error);
 });
 
-// Routes
+// Route for exercise tracking
 const exercisesRouter = require("./routes/exercises");
 app.use("/exercises", exercisesRouter);
+
+// Route for weekly goals
+const goalsRouter = require("./routes/goals");
+app.use("/goals", goalsRouter);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
