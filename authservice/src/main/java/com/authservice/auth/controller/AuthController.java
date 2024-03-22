@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-
 import com.authservice.auth.model.User;
 import com.authservice.auth.repository.UserRepository;
 import com.authservice.auth.service.SignUpService;
