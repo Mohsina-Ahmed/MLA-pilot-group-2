@@ -1,3 +1,5 @@
+# docker compose --env-file ./frontend/.env up --build
+# docker compose --env-file ./frontend/.env.test.local up --build
 version: "3.8"
 services:
   nginx:
