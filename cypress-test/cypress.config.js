@@ -1,9 +1,7 @@
 const { defineConfig } = require("cypress");
 const { connect, disconnect } = require("./cypress/support/db");
 
-const config = {
-  apiUrl: process.env.REACT_APP_API_GATEWAY_URL || "http://localhost",
-};
+console.log(process.env.CYPRESS_API_GATEWAY_URL)
 
 module.exports = defineConfig({
   video: true,
@@ -14,8 +12,8 @@ module.exports = defineConfig({
             const { activity, auth } = await connect();
               activity.collection('exercises').deleteMany({username: 'testUser'})
               auth.collection('users').deleteOne({username: 'testUser'})
-              
-            console.log('Removed testUser from database!!')
+
+            // console.log('Removed testUser from database!!')
             return null;
         }, 
         async disconnectDB() {
@@ -26,7 +24,7 @@ module.exports = defineConfig({
   },
   env: {
     // IP address of docker compose network!!!!!!!
-    baseUrl: 'http://172.26.0.1',
+    baseUrl: process.env.CYPRESS_API_GATEWAY_URL
   },
 
   // e2e: {

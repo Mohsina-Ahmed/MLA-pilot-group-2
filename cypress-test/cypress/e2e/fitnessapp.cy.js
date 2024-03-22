@@ -1,6 +1,5 @@
 // base url configured in cypress.config.js
 
-// TODO: how to prep and load database? 
 // run through docker compose to enable database connection?
 
 describe('The login page', () => {
