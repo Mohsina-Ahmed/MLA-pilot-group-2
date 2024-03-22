@@ -1,4 +1,5 @@
 # docker-compose -f docker-compose-cypress.yaml up 
+# docker compose --env-file ./.env.test.local -f docker-compose-cypress.yaml up --build
 version: "3.8"
 services:
     
@@ -7,11 +8,11 @@ services:
       context: ./
       dockerfile: Dockerfile
     working_dir: /cypress-test 
+    environment:
+      - CYPRESS_API_GATEWAY_URL=http://172.26.0.1
+      - CYPRESS_MONGO_URI=mongodb://root:cfgmla23@172.26.0.3:27017
     volumes:
       - ./:/cypress-test/
-    environment:
-      - MONGO_URI=mongodb://mongo:27017
-    # command: npx cypress run
     command: npx cypress run 
     # command: ping 127.0.0.1
     # command: ping frontend
