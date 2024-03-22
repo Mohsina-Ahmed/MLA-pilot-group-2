@@ -2,6 +2,7 @@ const { defineConfig } = require("cypress");
 const { connect, disconnect } = require("./cypress/support/db");
 
 // console.log(process.env.CYPRESS_API_GATEWAY_URL)
+// console.log(process.env.CYPRESS_API_GATEWAY_URL)
 
 module.exports = defineConfig({
   video: true,
