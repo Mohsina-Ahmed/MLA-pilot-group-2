@@ -17,3 +17,8 @@ cd cypress-test
 run the cypress docker file 
 
 docker-compose -f docker-compose-cypress.yaml up
+
+
+How to configure application with test environment variables?
+# docker compose --env-file ./frontend/.env.test.local up --build
+# docker compose --env-file ./.env.test.local -f docker-compose-cypress.yaml up --build
