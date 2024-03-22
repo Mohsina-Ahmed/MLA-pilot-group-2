@@ -8,9 +8,25 @@
 // https://on.cypress.io/custom-commands
 // ***********************************************
 //
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
+Cypress.Commands.add('login', (username, password) => {
+    // confirm on the login page 
+    cy.visit(Cypress.env('baseUrl'))
+    
+    cy.url().should('include', '/login')
+
+    // intercept the login post
+    cy.intercept('POST', '/auth/login').as('postLogin')
+
+    //login with test user
+    cy.get('#formUsername').type(Cypress.env('testUsername'))
+    cy.get('#formPassword').type(`${Cypress.env('testPassword')}{enter}`)
+    
+    // wait for the response 
+    cy.wait('@postLogin')
+
+    // loads home page 
+    cy.url().should('include', '/homepage')
+ })
 //
 //
 // -- This is a child command --
