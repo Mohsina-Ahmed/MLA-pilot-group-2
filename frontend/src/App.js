@@ -11,6 +11,7 @@ import Login from './components/login';
 import Signup from './components/signup';
 import Journal from './components/journal_v2';
 import Homepage from './components/homepage'; // New Component for Homepage
+import UserProfile from './components/userProfile'; // New component for User Profile page
 import logo from './img/CFG_logo.png'; // Update the path to your logo file
 
 function App() {
@@ -48,6 +49,7 @@ function App() {
             <Route path="/trackExercise" element={isLoggedIn ? <TrackExercise currentUser={currentUser} /> : <Navigate to="/login" />} />
             <Route path="/statistics_v2" element={isLoggedIn ? <Statistics currentUser={currentUser} /> : <Navigate to="/login" />} />
             <Route path="/journal_v2" element={isLoggedIn ? <Journal currentUser={currentUser} /> : <Navigate to="/login" />} />
+            <Route path="/userProfile" element={isLoggedIn ? <UserProfile currentUser={currentUser} /> : <Navigate to="/login" />} />
             <Route path="/" element={isLoggedIn ? <Navigate to="/homepage" /> : <Navigate to="/login" />} />
           </Routes>
         </div>

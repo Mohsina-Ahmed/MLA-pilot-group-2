@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.authservice.auth.model.User;
 import com.authservice.auth.repository.UserRepository;
@@ -52,6 +54,31 @@ public class AuthController {
             return ResponseEntity.ok("User authenticated");
         } else {
             return ResponseEntity.status(401).body("Invalid credentials");
+        }
+    }
+
+    @GetMapping("/profile/{username}")
+    public User profileUser(@PathVariable("username") String username) {
+        System.out.println("Fetching user profile for username: " + username);
+        User existingUser = userRepository.findByUsername(username);
+
+        if (existingUser != null) {
+            System.out.println("User profile found: " + existingUser.toString());
+        } else {
+            System.out.println("User profile not found for username: " + username);
+        }
+        return existingUser;
+    }
+
+    @PostMapping("/profile")
+    public ResponseEntity<?> updateProfile(@RequestBody User user) {
+        User existingUser = userRepository.findByUsername(user.getUsername());
+        
+        if (userRepository.existsByUsername(user.getUsername())) {
+            userRepository.save(user);
+            return ResponseEntity.ok("User profile updated.");
+        } else {
+            return ResponseEntity.badRequest().body("User not found.");
         }
     }
 }
