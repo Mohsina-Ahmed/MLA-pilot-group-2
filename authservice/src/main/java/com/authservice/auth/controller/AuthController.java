@@ -32,7 +32,7 @@ public class AuthController {
         //Code by Namrata
         //updated by Mohsina
         if (!signUpService.validatePassword(user.getPassword())) {
-            return ResponseEntity.badRequest().body("Password must be 6-12 characters long and contain at least one uppercase letter, one digit and one special character");
+            return ResponseEntity.badRequest().body("Password is invalid. It must contain at least one uppercase letter, one lowercase letter, one digit, one special character, and be at least 6 characters long.");
         }
         //Code finishes
         if (userRepository.existsByUsername(user.getUsername())) {
