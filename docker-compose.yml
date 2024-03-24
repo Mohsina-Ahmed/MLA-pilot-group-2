@@ -2,24 +2,26 @@ version: "3.8"
 services:
   nginx:
     image: nginx:latest
-    ports: 
+    ports:
       - "80:80"
-    volumes: 
-    - ./nginx:/etc/nginx/conf.d
-    depends_on: 
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    depends_on:
       - frontend
       - activity-tracking
       - analytics
       - authservice
-    networks: 
+    networks:
       - app-network
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    environment: 
+    environment:
       - REACT_APP_API_GATEWAY_URL=nginx
+    ports:
+      - "3000:3000" # Change port mapping to 3000
     networks:
       - app-network
 
