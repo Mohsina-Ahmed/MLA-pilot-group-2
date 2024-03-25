@@ -25,4 +25,4 @@ The Activity Tracking functionality uses the MERN stack (MongoDB, Express.js, Re
 
 ### Frontend
 
-The frontend is using port 80
+
