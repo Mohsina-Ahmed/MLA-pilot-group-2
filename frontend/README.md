@@ -25,7 +25,4 @@ The Activity Tracking functionality uses the MERN stack (MongoDB, Express.js, Re
 
 ### Frontend
 
-Frontend has been updated with .env file. It is inside src directory.
 
-Create a file .env and inside the file:
-REACT_APP_API_GATEWAY_URL=http://localhost:443
