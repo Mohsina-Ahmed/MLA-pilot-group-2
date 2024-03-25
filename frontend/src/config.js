@@ -3,7 +3,7 @@ import axios from "axios";
 // api config
 const config = {
   apiUrl:
-    "mla-fitness-app-v7.mla-fitness-app-v7:8080" ||
+    "http://mla-fitness-app-v7.mla-fitness-app-v7:8080" ||
     process.env.REACT_APP_API_GATEWAY_URL ||
     "http://127.0.0.1:80",
 };
