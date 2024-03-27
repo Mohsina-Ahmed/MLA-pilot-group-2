@@ -20,7 +20,25 @@
     margin-bottom: 20px;
 }
 
+.exercise-radial-bar {
+    gap: 10px;
+    padding-bottom: 20px;
+    width: 50%;
+    height: 20vh;
+    position: relative;
+}
+
+.exercise-bar-chart {
+    height: 30vh;
+    align-items: center;
+    padding-bottom: 20px;
+}
+
 h5 {
+    text-align: center;
+}
+
+h6 {
     text-align: center;
 }
 
