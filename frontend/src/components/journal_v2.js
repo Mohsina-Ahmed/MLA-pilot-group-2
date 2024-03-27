@@ -203,23 +203,10 @@ const Journal = ({ currentUser }) => {
         <span>{moment(startDate).format('DD-MM-YYYY')} to {moment(endDate).format('DD-MM-YYYY')}</span>
         <Button className="button-small" onClick={goToNextWeek}>Next &rarr;</Button>
       </div> 
-      <br></br>
         {/* <ul> {makeExerciseList()} </ul> */}
-      <div className="exercise-bar-chart" style={{ height: "50vh" }}> {/* 50% of view height*/}
-      <h4>Weekly Exercise Count</h4>
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={exerciseData}>
-              <XAxis dataKey="day" />
-              <YAxis interval={1} />
-              <Tooltip />
-            <Bar dataKey="count" fill="#8884d8" />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-      <br></br>
-      <div class="exercise-radial-bar" position="relative" style={{ width: "50%", height: "20vh" }}>
-      <h5>Exercise Goal</h5>
-      <ResponsiveContainer width="100%" height="100%">
+      <div class="exercise-radial-bar">
+      <h5>Weekly Goal</h5>
+      <ResponsiveContainer>
         <RadialBarChart 
           startAngle={90} 
           endAngle={-270} 
@@ -240,23 +227,32 @@ const Journal = ({ currentUser }) => {
             background
             clockWise={true}
             dataKey="week_total"
-            fill= "#8884d8"
+            fill="#8884d8"
           />
           {/* Label component for text */}
           <text
                 x='50%'
                 y='50%'
-                style={{ fontSize: 20, fontWeight: 'bold' }}
-                width={200}
-                scaleToFit={true}
                 textAnchor='middle'
-                verticalAnchor='middle'
+                style={{ fontSize: 20, fontWeight: 'bold', dominantBaseline:'middle' }}
             >
                 {`${duration['percentage']}%`}
             </text>
           <Tooltip />
         </RadialBarChart>
       </ResponsiveContainer>
+      </div>
+      <br></br>
+      <div className="exercise-bar-chart"> {/* 50% of view height*/}
+      <h5>Daily Exercise</h5>
+        <ResponsiveContainer>
+          <BarChart data={exerciseData}>
+              <XAxis dataKey="day" />
+              <YAxis interval={1} />
+              <Tooltip />
+            <Bar dataKey="count" fill="#8884d8"/>
+          </BarChart>
+        </ResponsiveContainer>
       </div>
     </div>
     
