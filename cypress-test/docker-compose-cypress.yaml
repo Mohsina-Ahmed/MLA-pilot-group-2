@@ -9,8 +9,8 @@ services:
       dockerfile: Dockerfile
     working_dir: /cypress-test 
     environment:
-      - CYPRESS_API_GATEWAY_URL=http://172.26.0.1
-      - CYPRESS_MONGO_URI=mongodb://root:cfgmla23@172.26.0.3:27017
+      - CYPRESS_API_GATEWAY_URL=http://172.19.0.1
+      - CYPRESS_MONGO_URI=mongodb://root:cfgmla23@172.19.0.3:27017
     volumes:
       - ./:/cypress-test/
     command: npx cypress run 
