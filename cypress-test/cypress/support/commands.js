@@ -18,8 +18,8 @@ Cypress.Commands.add('login', (username, password) => {
     cy.intercept('POST', '/auth/login').as('postLogin')
 
     //login with test user
-    cy.get('#formUsername').type(Cypress.env('testUsername'))
-    cy.get('#formPassword').type(`${Cypress.env('testPassword')}{enter}`)
+    cy.get('#formUsername').type(username)
+    cy.get('#formPassword').type(`${password}{enter}`)
     
     // wait for the response 
     cy.wait('@postLogin')

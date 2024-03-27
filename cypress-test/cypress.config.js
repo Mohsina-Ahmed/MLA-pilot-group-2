@@ -24,13 +24,8 @@ module.exports = defineConfig({
   },
   env: {
     // IP address of docker compose network!!!!!!!
-    // baseUrl: process.env.CYPRESS_API_GATEWAY_URL
-    baseUrl: "http://localhost",
-    wrongUsername: "incorrectUser",
-    wrongPassword: "incorrectPassword",
-    testUsername: "testUser",
-    testSimplePassword: "testPW",
-    testPassword: "Strong123!"
+    baseUrl: process.env.CYPRESS_API_GATEWAY_URL
+    // baseUrl: "http://localhost",
   },
 
   // e2e: {
