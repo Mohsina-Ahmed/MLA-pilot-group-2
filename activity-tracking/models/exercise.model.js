@@ -9,8 +9,7 @@ const exerciseSchema = new Schema(
     username: { type: String, required: true },
     exerciseType: {
       type: String,
-      required: true,
-      enum: ['Running', 'Cycling', 'Swimming', 'Gym', 'Rowing', 'Football', 'Skiing', 'Horse Riding', 'Surfing', 'Golf', 'Climbing','Other']
+      required: true
     },
     description: { type: String, required: false },
     duration: { 
