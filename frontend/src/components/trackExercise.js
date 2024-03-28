@@ -8,7 +8,8 @@ import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike';
 import PoolIcon from '@mui/icons-material/Pool';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
-import OtherIcon from '@mui/icons-material/HelpOutline';
+import DirectionsWalkOutlinedIcon from '@mui/icons-material/DirectionsWalkOutlined';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import HappyIcon from '@mui/icons-material/SentimentVerySatisfied';
 import PainfulIcon from "@mui/icons-material/MoodBad";
 import UnhappyIcon from "@mui/icons-material/SentimentVeryDissatisfied";
@@ -31,6 +32,8 @@ const TrackExercise = ({ currentUser }) => {
     mood: '',
   });
   const [message, setMessage] = useState(''); 
+  const [other, setOther] = useState(false);
+  const [customize, setCustomize] = useState(false);
 
   const calculateSpeed = () => {
     if (state.distance > 0) {
@@ -50,6 +53,30 @@ const TrackExercise = ({ currentUser }) => {
       state.pace = 0;
       return state.pace;
     };
+  };
+
+  const updateExercise = (exercise, type) => {
+    if (type === "other") {
+      setState({ ...state, exerciseType: exercise });
+      setOther(true);
+      setCustomize(false);
+    } else if (type === "custom") {
+      setState({ ...state, exerciseType: exercise });
+      setCustomize(true);
+      setOther(false);
+    } else {
+      setState({ ...state, exerciseType: exercise });
+      setCustomize(false);
+      setOther(false);
+    }
+  };
+
+  const toTitleCase = (str) => {
+    str = str.toLowerCase().split(' ');
+    for (var i = 0; i < str.length; i++) {
+      str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1); 
+    }
+    return str.join(' ');
   };
 
   const onSubmit = async (e) => {
@@ -106,51 +133,64 @@ const TrackExercise = ({ currentUser }) => {
         <Row>
         <div style={{ marginBottom: '20px' }}>
           <Tooltip title="Running">
-          <IconButton data-testid="Run Icon" color={state.exerciseType === 'Running' ? "primary" : "default"} onClick={() => setState({ ...state, exerciseType: 'Running' })}>
+          <IconButton data-testid="Run Icon" color={state.exerciseType === 'Running' ? "primary" : "default"} onClick={() => updateExercise("Running", "none")}>
             <DirectionsRunIcon fontSize="large" />
           </IconButton>
           </Tooltip>
           <Tooltip title="Cycling">
-          <IconButton color={state.exerciseType === 'Cycling' ? "primary" : "default"} onClick={() => setState({ ...state, exerciseType: 'Cycling' })}>
+          <IconButton color={state.exerciseType === 'Cycling' ? "primary" : "default"} onClick={() => updateExercise("Cycling", "none")}>
             <DirectionsBikeIcon fontSize="large" />
           </IconButton>
           </Tooltip>
           <Tooltip title="Swimming">
-          <IconButton color={state.exerciseType === 'Swimming' ? "primary" : "default"} onClick={() => setState({ ...state, exerciseType: 'Swimming' })}>
+          <IconButton color={state.exerciseType === 'Swimming' ? "primary" : "default"} onClick={() => updateExercise("Swimming", "none")}>
             <PoolIcon fontSize="large" />
           </IconButton>
           </Tooltip>
           <Tooltip title="Workout">
-          <IconButton data-testid="Gym Icon" color={state.exerciseType === 'Gym' ? "primary" : "default"} onClick={() => setState({ ...state, exerciseType: 'Gym' })}>
+          <IconButton data-testid="Gym Icon" color={state.exerciseType === 'Gym' ? "primary" : "default"} onClick={() => updateExercise("Gym", "none")}>
             <FitnessCenterIcon fontSize="large" />
           </IconButton>
           </Tooltip>
+          <Tooltip title="Walking">
+          <IconButton color={state.exerciseType === 'Walking' ? "primary" : "default"} onClick={() => updateExercise("Walking", "none")}>
+            <DirectionsWalkOutlinedIcon fontSize="large" />
+          </IconButton>
+          </Tooltip>
           <Tooltip title="Other Activity">
-          <IconButton color={state.exerciseType === 'Other' ? "primary" : "default"} onClick={() => setState({ ...state, exerciseType: 'Other' })}>
-            <OtherIcon fontSize="large" /> 
+          <IconButton color={other || customize  ? "primary" : "default"} onClick={() => updateExercise("Other", "other")}>
+            <AddCircleOutlineIcon fontSize="large" /> 
           </IconButton>  
           </Tooltip>
         </div>
         </Row>
-        <Row>
-        <div id="div-other" className={state.exerciseType === 'Other' ? "div-other" : "invisible"}>            
-          <Dropdown style={{ marginBottom: '40px' }}>
-            <DropdownButton title="Which activity would you like to track?">
-              <Dropdown.Item onClick={() => setState({ ...state, exerciseType: 'Rowing' })}>Rowing &#128675;</Dropdown.Item>
-              <Dropdown.Item onClick={() => setState({ ...state, exerciseType: 'Football' })}>Football &#9917;</Dropdown.Item>
-              <Dropdown.Item onClick={() => setState({ ...state, exerciseType: 'Skiing' })}>Skiing &#9975;</Dropdown.Item>
-              <Dropdown.Item onClick={() => setState({ ...state, exerciseType: 'Golf' })}>Golf &#9971;</Dropdown.Item>
-              <Dropdown.Item onClick={() => setState({ ...state, exerciseType: 'Horse Riding' })}>Horse Riding &#127943;</Dropdown.Item>
-              <Dropdown.Item onClick={() => setState({ ...state, exerciseType: 'Climbing' })}>Climbing &#129495;</Dropdown.Item>
-              <Dropdown.Item onClick={() => setState({ ...state, exerciseType: 'Surfing' })}>Surfing &#127940;</Dropdown.Item>
+        <Row style={{ marginBottom: '20px' }}>
+        <div id="div-other" className={other === true ? "div-other" : "invisible"}>            
+          <Dropdown>
+            <DropdownButton title={state.exerciseType === "Other" ? "Which activity would you like to track?" : state.exerciseType}>
+              <Dropdown.Item onClick={() => updateExercise("Rowing", "other")}>Rowing &#128675;</Dropdown.Item>
+              <Dropdown.Item onClick={() => updateExercise("Football", "other")}>Football &#9917;</Dropdown.Item>
+              <Dropdown.Item onClick={() => updateExercise("Skiing", "other")}>Skiing &#9975;</Dropdown.Item>
+              <Dropdown.Item onClick={() => updateExercise("Golf", "other")}>Golf &#9971;</Dropdown.Item>
+              <Dropdown.Item onClick={() => updateExercise("Horse Riding", "other")}>Horse Riding &#127943;</Dropdown.Item>
+              <Dropdown.Item onClick={() => updateExercise("Climbing", "other")}>Climbing &#129495;</Dropdown.Item>
+              <Dropdown.Item onClick={() => updateExercise("Surfing", "other")}>Surfing &#127940;</Dropdown.Item>
+              <Dropdown.Item onClick={() => updateExercise("", "custom")}>Custom Activity &#x2795;</Dropdown.Item>
             </DropdownButton>
           </Dropdown>
         </div>
-        </Row>
-        <Row>
-        <div id="other-label" className={state.exerciseType === 'Rowing' || state.exerciseType === 'Football' || state.exerciseType === 'Skiing' || state.exerciseType === 'Golf' || state.exerciseType === 'Horse Riding' || state.exerciseType === 'Climbing' || state.exerciseType === 'Surfing'? "other-label" : "invisible"}>
-          <p id="other-exercise">Activity: {state.exerciseType}</p>
-        </div>
+        <Form.Group id="custom" className={customize ? "default" : "invisible"}>
+        <Form.Label>Enter the activity you want to track:</Form.Label>
+          <Form.Control
+            placeholder="e.g. Wheelchair Basketball"
+            as="textarea"
+            fontSize="large"
+            rows={1}
+            required 
+            value={state.exerciseType} 
+            onChange={(e) => updateExercise(toTitleCase(e.target.value),"custom")}
+          />
+        </Form.Group>
         </Row>
         <Row>
           <Form.Group controlId="description" data-testid="title" style={{ marginBottom: '40px' }}>
@@ -225,9 +265,9 @@ const TrackExercise = ({ currentUser }) => {
           </Tooltip>
           </Col>
         </Row>
-        <Row className={state.exerciseType === 'Gym' ? "row" : "invisible"}>
+        <Row className={state.exerciseType === 'Gym' || customize ? "row" : "invisible"}>
           <Col>
-          <Form.Group controlId="sets" data-testid="sets" className={state.exerciseType === 'Gym' ? "row" : "invisible"} style={{ marginBottom: '40px' }}>
+          <Form.Group controlId="sets" data-testid="sets" className={state.exerciseType === 'Gym' || customize ? "row" : "invisible"} style={{ marginBottom: '40px' }}>
             <Form.Label>Number of Sets:</Form.Label>
             <Form.Control 
               type="number"
@@ -237,7 +277,7 @@ const TrackExercise = ({ currentUser }) => {
           </Form.Group>
           </Col>
           <Col>
-          <Form.Group controlId="reps" data-testid="reps" className={state.exerciseType === 'Gym' ? "row" : "invisible"} style={{ marginBottom: '40px' }}>
+          <Form.Group controlId="reps" data-testid="reps" className={state.exerciseType === 'Gym' || customize ? "row" : "invisible"} style={{ marginBottom: '40px' }}>
             <Form.Label>Number of Reps per set:</Form.Label>
             <Form.Control 
               type="number"
