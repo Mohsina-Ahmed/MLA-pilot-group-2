@@ -190,8 +190,6 @@ sum(rate(flask_http_request_total[5m])) by (method, status)
 Use the Explore feature in Grafana to experiment with queries against your Prometheus data source and see the results in real time.
 
 ![alt text](image.png)
-![alt text](image-1.png)
-![alt text](image-2.png)
 
 #### 6. Set Up Alerts (Optional)
 
