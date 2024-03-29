@@ -293,7 +293,7 @@ def create_app(config_object=Config):
                     "$group": {
                         "_id": {
 							"username": "$username",
-                            "day": {"$dayOfWeek": {"date": "$date"}}}, 
+                            "day": {"$isoDayOfWeek": {"date": "$date"}}}, # monday as start of week
                             "count": {"$sum": 1},
                             "dailyDuration": {"$sum": "$duration"}
                     }
