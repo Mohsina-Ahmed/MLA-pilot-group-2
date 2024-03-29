@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Button, Col } from 'react-bootstrap';
 import moment from 'moment';
 import './journal.css';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery, gql, NetworkStatus } from '@apollo/client';
 import { BarChart, Bar, RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer, XAxis, YAxis, Tooltip, Label, Text} from 'recharts';
 
 // import { ApolloClient, InMemoryCache, useQuery, gql } from '@apollo/client';
@@ -54,15 +54,17 @@ const DAILY_QUERY = gql
   `;
 
 // default bar data - 0 exercises
-const dailyExercise = [
-  {day: 'M', id: '1', count: 0, duration: 0},
-  {day: 'T', id: '2', count: 0, duration: 0},
-  {day: 'W', id: '3', count: 0, duration: 0},
-  {day: 'Th', id: '4', count: 0, duration: 0},
-  {day: 'F', id: '5', count: 0, duration: 0},
-  {day: 'S', id: '6', count: 0, duration: 0},
-  {day: 'Su', id: '7', count: 0, duration: 0}
-];
+const zeroExerciseList = () => {
+    return [
+    {day: 'M', id: '1', count: 0, duration: 0},
+    {day: 'T', id: '2', count: 0, duration: 0},
+    {day: 'W', id: '3', count: 0, duration: 0},
+    {day: 'Th', id: '4', count: 0, duration: 0},
+    {day: 'F', id: '5', count: 0, duration: 0},
+    {day: 'S', id: '6', count: 0, duration: 0},
+    {day: 'Su', id: '7', count: 0, duration: 0}
+  ];
+};
 
 
 const Journal = ({ currentUser }) => {
@@ -70,16 +72,16 @@ const Journal = ({ currentUser }) => {
   const [startDate, setStartDate] = useState(moment().startOf('isoWeek').toDate());
   const [endDate, setEndDate] = useState(moment().endOf('isoWeek').toDate());
   const [duration, setDuration] = useState({week_total: 0, percentage: 0});
-  const [exerciseData, setExerciseDuration] = useState(dailyExercise);
+  const [exerciseData, setExerciseDuration] = useState(zeroExerciseList());
 
 
-
-  const { loading, error, data } = useQuery(DAILY_QUERY, {
+  const { loading, error, data, refetch, networkStatus } = useQuery(DAILY_QUERY, {
     variables: {
       name: currentUser,
       start_date: moment(startDate).format('DD-MM-YYYY'),
       end_date: moment(endDate).format('DD-MM-YYYY'),
     },
+    notifyOnNetworkStatusChange: true,
   });
 
   useEffect(() => {
@@ -91,9 +93,10 @@ const Journal = ({ currentUser }) => {
   
 
   // handle loading and error states
-  if (loading) return <p>Loading...</p>;
+  if (loading || networkStatus === NetworkStatus.refetch) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
-
+    
+  
   // const exercises = data.weeklyStats;
   
   
@@ -156,11 +159,16 @@ const Journal = ({ currentUser }) => {
         updateExerciseCount(exercises);
         updateDuration(exercises);
       }
+      else {
+        setExerciseDuration(zeroExerciseList()); // set to default
+        setDuration({week_total: 0, percentage: 0})
+      }
     }
   };
 
   const updateExerciseCount = (exercises) => {
       // Update dailyExercise count based on exerciseCount
+      
       exercises.results[0].exerciseCount.forEach(({ count, date, dailyDuration }) => {
       const exercise = exerciseData.find(exercise => exercise.id === date);
       if (exercise) {
@@ -169,16 +177,16 @@ const Journal = ({ currentUser }) => {
         }
       });
       // Update exerciseData state using the setter function
-      setExerciseDuration([...dailyExercise]);
+      setExerciseDuration([...exerciseData]);
   };
 
   const updateDuration = (exercises) => {
-    const totalDuration = data.dailyStats.results[0].totalDuration;
     // round down to closet integer  
+    const totalDuration = data.dailyStats.results[0].totalDuration;
     setDuration({ week_total: totalDuration , percentage: Math.floor((totalDuration / weekly_goal) * 100)});
   };
 
-  console.log(exerciseData)
+
   
 
   //   <ul>
@@ -192,6 +200,13 @@ const Journal = ({ currentUser }) => {
   //     <li>No exercises found for this period.</li>
   //   }
   // </ul>
+
+  const updateWeek = () =>{
+    goToPreviousWeek()
+    refetch({name: currentUser, 
+      start_date: moment(startDate).format('DD-MM-YYYY'), 
+      end_date: moment(endDate).format('DD-MM-YYYY')})
+  } 
 
   // TODO: Deal with empty result
   return (
