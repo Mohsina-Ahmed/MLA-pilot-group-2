@@ -7,10 +7,11 @@ type Stats{
     exercises: [Exercise]
 }
 
-type DailyCount{
+type ExerciseCount{
     username: String
     totalDuration: Int
-    exerciseCount: [ExerciseCount]
+    totalDistance: Int
+    exerciseCount: [DailyCount]
 }
 
 type Exercise{
@@ -18,10 +19,11 @@ type Exercise{
     exerciseDuration: Int
 }
 
-type ExerciseCount{
+type DailyCount{
     date: String
     count: Int
     dailyDuration: Int
+    dailyDistance: Int
 }
 
 type StatsResult{
@@ -30,15 +32,15 @@ type StatsResult{
     results: [Stats]
 }
 
-type DailyResult{
+type ExerciseResult{
     success: Boolean!
     errors: [String]
-    results: [DailyCount]
+    results: [ExerciseCount]
 }
 
 type Query{
     stats: StatsResult
     filteredStats(name: String): StatsResult
     weeklyStats(name: String, start_date: String, end_date: String): StatsResult
-    dailyStats(name: String, start_date: String, end_date: String): DailyResult
+    exerciseStats(name: String, start_date: String, end_date: String): ExerciseResult
 }

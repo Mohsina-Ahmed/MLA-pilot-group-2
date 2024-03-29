@@ -5,9 +5,14 @@
   "python.formatting.provider": "none",
   "cSpell.words": [
     "bson",
+    "colour",
     "dotenv",
     "jsonify",
-    "pymongo"
+    "larr",
+    "pymongo",
+    "rarr",
+    "weeklygoal",
+    "Yaxis"
   ],
   "java.compile.nullAnalysis.mode": "automatic",
   "python.testing.pytestArgs": [
