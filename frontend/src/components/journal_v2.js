@@ -1,57 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Button, Col } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import moment from 'moment';
 import './journal.css';
-import { useQuery, gql, NetworkStatus } from '@apollo/client';
-import { BarChart, Bar, RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer, XAxis, YAxis, Tooltip, Label, Text} from 'recharts';
+import { useQuery, NetworkStatus } from '@apollo/client';
+import { BarChart, Bar, RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell} from 'recharts';
 
-// import { ApolloClient, InMemoryCache, useQuery, gql } from '@apollo/client';
-// import config from '../config';
+import { EXERCISE_QUERY } from './queries/graphql';
 
-console.log('on the journal graphQL page')
-const weekly_goal = 280;
 
-// // set up apollo client for graphql 
-// const client = new ApolloClient({
-//   uri: `${config.apiUrl}/api/graphql`,
-//   cache: new InMemoryCache(),
-// });
-
-// setup schema query 
-const JOURNAL_QUERY = gql
-  `query weeklyStats($name: String, $start_date: String, $end_date: String) {
-    weeklyStats(name: $name, start_date: $start_date, end_date: $end_date) {
-      success
-      errors
-      results {
-        username 
-        exercises {
-          exerciseType
-          exerciseDuration
-        }
-      }
-    }
-  }
-  `;
-
-const DAILY_QUERY = gql
-  `query dailyStats ($name: String, $start_date: String, $end_date: String){
-    dailyStats(name: $name, start_date: $start_date, end_date: $end_date) {
-      success
-      errors
-      results {
-        username 
-        totalDuration
-        exerciseCount {
-          date
-          count
-          dailyDuration
-        }
-      }
-    }
-  }
-  `;
+const duration_goal = 280;
+const distance_goal = 50;
 
 // default bar data - 0 exercises
 const zeroExerciseList = () => {
@@ -66,60 +24,84 @@ const zeroExerciseList = () => {
   ];
 };
 
+const weeklygoalList = () => {
+  return {week_total: 0, percentage: 0}
+}
+
 
 const Journal = ({ currentUser }) => {
   // isoWeek = start/end of ISO week = monday - sunday
   const [startDate, setStartDate] = useState(moment().startOf('isoWeek').toDate());
   const [endDate, setEndDate] = useState(moment().endOf('isoWeek').toDate());
-  const [duration, setDuration] = useState({week_total: 0, percentage: 0});
+  const [duration, setDuration] = useState(weeklygoalList());
+  const [distance, setDistance] = useState(weeklygoalList());
   const [exerciseData, setExerciseDuration] = useState(zeroExerciseList());
 
 
-  const { loading, error, data, refetch, networkStatus } = useQuery(DAILY_QUERY, {
+  const { loading, error, data, refetch, networkStatus } = useQuery(EXERCISE_QUERY, {
     variables: {
       name: currentUser,
       start_date: moment(startDate).format('DD-MM-YYYY'),
       end_date: moment(endDate).format('DD-MM-YYYY'),
     },
     notifyOnNetworkStatusChange: true,
+    // fetchPolicy: 'cache-and-network',
   });
 
   useEffect(() => {
+    // function for exercise count
+    const updateExerciseCount = (exercises) => {
+      // Update dailyExercise count based on exerciseCount
+      const exerciseList = zeroExerciseList() 
+      exercises.results[0].exerciseCount.forEach(({ count, date, dailyDuration }) => {
+      const exercise = exerciseList.find(exercise => exercise.id === date);
+      if (exercise) {
+          exercise.count = count;
+          exercise.duration = dailyDuration;
+        }
+      });
+      // Update exerciseData state using the setter function
+      setExerciseDuration([...exerciseList]);
+    };
+
+    // function for duration
+    const updateGoals = (exercises) => {
+      // round down to closet integer  
+      const totalDuration = exercises.results[0].totalDuration;
+      const totalDistance = exercises.results[0].totalDistance;
+      const durationPerc= Math.floor((totalDuration / duration_goal) * 100)
+      const distancePerc= Math.floor((totalDistance / distance_goal) * 100)
+      setDuration({ week_total: totalDuration , percentage: (durationPerc < 100) ? durationPerc : 100});
+      setDistance({ week_total: totalDistance , percentage: (distancePerc < 100) ? distancePerc : 100});
+    };
+
+    // check for data object
     if (data) {
-      const exercises = data.dailyStats;
-      updateExerciseStats(exercises);
+      const exercises = data.exerciseStats;
+
+      // check for results in graphql response
+      if (exercises.hasOwnProperty('results')){
+        if (exercises.success && exercises.results.length > 0){
+          updateExerciseCount(exercises);
+          updateGoals(exercises);
+        }
+        else {
+          // no data present - reset to 0 
+          setExerciseDuration(zeroExerciseList());
+          setDuration(weeklygoalList())
+          setDistance(weeklygoalList())
+        }
+      }
     }
   }, [data, currentUser, startDate, endDate]);
   
-
   // handle loading and error states
   if (loading || networkStatus === NetworkStatus.refetch) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
     
-  
-  // const exercises = data.weeklyStats;
-  
-  
-  // // make graphql request
-  // const fetchExercises = async() => {
-  //   try {
-  //     const response = await client.query({
-  //       query: JOURNAL_QUERY,
-  //       variables: {
-  //         name: currentUser,
-  //         start_date: moment(startDate).format('DD-MM-YYYY'),
-  //         end_date: moment(endDate).format('DD-MM-YYYY'),
-  //       },
-  //     });
-  //     setExercises(response.data.weeklyStats);
-  //   } catch (error) {
-  //     console.error('Failed to fetch exercises', error.message);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchExercises();
-  // }, [currentUser, startDate, endDate]);
+  // Handle date buttons
+  const today = moment();
+  const isNextWeekValid = moment(startDate).add(1, 'weeks').isBefore(today);
 
   const goToPreviousWeek = () => {
     setStartDate(moment(startDate).subtract(1, 'weeks').startOf('isoWeek').toDate());
@@ -131,84 +113,7 @@ const Journal = ({ currentUser }) => {
     setEndDate(moment(endDate).add(1, 'weeks').endOf('isoWeek').toDate());
   };
 
-  
-  // generate exercise list - use of separate function call makes it easier to 
-  // check if exercise results exist to avoid access errors
-  // const makeExerciseList = () => {
-  //   if (exercises.hasOwnProperty('results')) {
-  //     return (exercises.success && exercises.results.length > 0) ? (
-  //       exercises.results[0].exercises.map((item, index) => (
-  //         <li key={index} className="exercise-journal-data">
-  //           {item.exerciseType} - {item.exerciseDuration} minutes
-  //         </li>
-  //       ))
-  //     ) : (
-  //       <li>No exercises found for this period.</li>
-  //     );
-  //   } else {
-  //     return <li>No exercises found for this period.</li>;
-  //   }
-  // };
 
- 
-  // Consolidating update functions
-  const updateExerciseStats = (exercises) => {
-    // check for results to confirm data is safe to access
-    if (exercises.hasOwnProperty('results')){
-      if (exercises.success && exercises.results.length > 0){
-        updateExerciseCount(exercises);
-        updateDuration(exercises);
-      }
-      else {
-        setExerciseDuration(zeroExerciseList()); // set to default
-        setDuration({week_total: 0, percentage: 0})
-      }
-    }
-  };
-
-  const updateExerciseCount = (exercises) => {
-      // Update dailyExercise count based on exerciseCount
-      
-      exercises.results[0].exerciseCount.forEach(({ count, date, dailyDuration }) => {
-      const exercise = exerciseData.find(exercise => exercise.id === date);
-      if (exercise) {
-          exercise.count = count;
-          exercise.duration = dailyDuration;
-        }
-      });
-      // Update exerciseData state using the setter function
-      setExerciseDuration([...exerciseData]);
-  };
-
-  const updateDuration = (exercises) => {
-    // round down to closet integer  
-    const totalDuration = data.dailyStats.results[0].totalDuration;
-    setDuration({ week_total: totalDuration , percentage: Math.floor((totalDuration / weekly_goal) * 100)});
-  };
-
-
-  
-
-  //   <ul>
-  //   {exercises.success ? (
-  //     exercises.results[0].exercises.map((item, index) => (
-  //       <li key={index} className="exercise-journal-data">
-  //         {item.exerciseType} - {item.totalDuration} minutes
-  //       </li>
-  //     ))
-  //   ) : 
-  //     <li>No exercises found for this period.</li>
-  //   }
-  // </ul>
-
-  const updateWeek = () =>{
-    goToPreviousWeek()
-    refetch({name: currentUser, 
-      start_date: moment(startDate).format('DD-MM-YYYY'), 
-      end_date: moment(endDate).format('DD-MM-YYYY')})
-  } 
-
-  // TODO: Deal with empty result
   return (
     <div className="journal-container">
       <h4>Weekly Exercise Journal</h4>
@@ -216,54 +121,95 @@ const Journal = ({ currentUser }) => {
       <div className="date-range">
         <Button className="button-small" onClick={goToPreviousWeek}>&larr; Previous</Button>
         <span>{moment(startDate).format('DD-MM-YYYY')} to {moment(endDate).format('DD-MM-YYYY')}</span>
-        <Button className="button-small" onClick={goToNextWeek}>Next &rarr;</Button>
+        {isNextWeekValid && <Button className="button-small" onClick={goToNextWeek}>Next &rarr;</Button>}
       </div> 
         {/* <ul> {makeExerciseList()} </ul> */}
-      <div class="exercise-radial-bar">
-      <h5>Weekly Goal</h5>
-      <ResponsiveContainer>
-        <RadialBarChart 
-          startAngle={90} 
-          endAngle={-270} 
-          innerRadius="80%" 
-          outerRadius="100%" 
-          barSize={10} 
-          data={[duration]}
-          >
-          {/* Title */}
-          <PolarAngleAxis
-            type="number"
-            domain={[0, weekly_goal]}
-            angleAxisId={0}
-            tick={false}
-          />
-          <RadialBar
-            minAngle={15}
-            background
-            clockWise={true}
-            dataKey="week_total"
-            fill="#8884d8"
-          />
-          {/* Label component for text */}
-          <text
-                x='50%'
-                y='50%'
-                textAnchor='middle'
-                style={{ fontSize: 20, fontWeight: 'bold', dominantBaseline:'middle' }}
+      <div className="two-column-layout">   
+        <div class="exercise-radial-bar">
+        <text>Duration</text>
+        <ResponsiveContainer>
+          <RadialBarChart 
+            startAngle={90} // adjust start/end angle to make rotate clockwise
+            endAngle={-270} 
+            innerRadius={60} 
+            outerRadius={80} 
+            barSize={15} 
+            data={[duration]}
             >
-                {`${duration['percentage']}%`}
+            {/* Title */}
+            <PolarAngleAxis
+              type="number"
+              domain={[0, duration_goal]}
+              angleAxisId={0}
+              tick={false}
+            />
+            <RadialBar
+              minAngle={5}
+              background
+              clockWise={true}
+              cornerRadius={10 / 2}
+              dataKey="week_total"
+            >
+                <Cell
+                  key={`cell-1`}
+                  fill={duration['percentage'] === 100 ? "#49ff8f" : "#8884d8"} // adjust colour for 100% goal
+                />
+            </RadialBar>
+            {/* Label component for text */}
+            <text x='50%' y='50%' textAnchor='middle' style={{ fontSize: 20, fontWeight: 'bold', dominantBaseline:'middle' }}>
+                  {`${duration['percentage']}%`}
             </text>
-          <Tooltip />
-        </RadialBarChart>
-      </ResponsiveContainer>
+            <Tooltip />
+          </RadialBarChart>
+        </ResponsiveContainer>
+        </div>
+        <div className="exercise-radial-bar">
+          <text>Distance</text>
+          <ResponsiveContainer>
+            <RadialBarChart 
+              startAngle={90} // adjust start/end angle to make rotate clockwise
+              endAngle={-270} 
+              innerRadius={60} 
+              outerRadius={80} 
+              barSize={15} 
+              data={[distance]}
+              >
+              {/* Title */}
+              <PolarAngleAxis
+                type="number"
+                domain={[0, distance_goal]}
+                angleAxisId={0}
+                tick={false}
+              />
+              <RadialBar
+                minAngle={5}
+                background
+                clockWise={true}
+                cornerRadius={10 / 2}
+                dataKey="week_total"
+              >
+                  <Cell
+                    key={`cell-1`}
+                    fill={distance['percentage'] === 100 ? "#49ff8f" : "#8884d8"} // adjust colour for 100% goal
+                  />
+              </RadialBar>
+              {/* Label component for text */}
+              <text x='50%'y='50%' textAnchor='middle' style={{ fontSize: 20, fontWeight: 'bold', dominantBaseline:'middle' }}>
+                    {`${distance['percentage']}%`}
+              </text>
+              <Tooltip />
+            </RadialBarChart>
+          </ResponsiveContainer>  
+        </div>
       </div>
+
       <br></br>
-      <div className="exercise-bar-chart"> {/* 50% of view height*/}
+      <div className="exercise-bar-chart"> 
       <h5>Daily Exercise</h5>
         <ResponsiveContainer>
-          <BarChart data={exerciseData}>
+          <BarChart data={exerciseData} margin={{ top: 5, right: 0, bottom: 5, left: 0 }}>
               <XAxis dataKey="day" />
-              <YAxis interval={1} />
+              <YAxis allowDecimals={false} domain={[0, dataMax => (dataMax === 0 ? dataMax + 1 : dataMax)]}/>  {/*set Yaxis limits*/}
               <Tooltip />
             <Bar dataKey="count" fill="#8884d8"/>
           </BarChart>

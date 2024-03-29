@@ -107,8 +107,8 @@ def create_app(config_object=Config):
             }
         return payload
     
-    @query.field("dailyStats")
-    def resolve_dailyStats(*_, name=None, start_date=None, end_date=None):
+    @query.field("exerciseStats")
+    def resolve_exerciseStats(*_, name=None, start_date=None, end_date=None):
         try:
             print("Resolving the daily stats info")
             loadedStats = daily_exercise_user_stats(name, start_date, end_date)
@@ -295,7 +295,8 @@ def create_app(config_object=Config):
 							"username": "$username",
                             "day": {"$isoDayOfWeek": {"date": "$date"}}}, # monday as start of week
                             "count": {"$sum": 1},
-                            "dailyDuration": {"$sum": "$duration"}
+                            "dailyDuration": {"$sum": "$duration"},
+                            "dailyDistance": {"$sum": "$distance"}
                     }
 				},
 				{ "$group": {
@@ -304,13 +305,15 @@ def create_app(config_object=Config):
                         "$push": {
 							"date": {"$toString": "$_id.day"},
                             "count": "$count",
-                            "dailyDuration": "$dailyDuration"
+                            "dailyDuration": "$dailyDuration",
+                            "dailyDistance": "$dailyDistance"
 							}
 						},
-						"totalDuration": {"$sum": "$dailyDuration"}            
+						"totalDuration": {"$sum": "$dailyDuration"},            
+						"totalDistance": {"$sum": "$dailyDistance"}            
 					}
 				},
-				{ "$project": {"_id": 0, "username": "$_id", "exerciseCount": 1, "totalDuration": 1} }
+				{ "$project": {"_id": 0, "username": "$_id", "exerciseCount": 1, "totalDuration": 1, "totalDistance": 1} }
             ]
     
         stats = list(db.exercises.aggregate(pipeline))

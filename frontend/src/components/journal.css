@@ -20,12 +20,25 @@
     margin-bottom: 20px;
 }
 
+.two-column-layout {
+    display: flex;
+    flex-direction: row;
+}
+
 .exercise-radial-bar {
     gap: 10px;
-    padding-bottom: 20px;
     width: 50%;
     height: 20vh;
     position: relative;
+}
+
+.centered-labels {
+    top: 50%;
+    left: 50%;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .exercise-bar-chart {
