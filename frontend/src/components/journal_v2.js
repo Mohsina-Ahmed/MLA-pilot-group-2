@@ -5,11 +5,7 @@ import './journal.css';
 import { useQuery, NetworkStatus } from '@apollo/client';
 import { BarChart, Bar, RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell} from 'recharts';
 
-import { EXERCISE_QUERY } from './queries/graphql';
-
-
-const duration_goal = 280;
-const distance_goal = 50;
+import { EXERCISE_QUERY, GOAL_QUERY } from './queries/graphql';
 
 // default bar data - 0 exercises
 const zeroExerciseList = () => {
@@ -33,12 +29,13 @@ const Journal = ({ currentUser }) => {
   // isoWeek = start/end of ISO week = monday - sunday
   const [startDate, setStartDate] = useState(moment().startOf('isoWeek').toDate());
   const [endDate, setEndDate] = useState(moment().endOf('isoWeek').toDate());
-  const [duration, setDuration] = useState(weeklygoalList());
-  const [distance, setDistance] = useState(weeklygoalList());
-  const [exerciseData, setExerciseDuration] = useState(zeroExerciseList());
+  const [weeklyGoal, setWeeklyGoal] = useState(weeklygoalList());
+  const [weeklyGoalList, setWeeklyGoalList] = useState({value: 0});
+  const [exerciseData, setExerciseData] = useState(zeroExerciseList());
 
 
-  const { loading, error, data, refetch, networkStatus } = useQuery(EXERCISE_QUERY, {
+  const goalResponse = useQuery(GOAL_QUERY, {variables: {name: currentUser}})
+  const exerciseResponse = useQuery(EXERCISE_QUERY, {
     variables: {
       name: currentUser,
       start_date: moment(startDate).format('DD-MM-YYYY'),
@@ -47,6 +44,21 @@ const Journal = ({ currentUser }) => {
     notifyOnNetworkStatusChange: true,
     // fetchPolicy: 'cache-and-network',
   });
+
+  useEffect(() => {
+    if (goalResponse.data){
+      const goalResult = goalResponse.data.weeklyGoal;
+      // check for results in graphql response
+      if (goalResult.hasOwnProperty('results')){
+        if (goalResult.success && goalResult.results.length > 0){
+          setWeeklyGoalList(goalResponse.result);
+        }
+        else {
+          setWeeklyGoalList({value: 0})
+        }
+      }
+    }
+  }, [goalResponse, currentUser])
 
   useEffect(() => {
     // function for exercise count
@@ -61,43 +73,56 @@ const Journal = ({ currentUser }) => {
         }
       });
       // Update exerciseData state using the setter function
-      setExerciseDuration([...exerciseList]);
-    };
-
-    // function for duration
-    const updateGoals = (exercises) => {
-      // round down to closet integer  
-      const totalDuration = exercises.results[0].totalDuration;
-      const totalDistance = exercises.results[0].totalDistance;
-      const durationPerc= Math.floor((totalDuration / duration_goal) * 100)
-      const distancePerc= Math.floor((totalDistance / distance_goal) * 100)
-      setDuration({ week_total: totalDuration , percentage: (durationPerc < 100) ? durationPerc : 100});
-      setDistance({ week_total: totalDistance , percentage: (distancePerc < 100) ? distancePerc : 100});
+      setExerciseData([...exerciseList]);
     };
 
     // check for data object
-    if (data) {
-      const exercises = data.exerciseStats;
+    if (exerciseResponse.data) {
+      const exercises = exerciseResponse.data.exerciseStats;
 
       // check for results in graphql response
       if (exercises.hasOwnProperty('results')){
         if (exercises.success && exercises.results.length > 0){
           updateExerciseCount(exercises);
-          updateGoals(exercises);
         }
         else {
           // no data present - reset to 0 
-          setExerciseDuration(zeroExerciseList());
-          setDuration(weeklygoalList())
-          setDistance(weeklygoalList())
+          setExerciseData(zeroExerciseList());
         }
       }
     }
-  }, [data, currentUser, startDate, endDate]);
-  
+  }, [exerciseResponse, currentUser, startDate, endDate]);
+
+  useEffect(() => {
+    // check for save access
+    let exerciseTotal
+    if (weeklyGoalList.value > 0 ) {
+        if (exerciseResponse.data) {
+      const exercises = exerciseResponse.data.exerciseStats;
+
+      // check for results in graphql response
+      if (exercises.hasOwnProperty('results')){
+        if (exercises.success && exercises.results.length > 0){
+
+          if (weeklyGoalList.goal === "Duration") {
+             exerciseTotal = exercises.results[0].totalDuration;
+          }
+          else if (weeklyGoalList.goal === "Distance") {
+              exerciseTotal = exercises.results[0].totalDistance;
+          }
+
+          const GoalPercentage= Math.floor((exerciseTotal / weeklyGoalList.value) * 100)
+          setWeeklyGoal({ week_total: exerciseTotal , percentage: (GoalPercentage < 100) ? GoalPercentage : 100});
+        }
+      }
+    }
+  }
+
+  }, [exerciseResponse, weeklyGoalList])
+ 
   // handle loading and error states
-  if (loading || networkStatus === NetworkStatus.refetch) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  if (exerciseResponse.loading || exerciseResponse.networkStatus === NetworkStatus.refetch) return <p>Loading...</p>;
+  if (exerciseResponse.error) return <p>Error: {exerciseResponse.error.message}</p>;
     
   // Handle date buttons
   const today = moment();
@@ -126,7 +151,7 @@ const Journal = ({ currentUser }) => {
         {/* <ul> {makeExerciseList()} </ul> */}
       <div className="two-column-layout">   
         <div class="exercise-radial-bar">
-        <text>Duration</text>
+        <text>Weekly Goal</text>
         <ResponsiveContainer>
           <RadialBarChart 
             startAngle={90} // adjust start/end angle to make rotate clockwise
@@ -134,12 +159,12 @@ const Journal = ({ currentUser }) => {
             innerRadius={60} 
             outerRadius={80} 
             barSize={15} 
-            data={[duration]}
+            data={[weeklyGoal]}
             >
             {/* Title */}
             <PolarAngleAxis
               type="number"
-              domain={[0, duration_goal]}
+              domain={[0, weeklyGoal.value]}
               angleAxisId={0}
               tick={false}
             />
@@ -152,54 +177,16 @@ const Journal = ({ currentUser }) => {
             >
                 <Cell
                   key={`cell-1`}
-                  fill={duration['percentage'] === 100 ? "#49ff8f" : "#8884d8"} // adjust colour for 100% goal
+                  fill={weeklyGoal['percentage'] === 100 ? "#49ff8f" : "#8884d8"} // adjust colour for 100% goal
                 />
             </RadialBar>
             {/* Label component for text */}
             <text x='50%' y='50%' textAnchor='middle' style={{ fontSize: 20, fontWeight: 'bold', dominantBaseline:'middle' }}>
-                  {`${duration['percentage']}%`}
+                  {`${weeklyGoal['percentage']}%`}
             </text>
             <Tooltip />
           </RadialBarChart>
         </ResponsiveContainer>
-        </div>
-        <div className="exercise-radial-bar">
-          <text>Distance</text>
-          <ResponsiveContainer>
-            <RadialBarChart 
-              startAngle={90} // adjust start/end angle to make rotate clockwise
-              endAngle={-270} 
-              innerRadius={60} 
-              outerRadius={80} 
-              barSize={15} 
-              data={[distance]}
-              >
-              {/* Title */}
-              <PolarAngleAxis
-                type="number"
-                domain={[0, distance_goal]}
-                angleAxisId={0}
-                tick={false}
-              />
-              <RadialBar
-                minAngle={5}
-                background
-                clockWise={true}
-                cornerRadius={10 / 2}
-                dataKey="week_total"
-              >
-                  <Cell
-                    key={`cell-1`}
-                    fill={distance['percentage'] === 100 ? "#49ff8f" : "#8884d8"} // adjust colour for 100% goal
-                  />
-              </RadialBar>
-              {/* Label component for text */}
-              <text x='50%'y='50%' textAnchor='middle' style={{ fontSize: 20, fontWeight: 'bold', dominantBaseline:'middle' }}>
-                    {`${distance['percentage']}%`}
-              </text>
-              <Tooltip />
-            </RadialBarChart>
-          </ResponsiveContainer>  
         </div>
       </div>
 
