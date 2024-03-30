@@ -37,4 +37,19 @@ const EXERCISE_QUERY = gql
   }
   `;
 
-  export {JOURNAL_QUERY, EXERCISE_QUERY}
+  const GOAL_QUERY = gql
+  `query weeklyGoal ($name: String){
+    weeklyGoal(name: $name) {
+      success
+      errors
+      results {
+        exercise
+        goal
+        unit
+        value
+      }
+    }
+  }
+  `;
+
+  export { EXERCISE_QUERY, GOAL_QUERY }

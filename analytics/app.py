@@ -123,6 +123,23 @@ def create_app(config_object=Config):
                 "errors": [str(error)]
             }
         return payload
+    
+    @query.field("weeklyGoal")
+    def resolve_weeklyGoal(*_, name=None):
+        try:
+            print("Resolving the weekly goal info")
+            loadedStats = user_weekly_goal(name)
+            print(loadedStats)
+            payload = {
+                "success": True,
+                "results": loadedStats
+            }
+        except Exception as error:
+            payload = {
+                "success": False,
+                "errors": [str(error)]
+            }
+        return payload
 
     @app.route('/')
     def index():
@@ -319,6 +336,25 @@ def create_app(config_object=Config):
         stats = list(db.exercises.aggregate(pipeline))
         return stats
 
+    def user_weekly_goal(username):
+        pipeline = [
+            {
+                "$match": {"username": username}
+            },
+            {
+                "$project": {
+                    "exercise": "$exerciseType",
+                    "goal": "$goalType",
+                    "unit": "$goalUnit",
+                    "value": "$goalValue",
+                    "_id": 0
+                }
+            }
+        ]
+
+        stats = list(db.goals.aggregate(pipeline))
+        return stats
+    
     @app.errorhandler(Exception)
     def handle_error(e):
         app.logger.error(f"An error occurred: {e}")
