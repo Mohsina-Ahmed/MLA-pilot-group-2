@@ -4,6 +4,8 @@ import { Button } from 'react-bootstrap';
 import moment from 'moment';
 import config from '../config';
 import { Mood, MoodBad, SentimentSatisfied, SentimentVeryDissatisfied } from '@mui/icons-material'; 
+import { useQuery } from '@apollo/client';
+import { LAST_EXERCISE_QUERY } from './queries/graphql';
 
 const Homepage = ({ currentUser }) => {
   // const [selectedEmoji, setSelectedEmoji] = useState(null);
@@ -13,6 +15,9 @@ const Homepage = ({ currentUser }) => {
   //   setSelectedEmoji(emoji);
   //   updateBackgroundColor(emoji);
   // };
+
+  const response = useQuery(LAST_EXERCISE_QUERY, {variables: {name: currentUser}})
+  // response.data.homePage.results[0]
 
   const updateBackgroundColor = (color) => {
     const navBar = document.getElementById("navBar");
