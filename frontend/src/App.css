@@ -137,7 +137,13 @@ input#description {
   margin: auto; 
 }
 
+input#intensity {
+  width: 75%;
+  margin: auto;
+}
+
 input#calories {
+  width: 70%;
   margin: auto;
   background-color: #d3d3d3;
   outline-color: #6c757d;
