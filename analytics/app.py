@@ -77,6 +77,14 @@ def create_app(config_object=Config):
             payload = {"success": False, "errors": [str(error)]}
         return payload
 
+    # date_format = "%d-%m-%Y"
+    def parse_date(date_str, date_format="%d-%m-%Y"):
+        try:
+            return datetime.strptime(date_str, date_format)
+        except Exception as e:
+            logging.error(f"Error parsing dates: {e}")
+            return jsonify(error="Invalid date format"), 400
+        
     # graphql queries 
     @query.field("stats")
     def resolve_stats(_):
@@ -87,6 +95,11 @@ def create_app(config_object=Config):
     def resolve_filtered_stats(*_, name=None):
         print("Resolving the filtered stats info")
         return resolve_query(func=user_stats, username=name)
+    
+    @query.field("filteredActivityStats")
+    def resolve_activity_stats(*_, name=None, activity=None):
+        print("Resolving the filtered activity stats info")
+        return resolve_query(func=user_activity_stats, username=name, activity=activity)
 
     @query.field("weeklyStats")
     def resolve_weekly_stats(*_, name=None, start_date=None, end_date=None):
@@ -108,6 +121,7 @@ def create_app(config_object=Config):
         print("Resolving the home page info")
         return resolve_query(func=home_page_last_exercise, username=name)
     
+    schema = make_executable_schema(type_defs, query)
 
     def stats():
         pipeline = [
@@ -134,20 +148,19 @@ def create_app(config_object=Config):
             {"$project": {"username": "$_id", "exercises": 1, "_id": 0}}
         ]
 
-        stats = list(db.exercises.aggregate(pipeline))
-        return stats
+        return list(db.exercises.aggregate(pipeline))
 
-    schema = make_executable_schema(type_defs, query)
+    def user_activity_stats(username, activity):
+        pipeline = [
+            {"$match": {"username": username, "exerciseType": activity}},
+            {"$group": {"_id": {"exercise": "$exerciseType"},
+                    "totalDistance": {"$sum": "$distance"},
+                    "totalDuration": {"$sum": "$duration"}}},
+            {"$project": {"exercise": "$_id.exercise", "totalDistance": 1, "totalDuration": 1, "_id": 0}}
+        ]
 
-    # date_format = "%d-%m-%Y"
-    def parse_date(date_str, date_format="%d-%m-%Y"):
-        try:
-            return datetime.strptime(date_str, date_format)
-        except Exception as e:
-            logging.error(f"Error parsing dates: {e}")
-            return jsonify(error="Invalid date format"), 400
-        
-    
+        return list(db.exercises.aggregate(pipeline))
+   
     def weekly_user_stats(username, start_date_str, end_date_str):
         start_date = parse_date(start_date_str)
         end_date = parse_date(end_date_str) + timedelta(days=1)  # Include the whole end day

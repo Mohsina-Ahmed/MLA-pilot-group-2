@@ -12,6 +12,13 @@
     padding-top: 20px;
 }
 
+.two-column-layout {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
 .stats-content {
     display: flex;
     flex-wrap: wrap;
