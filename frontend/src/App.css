@@ -137,6 +137,12 @@ input#description {
   margin: auto; 
 }
 
+input#calories {
+  margin: auto;
+  background-color: #d3d3d3;
+  outline-color: #6c757d;
+}
+
 div#div-other {
   margin-bottom: 20px;
 }

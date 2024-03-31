@@ -51,6 +51,16 @@ const exerciseSchema = new Schema(
       required: true,
       max: [maxDate, 'Cannot track exercises in the future.'] 
     },
+    intensity: {
+      type: Number,
+      required: false,
+      min: [1, 'Intensity should be positive.']
+    },
+    calories: {
+      type: Number,
+      required: false,
+      min: [0, 'Calories should be positive.']
+    },
     mood: {
       type: String,
       required: true,
