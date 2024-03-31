@@ -27,16 +27,21 @@ def create_app(config_object=Config):
     # get database name
     mongo_db = app.config['MONGO_DB']
     
-    # connect to mongoDB through Flask wrapper PyMongo
-    # reads the MONGO URI from the app config
+    # connect to mongoDB through Flask wrapper PyMongo - reads the MONGO URI from the app config
     mongo = PyMongo()
     mongo.init_app(app, connect=True)
     
-    # print(app.config['MONGO_URI'])
     print(mongo_db)
     db = mongo.cx.get_database(mongo_db)
+
     query = QueryType()
     type_defs = load_schema_from_path("schema.graphql")
+
+    @app.route('/')
+    def index():
+        exercises = db.exercises.find()
+        exercises_list = list(exercises)
+        return json_util.dumps(exercises_list)
 
     @app.route('/api/graphql', methods=['GET'])
     def graphql_playground():
@@ -55,184 +60,78 @@ def create_app(config_object=Config):
         )
         status_code = 200 if success else 400
         return jsonify(result), status_code
-
-    @query.field("stats")
-    def resolve_stats(_, info):
+    
+    @app.errorhandler(Exception)
+    def handle_error(e):
+        app.logger.error(f"An error occurred: {e}")
+        traceback.print_exc()
+        return jsonify(error="An internal error occurred"), 500
+    
+    # function to resolve queries
+    def resolve_query(func, **kwargs):
         try:
-            print("Resolving the list stats info")
-            loadedStats = stats()
-            print(loadedStats)
-            payload = {
-                "success": True,
-                "results": loadedStats
-            }
+            loaded_stats = func(**kwargs)
+            print(loaded_stats)
+            payload = {"success": True, "results": loaded_stats}
         except Exception as error:
-            payload = {
-                "success": False,
-                "errors": [str(error)]
-            }
+            payload = {"success": False, "errors": [str(error)]}
         return payload
+
+    # graphql queries 
+    @query.field("stats")
+    def resolve_stats(_):
+        print("Resolving the list stats info")
+        return resolve_query(func=stats)
 
     @query.field("filteredStats")
-    def resolve_filteredStats(*_, name=None):
-        try:
-            print("Resolving the list stats info")
-            loadedStats = user_stats(name)
-            print(loadedStats)
-            payload = {
-                "success": True,
-                "results": loadedStats
-            }
-        except Exception as error:
-            payload = {
-                "success": False,
-                "errors": [str(error)]
-            }
-        return payload
+    def resolve_filtered_stats(*_, name=None):
+        print("Resolving the filtered stats info")
+        return resolve_query(func=user_stats, username=name)
 
     @query.field("weeklyStats")
-    def resolve_weeklyStats(*_, name=None, start_date=None, end_date=None):
-        try:
-            print("Resolving the weekly stats info")
-            loadedStats = weekly_user_stats(name, start_date, end_date)
-            print(loadedStats)
-            payload = {
-                "success": True,
-                "results": loadedStats
-            }
-        except Exception as error:
-            payload = {
-                "success": False,
-                "errors": [str(error)]
-            }
-        return payload
-    
-    @query.field("exerciseStats")
-    def resolve_exerciseStats(*_, name=None, start_date=None, end_date=None):
-        try:
-            print("Resolving the daily stats info")
-            loadedStats = daily_exercise_user_stats(name, start_date, end_date)
-            print(loadedStats)
-            payload = {
-                "success": True,
-                "results": loadedStats
-            }
-        except Exception as error:
-            payload = {
-                "success": False,
-                "errors": [str(error)]
-            }
-        return payload
-    
-    @query.field("weeklyGoal")
-    def resolve_weeklyGoal(*_, name=None):
-        try:
-            print("Resolving the weekly goal info")
-            loadedStats = user_weekly_goal(name)
-            print(loadedStats)
-            payload = {
-                "success": True,
-                "results": loadedStats
-            }
-        except Exception as error:
-            payload = {
-                "success": False,
-                "errors": [str(error)]
-            }
-        return payload
-    
-    @query.field("homePage")
-    def resolve_homePage(*_, name=None):
-        try:
-            print("Resolving the last logged exercise")
-            loadedStats = home_page_last_exercise(name)
-            print(loadedStats)
-            payload = {
-                "success": True,
-                "results": loadedStats
-            }
-        except Exception as error:
-            payload = {
-                "success": False,
-                "errors": [str(error)]
-            }
-        return payload
+    def resolve_weekly_stats(*_, name=None, start_date=None, end_date=None):
+        print("Resolving the weekly stats info")
+        return resolve_query(func=weekly_user_stats, username=name, start_date_str=start_date, end_date_str=end_date)
 
-    @app.route('/')
-    def index():
-        exercises = db.exercises.find()
-        exercises_list = list(exercises)
-        return json_util.dumps(exercises_list)
+    @query.field("exerciseStats")
+    def resolve_exercise_stats(*_, name=None, start_date=None, end_date=None):
+        print("Resolving the exercise stats info")
+        return resolve_query(func=daily_exercise_user_stats, username=name, start_date_str=start_date, end_date_str=end_date)
+
+    @query.field("weeklyGoal")
+    def resolve_weekly_goal(*_, name=None):
+        print("Resolving the weekly goal info")
+        return resolve_query(func=user_weekly_goal, username=name)
+
+    @query.field("homePage")
+    def resolve_home_page(*_, name=None):
+        print("Resolving the home page info")
+        return resolve_query(func=home_page_last_exercise, username=name)
     
-    # @app.route('/stats')
+
     def stats():
         pipeline = [
-            {
-                "$group": {
-                    "_id": {
-                        "username": "$username",
-                        "exerciseType": "$exerciseType"
-                    },
-                    "totalDuration": {"$sum": "$duration"}
-                }
-            },
-            {
-                "$group": {
-                    "_id": "$_id.username",
-                    "exercises": {
-                        "$push": {
-                            "exerciseType": "$_id.exerciseType",
-                            "totalDuration": "$totalDuration"
+            {"$group": {"_id": {"username": "$username", "exerciseType": "$exerciseType"},
+                    "totalDuration": {"$sum": "$duration"}}},
+            {"$group": {"_id": "$_id.username", "exercises": {
+                        "$push": {"exerciseType": "$_id.exerciseType","totalDuration": "$totalDuration" }}
                         }
-                    }
-                }
             },
-            {
-                "$project": {
-                    "username": "$_id",
-                    "exercises": 1,
-                    "_id": 0
-                }
-            }
+            { "$project": {"username": "$_id", "exercises": 1, "_id": 0}}
         ]
 
-        stats = list(db.exercises.aggregate(pipeline))
-        return stats
+        return list(db.exercises.aggregate(pipeline))
 
 
-    # @app.route('/stats/<username>', methods=['GET'])
     def user_stats(username):
         pipeline = [
-            {
-                "$match": {"username": username}
+            {"$match": {"username": username}},
+            {"$group": {"_id": {"username": "$username", "exerciseType": "$exerciseType"},
+                    "totalDuration": {"$sum": "$duration"}}},
+            {"$group": {"_id": "$_id.username", "exercises": {
+                        "$push": {"exerciseType": "$_id.exerciseType", "totalDuration": "$totalDuration"}}}
             },
-            {
-                "$group": {
-                    "_id": {
-                        "username": "$username",
-                        "exerciseType": "$exerciseType"
-                    },
-                    "totalDuration": {"$sum": "$duration"}
-                }
-            },
-            {
-                "$group": {
-                    "_id": "$_id.username",
-                    "exercises": {
-                        "$push": {
-                            "exerciseType": "$_id.exerciseType",
-                            "totalDuration": "$totalDuration"
-                        }
-                    }
-                }
-            },
-            {
-                "$project": {
-                    "username": "$_id",
-                    "exercises": 1,
-                    "_id": 0
-                }
-            }
+            {"$project": {"username": "$_id", "exercises": 1, "_id": 0}}
         ]
 
         stats = list(db.exercises.aggregate(pipeline))
@@ -240,138 +139,70 @@ def create_app(config_object=Config):
 
     schema = make_executable_schema(type_defs, query)
 
-    # @app.route('/stats/weekly/', methods=['GET'])
-    def weekly_user_stats(username, start_date_str, end_date_str):
-        # username = request.args.get('user')
-        # start_date_str = request.args.get('start')
-        # end_date_str = request.args.get('end')
-
-        date_format = "%d-%m-%Y"
+    # date_format = "%d-%m-%Y"
+    def parse_date(date_str, date_format="%d-%m-%Y"):
         try:
-            start_date = datetime.strptime(start_date_str, date_format)
-            end_date = datetime.strptime(end_date_str, date_format) + timedelta(days=1)  # Include the whole end day
-
-            logging.info(f"Fetching weekly stats for user: {username} from {start_date} to {end_date}")
+            return datetime.strptime(date_str, date_format)
         except Exception as e:
             logging.error(f"Error parsing dates: {e}")
             return jsonify(error="Invalid date format"), 400
-
+        
+    
+    def weekly_user_stats(username, start_date_str, end_date_str):
+        start_date = parse_date(start_date_str)
+        end_date = parse_date(end_date_str) + timedelta(days=1)  # Include the whole end day
+        logging.info(f"Fetching weekly stats for user: {username} from {start_date} to {end_date}")
         pipeline = [
-            {
-                "$match": {
-                    "username": username,
-                    "date": {
-                        "$gte": start_date,
-                        "$lt": end_date
-                    }
-                }
-            },
-            {
-                "$group": {
-                    "_id": {
-                    "username": "$username",
-                    "exerciseType": "$exerciseType"
-                    },
-                    "exerciseDuration": {"$sum": "$duration"}
-                }
-            },
-            {
-                "$group": {
-                    "_id": "$_id.username",
-                    "exercises": {
-                        "$push": {
+            {"$match": {"username": username, "date": {"$gte": start_date, "$lt": end_date}}},
+            {"$group": {"_id": {"username": "$username","exerciseType": "$exerciseType"},
+                    "exerciseDuration": {"$sum": "$duration"}}},
+            {"$group": {"_id": "$_id.username",
+                    "exercises": {"$push": {
                             "exerciseType": "$_id.exerciseType",
-                            "exerciseDuration": "$exerciseDuration"
-                        }
-                    }
-                }
+                            "exerciseDuration": "$exerciseDuration"}}}
             },
-            {
-                "$project": {
-                    "username": "$_id",
-                    "exercises": 1,
-                    "_id": 0
-                }
-            }
+            {"$project": {"username": "$_id","exercises": 1,"_id": 0}}
         ]
         
-        stats = list(db.exercises.aggregate(pipeline))
-        return stats
+        return list(db.exercises.aggregate(pipeline))
     
     def daily_exercise_user_stats(username, start_date_str, end_date_str):
-        # username = request.args.get('user')
-        # start_date_str = request.args.get('start')
-        # end_date_str = request.args.get('end')
-
-        date_format = "%d-%m-%Y"
-        try:
-            start_date = datetime.strptime(start_date_str, date_format)
-            end_date = datetime.strptime(end_date_str, date_format) + timedelta(days=1)  # Include the whole end day
-
-            logging.info(f"Fetching daily count for user: {username} from {start_date} to {end_date}")
-        except Exception as e:
-            logging.error(f"Error parsing dates: {e}")
-            return jsonify(error="Invalid date format"), 400
+        start_date = parse_date(start_date_str)
+        end_date = parse_date(end_date_str) + timedelta(days=1)  # Include the whole end day
+        logging.info(f"Fetching weekly stats for user: {username} from {start_date} to {end_date}")
 
         pipeline = [
-                {
-                    "$match": {
-                        "username": username,
-                        "date": {
-                            "$gte": start_date,
-                            "$lt": end_date
-                        }
-                    }
-                },
-                {
-                    "$group": {
-                        "_id": {
-							"username": "$username",
-                            "day": {"$isoDayOfWeek": {"date": "$date"}}}, # monday as start of week
-                            "count": {"$sum": 1},
-                            "dailyDuration": {"$sum": "$duration"},
-                            "dailyDistance": {"$sum": "$distance"}
-                    }
+                {"$match": { "username": username, "date": {"$gte": start_date, "$lt": end_date}}},
+                {"$group": {"_id": {"username": "$username",
+                                    "day": {"$isoDayOfWeek": {"date": "$date"}}}, # monday as start of week
+                                    "count": {"$sum": 1},
+                                     "dailyDuration": {"$sum": "$duration"},
+                                     "dailyDistance": {"$sum": "$distance"}}
 				},
-				{ "$group": {
-						"_id": "$_id.username",
-						"exerciseCount": {
-                        "$push": {
-							"date": {"$toString": "$_id.day"},
-                            "count": "$count",
-                            "dailyDuration": "$dailyDuration",
-                            "dailyDistance": "$dailyDistance"
-							}
-						},
-						"totalCount": {"$sum": "$count"},            
-						"totalDuration": {"$sum": "$dailyDuration"},            
-						"totalDistance": {"$sum": "$dailyDistance"}            
-					}
+				{ "$group": {"_id": "$_id.username","exerciseCount": 
+                            { "$push": {"date": {"$toString": "$_id.day"},
+                                        "count": "$count",
+                                         "dailyDuration": "$dailyDuration",
+                                        "dailyDistance": "$dailyDistance"}
+						    },
+                            "totalCount": {"$sum": "$count"},            
+						    "totalDuration": {"$sum": "$dailyDuration"},            
+						    "totalDistance": {"$sum": "$dailyDistance"}}
 				},
 				{ "$project": {"_id": 0, "username": "$_id", "exerciseCount": 1, "totalCount": 1, "totalDuration": 1, "totalDistance": 1} }
             ]
     
-        stats = list(db.exercises.aggregate(pipeline))
-        return stats
+        return list(db.exercises.aggregate(pipeline))
 
     def user_weekly_goal(username):
         pipeline = [
-            {
-                "$match": {"username": username}
-            },
-            {
-                "$project": {
-                    "exercise": "$exerciseType",
-                    "goal": "$goalType",
-                    "unit": "$goalUnit",
-                    "value": "$goalValue",
-                    "_id": 0
-                }
+            {"$match": {"username": username}},
+            {"$project": { "exercise": "$exerciseType", "goal": "$goalType",
+                         "unit": "$goalUnit", "value": "$goalValue", "_id": 0}
             }
         ]
 
-        stats = list(db.goals.aggregate(pipeline))
-        return stats
+        return list(db.goals.aggregate(pipeline))
     
     def home_page_last_exercise(username):
         pipeline = [
@@ -381,14 +212,7 @@ def create_app(config_object=Config):
 			{"$project": {"_id": 0, "date": "$date", "exercise": "$exerciseType", "duration": "$duration"}}
         ]
 
-        stats = list(db.exercises.aggregate(pipeline))
-        return stats
-    
-    @app.errorhandler(Exception)
-    def handle_error(e):
-        app.logger.error(f"An error occurred: {e}")
-        traceback.print_exc()
-        return jsonify(error="An internal error occurred"), 500
+        return list(db.exercises.aggregate(pipeline))
 
     return app
 
