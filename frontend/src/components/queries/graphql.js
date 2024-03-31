@@ -51,4 +51,18 @@ const EXERCISE_QUERY = gql
   }
   `;
 
-  export { EXERCISE_QUERY, GOAL_QUERY }
+  const LAST_EXERCISE_QUERY = gql
+  `query homePage ($name: String){
+    homePage(name: $name) {
+      success
+      errors
+      results {
+        exercise
+        duration
+        date
+      }
+    }
+  }
+  `;
+
+  export { EXERCISE_QUERY, GOAL_QUERY, LAST_EXERCISE_QUERY }

@@ -140,6 +140,23 @@ def create_app(config_object=Config):
                 "errors": [str(error)]
             }
         return payload
+    
+    @query.field("homePage")
+    def resolve_homePage(*_, name=None):
+        try:
+            print("Resolving the last logged exercise")
+            loadedStats = home_page_last_exercise(name)
+            print(loadedStats)
+            payload = {
+                "success": True,
+                "results": loadedStats
+            }
+        except Exception as error:
+            payload = {
+                "success": False,
+                "errors": [str(error)]
+            }
+        return payload
 
     @app.route('/')
     def index():
@@ -354,6 +371,17 @@ def create_app(config_object=Config):
         ]
 
         stats = list(db.goals.aggregate(pipeline))
+        return stats
+    
+    def home_page_last_exercise(username):
+        pipeline = [
+            {"$match": {"username": username}},
+			{"$sort": {"createdAt": -1}},
+			{"$limit": 1},
+			{"$project": {"_id": 0, "date": "$date", "exercise": "$exerciseType", "duration": "$duration"}}
+        ]
+
+        stats = list(db.exercises.aggregate(pipeline))
         return stats
     
     @app.errorhandler(Exception)
