@@ -326,11 +326,12 @@ def create_app(config_object=Config):
                             "dailyDistance": "$dailyDistance"
 							}
 						},
+						"totalCount": {"$sum": "$count"},            
 						"totalDuration": {"$sum": "$dailyDuration"},            
 						"totalDistance": {"$sum": "$dailyDistance"}            
 					}
 				},
-				{ "$project": {"_id": 0, "username": "$_id", "exerciseCount": 1, "totalDuration": 1, "totalDistance": 1} }
+				{ "$project": {"_id": 0, "username": "$_id", "exerciseCount": 1, "totalCount": 1, "totalDuration": 1, "totalDistance": 1} }
             ]
     
         stats = list(db.exercises.aggregate(pipeline))

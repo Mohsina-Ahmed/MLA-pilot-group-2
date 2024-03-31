@@ -36,6 +36,7 @@ type ExerciseCount{
     username: String
     totalDuration: Int
     totalDistance: Int
+    totalCount: Int
     exerciseCount: [DailyCount]
 }
 

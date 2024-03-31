@@ -24,13 +24,12 @@ const EXERCISE_QUERY = gql
       errors
       results {
         username 
+        totalCount
         totalDuration
         totalDistance
         exerciseCount {
           date
           count
-          dailyDuration
-          dailyDistance
         }
       }
     }
