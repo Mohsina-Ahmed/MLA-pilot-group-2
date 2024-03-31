@@ -101,6 +101,7 @@ def create_app(config_object=Config):
         print("Resolving the filtered activity stats info")
         return resolve_query(func=user_activity_stats, username=name, activity=activity)
 
+
     @query.field("weeklyStats")
     def resolve_weekly_stats(*_, name=None, start_date=None, end_date=None):
         print("Resolving the weekly stats info")
