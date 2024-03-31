@@ -17,6 +17,20 @@ const STATS_QUERY = gql
   }
   `;
 
+const STATS_ACTIVITY_QUERY = gql
+  `query filteredActivityStats($name: String, $activity: String) {
+    filteredActivityStats(name: $name, activity: $activity) {
+      success
+      errors
+      results {
+        exercise
+        totalDistance 
+        totalDuration
+      }
+    }
+  }
+  `;
+
 
 // setup schema query 
 const JOURNAL_QUERY = gql
@@ -83,4 +97,4 @@ const EXERCISE_QUERY = gql
   }
   `;
 
-  export { STATS_QUERY, EXERCISE_QUERY, GOAL_QUERY, LAST_EXERCISE_QUERY }
+  export { STATS_QUERY, EXERCISE_QUERY, GOAL_QUERY, LAST_EXERCISE_QUERY, STATS_ACTIVITY_QUERY }

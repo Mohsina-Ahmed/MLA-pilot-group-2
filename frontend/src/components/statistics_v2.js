@@ -4,7 +4,7 @@ import * as ReactDOM from 'react-dom/client';
 import axios from 'axios';
 import './statistics.css';
 import { useQuery, NetworkStatus } from '@apollo/client';
-import { STATS_QUERY, GOAL_QUERY } from './queries/graphql';
+import { STATS_QUERY, STATS_ACTIVITY_QUERY } from './queries/graphql';
 
 
 
@@ -12,22 +12,23 @@ const Statistics = ({currentUser}) => {
   const [data, setData] = useState([]);
   const [currentActivity, setCurrentActivity] = useState({activity: "Running"});  // set default as first activity - GOAL: default to preferred user activity from profile
 
-  const statsResponse = useQuery(STATS_QUERY, {variables: {name: currentUser}})
-
-
+  const statsResponse = useQuery(STATS_ACTIVITY_QUERY, {variables: {name: currentUser, activity: currentActivity.activity}})
 
   // make graphql request
   useEffect(() => {
     if (statsResponse.data) {
-      const statsResults = statsResponse.data.filteredStats;
+      const statsResults = statsResponse.data.filteredActivityStats;
       
       if (statsResults.success && statsResults.results.length > 0){
-        const statsData = statsResults.results[0].exercises
+        const statsData = statsResults.results[0]
         setData(statsData);
+      }
+      else {
+        setData([])
       }
     }
 
-  }, [statsResponse, currentUser]);
+  }, [setCurrentActivity, statsResponse, currentUser]);
 
     // handle loading and error states
     if (statsResponse.loading) return <p>Loading...</p>;
@@ -55,15 +56,16 @@ const Statistics = ({currentUser}) => {
   } 
 
   const makeStatsList = () => {
-      return (data.length > 0) ? (
-        Object.values(data).map((item, index) => (
-          <li key={index} className="exercise-data">
-            <div><strong>{item.exerciseType}</strong></div>
-            <div>Total Duration: {item.exerciseDuration} min</div>
+      return (Object.keys(data).length > 0) ? (          
+          <li key={0} className="exercise-data">
+            <div><strong>{data.exercise}</strong></div>
+            <div className="two-column-layout">
+              <div>Total Duration: {data.totalDuration} min</div>
+              <div>Total Distance: {data.totalDistance} km</div>
+            </div>
           </li>
-        ))
       ) : (
-        <li>No data available.</li>
+        <li>No data available - Time to get active!</li>
       );
   }
 
