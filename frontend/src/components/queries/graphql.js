@@ -1,5 +1,23 @@
 import { gql } from '@apollo/client';
 
+
+const STATS_QUERY = gql
+  `query filteredStats($name: String) {
+    filteredStats(name: $name) {
+      success
+      errors
+      results {
+        username 
+        exercises {
+          exerciseType
+          exerciseDuration
+        }
+      }
+    }
+  }
+  `;
+
+
 // setup schema query 
 const JOURNAL_QUERY = gql
   `query weeklyStats($name: String, $start_date: String, $end_date: String) {
@@ -65,4 +83,4 @@ const EXERCISE_QUERY = gql
   }
   `;
 
-  export { EXERCISE_QUERY, GOAL_QUERY, LAST_EXERCISE_QUERY }
+  export { STATS_QUERY, EXERCISE_QUERY, GOAL_QUERY, LAST_EXERCISE_QUERY }

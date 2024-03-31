@@ -10,7 +10,7 @@
             "name": "Launch Chrome",
             "url": "http://localhost:80",
             "webRoot": "${workspaceFolder}",
-            "runtimeArgs": ["--incognito"]
+            // "runtimeArgs": ["--incognito"]
         }
     ]
 }

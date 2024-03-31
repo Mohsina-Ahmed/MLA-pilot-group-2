@@ -129,7 +129,7 @@ def create_app(config_object=Config):
             {"$group": {"_id": {"username": "$username", "exerciseType": "$exerciseType"},
                     "totalDuration": {"$sum": "$duration"}}},
             {"$group": {"_id": "$_id.username", "exercises": {
-                        "$push": {"exerciseType": "$_id.exerciseType", "totalDuration": "$totalDuration"}}}
+                        "$push": {"exerciseType": "$_id.exerciseType", "exerciseDuration": "$totalDuration"}}}
             },
             {"$project": {"username": "$_id", "exercises": 1, "_id": 0}}
         ]
