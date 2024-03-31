@@ -6,36 +6,29 @@ import config from '../config';
 import { Mood, MoodBad, SentimentSatisfied, SentimentVeryDissatisfied } from '@mui/icons-material'; 
 
 const Homepage = ({ currentUser }) => {
-  const [selectedEmoji, setSelectedEmoji] = useState(null);
-  const [pageBackgroundColor, setPageBackgroundColor] = useState('');
+  // const [selectedEmoji, setSelectedEmoji] = useState(null);
+  // const [pageBackgroundColor, setPageBackgroundColor] = useState('');
 
-  const handleEmojiSelect = (emoji) => {
-    setSelectedEmoji(emoji);
-    updateBackgroundColor(emoji);
-  };
+  // const handleEmojiSelect = (emoji) => {
+  //   setSelectedEmoji(emoji);
+  //   updateBackgroundColor(emoji);
+  // };
 
-  const updateBackgroundColor = (emoji) => {
-    if (emoji.type === Mood) {
-      setPageBackgroundColor('#f0f8ff'); 
-    } else if (emoji.type === SentimentSatisfied) {
-      setPageBackgroundColor('#fffacd'); 
-    } else if (emoji.type === SentimentVeryDissatisfied) {
-      setPageBackgroundColor('#ffe4e1'); 
-    } else if (emoji.type === MoodBad) {
-      setPageBackgroundColor('#f08080'); 
-    }
+  const updateBackgroundColor = (color) => {
+    const navBar = document.getElementById("navBar");
+    navBar.style.backgroundColor = color;
   };
 
   return (
-    <div className="Homepage-container" style={{ backgroundColor: pageBackgroundColor }}>
+    <div className="Homepage-container">
       <h4>Your week summary </h4>
       <p>Hello, {currentUser}!</p>
       <p>How are you today?:</p>
       <div className="emojis">
-        <Mood className="emoji" onClick={() => handleEmojiSelect(Mood)} />
-        <SentimentSatisfied className="emoji" onClick={() => handleEmojiSelect(SentimentSatisfied)} />
-        <SentimentVeryDissatisfied className="emoji" onClick={() => handleEmojiSelect(SentimentVeryDissatisfied)} />
-        <MoodBad className="emoji" onClick={() => handleEmojiSelect(MoodBad)} />
+        <Mood className="emoji" onClick={() => updateBackgroundColor('#f0f8ff')} />
+        <SentimentSatisfied className="emoji" onClick={() => updateBackgroundColor('#fffacd')} />
+        <SentimentVeryDissatisfied className="emoji" onClick={() => updateBackgroundColor('#ffe4e1')} />
+        <MoodBad className="emoji" onClick={() => updateBackgroundColor('#f08080')} />
       </div>
     </div>
   );

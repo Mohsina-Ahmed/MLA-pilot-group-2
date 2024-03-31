@@ -21,7 +21,7 @@ body {
 
 .App {
   text-align: center;
-  max-width: 650px;
+  max-width: 700px;
   margin: auto;
   padding: 20px;
 }
@@ -204,4 +204,10 @@ p#other-exercise {
 .row.invisible {
   display: none;
   max-height: none;
+}
+
+.emojis {
+  margin: auto;
+  max-width: 50%;
+  text-align: center;
 }
