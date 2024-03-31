@@ -203,8 +203,8 @@ const UserProfile = ({ currentUser }) => {
 
         <Row style={{ marginBottom: '20px' }}>
         <Col>
-          <Form.Group aria-label="Your height in metres" controlId="height">
-            <Form.Label>Height (in metres)</Form.Label>
+          <Form.Group aria-label="Your height in meters" controlId="height">
+            <Form.Label>Height (in meters)</Form.Label>
             <Form.Control
               type="number" 
               name="height"
