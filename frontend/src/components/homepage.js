@@ -1,41 +1,42 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import config from "../config";
+import React, { useState } from 'react';
+import axios from 'axios';
+import { Button } from 'react-bootstrap';
+import moment from 'moment';
+import config from '../config';
+import { Mood, MoodBad, SentimentSatisfied, SentimentVeryDissatisfied } from '@mui/icons-material'; 
 
 const Homepage = ({ currentUser }) => {
-  const [data, setData] = useState([]);
+  const [selectedEmoji, setSelectedEmoji] = useState(null);
+  const [pageBackgroundColor, setPageBackgroundColor] = useState('');
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const url = `${config.apiUrl}/stats/${currentUser}`;
-        const response = await axios.get(url);
-        setData(response.data.stats);
-      } catch (error) {
-        console.error("There was an error fetching the data!", error);
-      }
-    };
+  const handleEmojiSelect = (emoji) => {
+    setSelectedEmoji(emoji);
+    updateBackgroundColor(emoji);
+  };
 
-    fetchData();
-  }, [currentUser]);
-
-  const currentUserData = data.find((item) => item.username === currentUser);
+  const updateBackgroundColor = (emoji) => {
+    if (emoji.type === Mood) {
+      setPageBackgroundColor('#f0f8ff'); 
+    } else if (emoji.type === SentimentSatisfied) {
+      setPageBackgroundColor('#fffacd'); 
+    } else if (emoji.type === SentimentVeryDissatisfied) {
+      setPageBackgroundColor('#ffe4e1'); 
+    } else if (emoji.type === MoodBad) {
+      setPageBackgroundColor('#f08080'); 
+    }
+  };
 
   return (
-    <div className="stats-container">
-      <h4>Well done, {currentUser}! This is your overall effort:</h4>
-      {currentUserData ? (
-        currentUserData.exercises.map((item, index) => (
-          <div key={index} className="exercise-data">
-            <div>
-              <strong>{item.exerciseType}</strong>
-            </div>
-            <div>Total Duration: {item.totalDuration} min</div>
-          </div>
-        ))
-      ) : (
-        <p>No data available</p>
-      )}
+    <div className="Homepage-container" style={{ backgroundColor: pageBackgroundColor }}>
+      <h4>Your week summary </h4>
+      <p>Hello, {currentUser}!</p>
+      <p>How are you today?:</p>
+      <div className="emojis">
+        <Mood className="emoji" onClick={() => handleEmojiSelect(Mood)} />
+        <SentimentSatisfied className="emoji" onClick={() => handleEmojiSelect(SentimentSatisfied)} />
+        <SentimentVeryDissatisfied className="emoji" onClick={() => handleEmojiSelect(SentimentVeryDissatisfied)} />
+        <MoodBad className="emoji" onClick={() => handleEmojiSelect(MoodBad)} />
+      </div>
     </div>
   );
 };
