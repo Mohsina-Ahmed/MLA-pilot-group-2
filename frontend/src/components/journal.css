@@ -23,6 +23,8 @@
 .two-column-layout {
     display: flex;
     flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
 }
 
 .exercise-radial-bar {
@@ -30,15 +32,6 @@
     width: 50%;
     height: 20vh;
     position: relative;
-}
-
-.centered-labels {
-    top: 50%;
-    left: 50%;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .exercise-bar-chart {
@@ -59,9 +52,15 @@ ul {
     padding-left: 0;
 }
 
+.list-container {
+    width: 50%;
+    text-align: center;
+}
+
 li {
     list-style-type: none;
     background: #e0e0e0;
+    margin-top: 5px;
     margin-bottom: 5px;
     padding: 10px;
     border-radius: 3px;

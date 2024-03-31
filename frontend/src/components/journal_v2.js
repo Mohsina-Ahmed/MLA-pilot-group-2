@@ -20,8 +20,12 @@ const zeroExerciseList = () => {
   ];
 };
 
-const weeklygoalList = () => {
-  return {week_total: 0, percentage: 0}
+const weeklygoalData = () => {
+  return {exercise: 0, percentage: 0}
+}
+
+const exerciseStats = () => {
+  return {activities: 0, duration: 0, distance: 0}
 }
 
 
@@ -29,9 +33,10 @@ const Journal = ({ currentUser }) => {
   // isoWeek = start/end of ISO week = monday - sunday
   const [startDate, setStartDate] = useState(moment().startOf('isoWeek').toDate());
   const [endDate, setEndDate] = useState(moment().endOf('isoWeek').toDate());
-  const [weeklyGoal, setWeeklyGoal] = useState(weeklygoalList());
+  const [weeklyGoal, setWeeklyGoal] = useState(weeklygoalData());
   const [weeklyGoalList, setWeeklyGoalList] = useState({value: 0});
   const [exerciseData, setExerciseData] = useState(zeroExerciseList());
+  const [exerciseSummary, setExerciseSummary] = useState(exerciseStats());
 
 
   const goalResponse = useQuery(GOAL_QUERY, {variables: {name: currentUser}})
@@ -49,13 +54,12 @@ const Journal = ({ currentUser }) => {
     if (goalResponse.data){
       const goalResult = goalResponse.data.weeklyGoal;
       // check for results in graphql response
-      if (goalResult.hasOwnProperty('results')){
-        if (goalResult.success && goalResult.results.length > 0){
-          setWeeklyGoalList(goalResponse.result);
-        }
-        else {
-          setWeeklyGoalList({value: 0})
-        }
+      if (goalResult.success && goalResult.results.length > 0){
+        const goal = goalResult.results[0]
+        setWeeklyGoalList(goal);
+      }
+      else {
+        setWeeklyGoalList({value: 0})
       }
     }
   }, [goalResponse, currentUser])
@@ -88,6 +92,8 @@ const Journal = ({ currentUser }) => {
         else {
           // no data present - reset to 0 
           setExerciseData(zeroExerciseList());
+          setWeeklyGoal(weeklygoalData());
+          setExerciseSummary(exerciseStats());
         }
       }
     }
@@ -103,16 +109,20 @@ const Journal = ({ currentUser }) => {
       // check for results in graphql response
       if (exercises.hasOwnProperty('results')){
         if (exercises.success && exercises.results.length > 0){
+            const duration = exercises.results[0].totalDuration;
+            const distance = exercises.results[0].totalDistance;
+            const activities = exercises.results[0].totalCount;
 
           if (weeklyGoalList.goal === "Duration") {
-             exerciseTotal = exercises.results[0].totalDuration;
+             exerciseTotal = duration
           }
           else if (weeklyGoalList.goal === "Distance") {
-              exerciseTotal = exercises.results[0].totalDistance;
+              exerciseTotal = distance
           }
 
           const GoalPercentage= Math.floor((exerciseTotal / weeklyGoalList.value) * 100)
-          setWeeklyGoal({ week_total: exerciseTotal , percentage: (GoalPercentage < 100) ? GoalPercentage : 100});
+          setWeeklyGoal({ exercise: exerciseTotal,  percentage: (GoalPercentage < 100) ? GoalPercentage : 100});
+          setExerciseSummary({activities: activities, duration: duration, distance: distance})
         }
       }
     }
@@ -138,6 +148,13 @@ const Journal = ({ currentUser }) => {
     setEndDate(moment(endDate).add(1, 'weeks').endOf('isoWeek').toDate());
   };
 
+  const makeStatsList = () => {
+      return Object.entries(exerciseSummary).map(([key, value], index) => (
+          <li key={index} className="exercise-summary">
+            <strong>{key}: </strong> {value}
+          </li>
+        ))
+  }
 
   return (
     <div className="journal-container">
@@ -164,7 +181,7 @@ const Journal = ({ currentUser }) => {
             {/* Title */}
             <PolarAngleAxis
               type="number"
-              domain={[0, weeklyGoal.value]}
+              domain={[0, weeklyGoalList.value]}
               angleAxisId={0}
               tick={false}
             />
@@ -173,7 +190,7 @@ const Journal = ({ currentUser }) => {
               background
               clockWise={true}
               cornerRadius={10 / 2}
-              dataKey="week_total"
+              dataKey="exercise"
             >
                 <Cell
                   key={`cell-1`}
@@ -188,11 +205,15 @@ const Journal = ({ currentUser }) => {
           </RadialBarChart>
         </ResponsiveContainer>
         </div>
+        <div className='list-container'>
+          <text style={{marginBottom: "10px"}}>Summary</text>
+          <ul> {makeStatsList()} </ul>
+        </div>
       </div>
 
       <br></br>
       <div className="exercise-bar-chart"> 
-      <h5>Daily Exercise</h5>
+      <text>Daily Exercise</text>
         <ResponsiveContainer>
           <BarChart data={exerciseData} margin={{ top: 5, right: 0, bottom: 5, left: 0 }}>
               <XAxis dataKey="day" />
