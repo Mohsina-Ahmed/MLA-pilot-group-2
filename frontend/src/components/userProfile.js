@@ -235,6 +235,7 @@ const UserProfile = ({ currentUser }) => {
               <Dropdown.Item onClick={() => setGoalData({ ...goalData, exerciseType: 'Cycling' })}>Cycling</Dropdown.Item>
               <Dropdown.Item onClick={() => setGoalData({ ...goalData, exerciseType: 'Swimming' })}>Swimming</Dropdown.Item>
               <Dropdown.Item onClick={() => setGoalData({ ...goalData, exerciseType: 'Gym' })}>Gym</Dropdown.Item>
+              <Dropdown.Item onClick={() => setGoalData({ ...goalData, exerciseType: 'Walking' })}>Walking</Dropdown.Item>
               <Dropdown.Item onClick={() => setGoalData({ ...goalData, exerciseType: 'Rowing' })}>Rowing</Dropdown.Item>
               <Dropdown.Item onClick={() => setGoalData({ ...goalData, exerciseType: 'Football' })}>Football</Dropdown.Item>
               <Dropdown.Item onClick={() => setGoalData({ ...goalData, exerciseType: 'Skiing' })}>Skiing</Dropdown.Item>

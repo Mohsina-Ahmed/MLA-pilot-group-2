@@ -34,7 +34,7 @@ const NavbarComponent = ({ onLogout }) => {
     <Navbar id="navBar" className="nav-back custom-navbar" expand="lg" activeKey=""> 
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className="mr-auto">
+        <Nav className="mr-auto" style={{ maxWidth: "700px"}}>
           <Nav.Link className={`custom-nav-link ${activeLink === 'Homepage' ? 'active' : ''}`} onClick={() => onNavigate('Homepage')}>Homepage</Nav.Link>
           <Nav.Link className={`custom-nav-link ${activeLink === 'TrackExercise' ? 'active' : ''}`} onClick={() => onNavigate('TrackExercise')}>Track New Exercise</Nav.Link>
           <Nav.Link className={`custom-nav-link ${activeLink === 'Statistics' ? 'active' : ''}`} onClick={() => onNavigate('Statistics')}>Statistics</Nav.Link>
