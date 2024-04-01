@@ -3,5 +3,11 @@
   "wrongPassword": "incorrectPassword",
   "testUsername": "testUser",
   "testSimplePassword": "testPW",
-  "testPassword": "Strong123!"
+  "testPassword": "Strong123!",
+  "FirstName": "Jane",
+  "LastName": "Smith", 
+  "email": "user@email.com",
+  "DOB": "01/02/2000",
+  "Height": 180,
+  "Weight": 60
 }
