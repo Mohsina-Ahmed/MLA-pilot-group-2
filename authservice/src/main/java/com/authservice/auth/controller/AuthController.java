@@ -1,15 +1,17 @@
 package com.authservice.auth.controller;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import com.authservice.auth.model.User;
 import com.authservice.auth.repository.UserRepository;
@@ -80,5 +82,26 @@ public class AuthController {
         } else {
             return ResponseEntity.badRequest().body("User not found.");
         }
+    }
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody User user) {
+        User existingUser = userRepository.findByUsername(user.getUsername());
+
+        if (existingUser != null) {
+            // Generate and send reset password token to the user's email
+            // You can use a service to send an email with the reset token
+            // For simplicity, let's assume we generate a token here and return it in the response
+            String resetToken = generateResetToken(existingUser);
+            return ResponseEntity.ok("Reset token generated: " + resetToken);
+        } else {
+            return ResponseEntity.badRequest().body("User not found.");
+        }
+    }
+
+    // Method to generate a reset token (dummy implementation)
+    private String generateResetToken(User user) {
+        // Generate a random token or use some hashing algorithm with user details
+        // For simplicity, let's assume we generate a random token here
+        return UUID.randomUUID().toString();
     }
 }

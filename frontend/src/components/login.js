@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Button, Form, Alert } from 'react-bootstrap';
 import axios from 'axios';
+import React, { useState } from 'react';
+import { Alert, Button, Form } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import config from '../config';
 
@@ -62,6 +62,9 @@ const Login = ({ onLogin }) => {
 
       <p className="mt-3">
     Don't have an account? <Link to="/signup">Sign up</Link>
+</p>
+      <p className="mt-3">
+         <Link to="/forgotPassword">Forgot Password?</Link>
 </p>
     </div>
   );
