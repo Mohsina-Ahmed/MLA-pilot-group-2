@@ -37,12 +37,6 @@ def create_app(config_object=Config):
     query = QueryType()
     type_defs = load_schema_from_path("schema.graphql")
 
-    @app.route('/')
-    def index():
-        exercises = db.exercises.find()
-        exercises_list = list(exercises)
-        return json_util.dumps(exercises_list)
-
     @app.route('/api/graphql', methods=['GET'])
     def graphql_playground():
         print('Received a get request')
@@ -60,6 +54,12 @@ def create_app(config_object=Config):
         )
         status_code = 200 if success else 400
         return jsonify(result), status_code
+    
+    @app.route('/')
+    def index():
+        exercises = db.exercises.find()
+        exercises_list = list(exercises)
+        return json_util.dumps(exercises_list)
     
     @app.errorhandler(Exception)
     def handle_error(e):
