@@ -159,10 +159,14 @@ def create_app(config_object=Config):
     def user_activity_stats(username, activity):
         pipeline = [
             {"$match": {"username": username, "exerciseType": activity}},
-            {"$group": {"_id": {"exercise": "$exerciseType"},
-                    "totalDistance": {"$sum": "$distance"},
-                    "totalDuration": {"$sum": "$duration"}}},
-            {"$project": {"exercise": "$_id.exercise", "totalDistance": 1, "totalDuration": 1, "_id": 0}}
+            {"$group": {"_id": {"exercise": "$exerciseType"}, 
+				"longestDistance": {"$max": "$distance"}, 
+				"longestDuration": {"$max": "$duration"}, 
+				"fastestPace": {"$min": "$pace"}, 
+				"totalDistance": {"$sum": "$distance"}, 
+				"totalDuration": {"$sum": "$duration"},
+				"totalActivities": {"$sum": 1}}},
+		    {"$project": {"_id": 0}} 
         ]
 
         return list(db.exercises.aggregate(pipeline))

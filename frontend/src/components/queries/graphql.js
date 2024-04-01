@@ -23,9 +23,12 @@ const STATS_ACTIVITY_QUERY = gql
       success
       errors
       results {
-        exercise
-        totalDistance 
-        totalDuration
+        longestDistance 
+				longestDuration
+				fastestPace 
+				totalDistance
+				totalDuration
+				totalActivities
       }
     }
   }
@@ -98,8 +101,8 @@ const EXERCISE_QUERY = gql
   `;
 
   const CALORIES_QUERY = gql
-  `query homePage ($name: String, $today_date: String){
-    homePage(name: $name, today_date: $today_date) {
+  `query dailyCalories ($name: String, $today_date: String){
+    dailyCalories(name: $name, today_date: $today_date) {
       success
       errors
       results {

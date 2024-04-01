@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
 import * as ReactDOM from 'react-dom/client';
 import axios from 'axios';
+import moment from 'moment';
 import './statistics.css';
 import { useQuery, NetworkStatus } from '@apollo/client';
 import { STATS_QUERY, STATS_ACTIVITY_QUERY } from './queries/graphql';
@@ -30,12 +31,10 @@ const Statistics = ({currentUser}) => {
 
   }, [setCurrentActivity, statsResponse, currentUser]);
 
-    // handle loading and error states
-    if (statsResponse.loading) return <p>Loading...</p>;
-    if (statsResponse.error) return <p>Error: {statsResponse.error.message}</p>;
+  // handle loading and error states
+  if (statsResponse.loading) return <p>Loading...</p>;
+  if (statsResponse.error) return <p>Error: {statsResponse.error.message}</p>;
       
-
- 
   const makeDropdownList = () => {
     return  <Dropdown>
               <DropdownButton aria-label="Your selected activity" title={`Activity: ${currentActivity.activity}`}>
@@ -57,14 +56,30 @@ const Statistics = ({currentUser}) => {
   } 
 
   const makeStatsList = () => {
-      return (Object.keys(data).length > 0) ? (          
-          <li key={0} className="exercise-data">
-            <div><strong>{data.exercise}</strong></div>
+      return (Object.keys(data).length > 0) ? (     
+          <div className="stats-list">     
+            <li key={0} className="exercise-data">
+              <div>Activities logged: {data.totalActivities}</div>
+            </li>
+            <li key={1} className="exercise-data">
+              <div><strong>{data.exercise}</strong></div>
+              <div className="two-column-layout">
+                <div>Total Duration: {data.totalDuration} min</div>
+                <div>Total Distance: {data.totalDistance} km</div>
+              </div>
+            </li>
+            <h6 style={{margin: "10px"}}>Personal Records</h6>
             <div className="two-column-layout">
-              <div>Total Duration: {data.totalDuration} min</div>
-              <div>Total Distance: {data.totalDistance} km</div>
+              <div className="stats-list-container">
+                <li key={0}>Time: {data.longestDuration} min</li>
+                <li key={1}>Distance: {data.longestDistance} km</li>
+              </div>
+              <div className="stats-list-container">
+                <li key={2}>Pace: {data.fastestPace} min/km</li> 
+                <li key={3}>Goal Streak: -</li>
+              </div>
             </div>
-          </li>
+          </div>
       ) : (
         <li>No data available - Time to get active!</li>
       );
