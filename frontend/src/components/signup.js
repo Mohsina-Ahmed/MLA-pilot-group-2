@@ -162,7 +162,7 @@ const handleSignup = async (e) => {
         </Col>
         </Row>
 
-        <Button aria-label="Signup" variant="primary" type="submit" style={{ marginTop: '20px' }}>
+        <Button aria-label="Signup" variant="primary" type="submit" data-cy="signup-button" style={{ marginTop: '20px' }}>
           Signup
         </Button>
       </Form>
