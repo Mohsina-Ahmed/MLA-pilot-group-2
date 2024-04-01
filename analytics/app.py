@@ -122,6 +122,11 @@ def create_app(config_object=Config):
         print("Resolving the home page info")
         return resolve_query(func=home_page_last_exercise, username=name)
     
+    @query.field("dailyCalories")
+    def resolve_daily_calories(*_, name=None, today_date=None):
+        print("Resolving the daily calorie info")
+        return resolve_query(func=daily_calories, username=name, today_date_str=today_date)
+        
     schema = make_executable_schema(type_defs, query)
 
     def stats():
@@ -224,6 +229,17 @@ def create_app(config_object=Config):
 			{"$sort": {"createdAt": -1}},
 			{"$limit": 1},
 			{"$project": {"_id": 0, "date": "$date", "exercise": "$exerciseType", "duration": "$duration"}}
+        ]
+
+        return list(db.exercises.aggregate(pipeline))
+    
+    def daily_calories(username,today_date_str):
+        start_date = parse_date(today_date_str)
+        end_date = parse_date(today_date_str) + timedelta(days=1)  # time range of 1 day
+        pipeline = [
+            {"$match": {"username": username, "date": {"$gte": start_date, "$lt": end_date}}},
+			{"$group": {"_id": {"username": "$username"}, "dailyCalories": {"$sum": "$calories"}}},
+			{"$project": {"_id": 0, "daily_calories": "$dailyCalories"}}
         ]
 
         return list(db.exercises.aggregate(pipeline))
