@@ -4,9 +4,13 @@ import { Button } from 'react-bootstrap';
 import moment from 'moment';
 import config from '../config';
 import { useQuery, NetworkStatus } from '@apollo/client';
+import { LAST_EXERCISE_QUERY } from './queries';
 import { Mood, MoodBad, SentimentSatisfied, SentimentVeryDissatisfied } from '@mui/icons-material'; 
 
 const Homepage = ({ currentUser }) => {
+  const { loading, error, data } = useQuery(LAST_EXERCISE_QUERY, { variables: { name: currentUser } });
+
+  const Homepage = ({ currentUser }) => {
   // const [selectedEmoji, setSelectedEmoji] = useState(null);
   // const [pageBackgroundColor, setPageBackgroundColor] = useState('');
 
@@ -14,8 +18,6 @@ const Homepage = ({ currentUser }) => {
   //   setSelectedEmoji(emoji);
   //   updateBackgroundColor(emoji);
   // };
-const response = useQuery(LAST_EXERCISE_QUERY, {variables: {name: currentUser}})
-  response.data.homePage.results[0]
   
   const updateBackgroundColor = (color) => {
     const navBar = document.getElementById("navBar");
