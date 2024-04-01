@@ -98,7 +98,7 @@ const EXERCISE_QUERY = gql
   `;
 
   const CALORIES_QUERY = gql
-  `query homePage ($name: String: $today_date: String){
+  `query homePage ($name: String, $today_date: String){
     homePage(name: $name, today_date: $today_date) {
       success
       errors
