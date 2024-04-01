@@ -8,7 +8,7 @@ import { Mood, MoodBad, SentimentSatisfied, SentimentVeryDissatisfied } from '@m
 
 const Homepage = ({ currentUser }) => {
 
-  const lastExerciseResponse = useQuery(LAST_EXERCISE_QUERY, { variables: { name: currentUser } });
+  const lastExerciseResponse = useQuery(LAST_EXERCISE_QUERY, { variables: { name: currentUser }, fetchPolicy: 'cache-and-network' });
   const [lastExercise, setLastExercise] = useState({
     exercise: '',
     duration: 0,
