@@ -9,7 +9,7 @@
 
 .exercise-data {
     margin-bottom: 10px;
-    padding-top: 20px;
+    padding-top: 10px;
 }
 
 .two-column-layout {
@@ -17,6 +17,10 @@
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
+}
+
+.stats-list-container {
+    width: 49%;
 }
 
 .stats-content {

@@ -26,9 +26,12 @@ type StatsFilteredResult{
 }
 
 type ExerciseFiltered{
-    exercise: String
-    totalDistance: Int
-    totalDuration: Int
+    longestDistance: Float
+    longestDuration: Float
+    fastestPace: Float
+    totalDistance: Float
+    totalDuration: Float
+    totalActivities: Int
 }
 
 type Stats{
@@ -38,7 +41,7 @@ type Stats{
 
 type Exercise{
     exerciseType: String
-    exerciseDuration: Int
+    exerciseDuration: Float
 }
 
 type ExerciseResult{
@@ -49,8 +52,8 @@ type ExerciseResult{
 
 type ExerciseCount{
     username: String
-    totalDuration: Int
-    totalDistance: Int
+    totalDuration: Float
+    totalDistance: Float
     totalCount: Int
     exerciseCount: [DailyCount]
 }
@@ -58,8 +61,8 @@ type ExerciseCount{
 type DailyCount{
     date: String
     count: Int
-    dailyDuration: Int
-    dailyDistance: Int
+    dailyDuration: Float
+    dailyDistance: Float
 }
 
 type GoalResult{
@@ -83,7 +86,7 @@ type HomePageResults{
 
 type LastExercise{
   exercise: String
-  duration: Int
+  duration: Float
   date: String
 }
 
@@ -94,5 +97,5 @@ type CaloriesResult{
 }
 
 type Calories{
-  daily_calories: Int
+  daily_calories: Float
 }
