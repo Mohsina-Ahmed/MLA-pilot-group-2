@@ -43,6 +43,7 @@ const Statistics = ({currentUser}) => {
                 <Dropdown.Item onClick={() => setCurrentActivity({ activity: 'Cycling' })}>Cycling</Dropdown.Item>
                 <Dropdown.Item onClick={() => setCurrentActivity({ activity: 'Swimming' })}>Swimming</Dropdown.Item>
                 <Dropdown.Item onClick={() => setCurrentActivity({ activity: 'Gym' })}>Gym</Dropdown.Item>
+                <Dropdown.Item onClick={() => setCurrentActivity({ activity: 'Walking' })}>Walking</Dropdown.Item>
                 <Dropdown.Item onClick={() => setCurrentActivity({ activity: 'Rowing' })}>Rowing</Dropdown.Item>
                 <Dropdown.Item onClick={() => setCurrentActivity({ activity: 'Football' })}>Football</Dropdown.Item>
                 <Dropdown.Item onClick={() => setCurrentActivity({ activity: 'Skiing' })}>Skiing</Dropdown.Item>

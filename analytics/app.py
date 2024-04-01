@@ -228,7 +228,7 @@ def create_app(config_object=Config):
             {"$match": {"username": username}},
 			{"$sort": {"createdAt": -1}},
 			{"$limit": 1},
-			{"$project": {"_id": 0, "date": "$date", "exercise": "$exerciseType", "duration": "$duration"}}
+			{"$project": {"_id": 0, "date": {"$dateToString": {"date": "$date", "format": "%d-%m-%Y"}}, "exercise": "$exerciseType", "duration": "$duration"}}
         ]
 
         return list(db.exercises.aggregate(pipeline))
