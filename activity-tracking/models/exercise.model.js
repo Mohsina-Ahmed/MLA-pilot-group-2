@@ -9,8 +9,7 @@ const exerciseSchema = new Schema(
     username: { type: String, required: true },
     exerciseType: {
       type: String,
-      required: true,
-      enum: ['Running', 'Cycling', 'Swimming', 'Gym', 'Rowing', 'Football', 'Skiing', 'Horse Riding', 'Surfing', 'Golf', 'Climbing','Other']
+      required: true
     },
     description: { type: String, required: false },
     duration: { 
@@ -51,6 +50,16 @@ const exerciseSchema = new Schema(
       type: Date, 
       required: true,
       max: [maxDate, 'Cannot track exercises in the future.'] 
+    },
+    intensity: {
+      type: Number,
+      required: false,
+      min: [1, 'Intensity should be positive.']
+    },
+    calories: {
+      type: Number,
+      required: false,
+      min: [0, 'Calories should be positive.']
     },
     mood: {
       type: String,

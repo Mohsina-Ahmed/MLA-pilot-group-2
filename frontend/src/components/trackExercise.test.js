@@ -18,6 +18,7 @@ import TrackExercise from './trackExercise';
 import { expect } from '@jest/globals';
 
 describe('TrackExercise Component', () => {
+
   test('renders the component', () => {
     const { container } = render(<TrackExercise currentUser="testUser" />);
     expect(container).toBeInTheDocument();
@@ -59,4 +60,11 @@ describe('TrackExercise Component', () => {
     expect(paceInput.value).toBe('5.63');
   });
 
+  test('calories calculates correctly', () => {
+    const { getByTestId } = render(<TrackExercise currentUser="testUser" />);
+    fireEvent.input(getByTestId('duration').querySelector('input'), { target: { value: '60' } });
+    fireEvent.input(getByTestId('intensity').querySelector('input'), { target: { value: '5' } });
+    const caloriesInput = getByTestId('calories').querySelector('input');
+    expect(caloriesInput.value).toBe(((( 7 * 75 * 3.5 ) / 200 ) * 60).toFixed(0));
+  });
 });

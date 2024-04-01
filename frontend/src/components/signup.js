@@ -45,12 +45,13 @@ const handleSignup = async (e) => {
 
   return (
     <div>
-      {error && <Alert variant="danger">{error}</Alert>}
+      <h3>Signup</h3>
+      {error && <Alert variant="danger" style={{ padding: "5px" }}>{error}</Alert>}
 
       <Form onSubmit={handleSignup} >
         <Row style={{ marginBottom: '20px' }}>
         <Col>
-        <Form.Group controlId="username">
+        <Form.Group aria-label="Username" controlId="username">
           <Form.Label>Username</Form.Label>
           <Form.Control
             type="text"
@@ -63,7 +64,7 @@ const handleSignup = async (e) => {
         </Form.Group>
         </Col>
         <Col>
-        <Form.Group controlId="password">
+        <Form.Group aria-label="Password" controlId="password">
           <Form.Label>Password</Form.Label>
           <Form.Control
             type="password"
@@ -78,7 +79,7 @@ const handleSignup = async (e) => {
         </Row>
         <Row style={{ marginBottom: '20px' }}>
         <Col>
-        <Form.Group controlId="name">
+        <Form.Group aria-label="Your first name" controlId="name">
           <Form.Label>First Name</Form.Label>
           <Form.Control
             type="text"
@@ -91,7 +92,7 @@ const handleSignup = async (e) => {
         </Form.Group>
         </Col>
         <Col>
-        <Form.Group controlId="surname">
+        <Form.Group aria-label="Your surname" controlId="surname">
           <Form.Label>Surname</Form.Label>
           <Form.Control
             type="text"
@@ -106,7 +107,7 @@ const handleSignup = async (e) => {
         </Row>
         <Row style={{ marginBottom: '20px' }} >
         <Col style={{ maxWidth: '75%' }} >
-        <Form.Group controlId="email">
+        <Form.Group aria-label="Your email address" controlId="email">
           <Form.Label>Email</Form.Label>
           <Form.Control
             type="text"
@@ -119,7 +120,7 @@ const handleSignup = async (e) => {
         </Form.Group>
         </Col>
         <Col style={{ maxWidth: '25%' }} >
-        <Form.Group controlId="dob">
+        <Form.Group aria-label="Your date of birth" controlId="dob">
           <Form.Label>Date of birth</Form.Label>
           <Form.Control
             type="text"
@@ -134,8 +135,8 @@ const handleSignup = async (e) => {
         </Row>
         <Row style={{ marginBottom: '20px' }}>     
         <Col>
-        <Form.Group controlId="height">
-          <Form.Label>Height ( in meters)</Form.Label>
+        <Form.Group aria-label="Your height in meters" controlId="height">
+          <Form.Label>Height (in meters)</Form.Label>
           <Form.Control
             type="number"
             placeholder="Enter current height"
@@ -147,7 +148,7 @@ const handleSignup = async (e) => {
         </Form.Group>
         </Col>
         <Col>
-        <Form.Group controlId="weight">
+        <Form.Group aria-label="Your weight in kilograms" controlId="weight">
           <Form.Label>Weight (in kilograms)</Form.Label>
           <Form.Control
             type="number"
@@ -161,12 +162,12 @@ const handleSignup = async (e) => {
         </Col>
         </Row>
 
-        <Button variant="primary" type="submit" style={{ marginTop: '20px' }}>
+        <Button aria-label="Signup" variant="primary" type="submit" style={{ marginTop: '20px' }}>
           Signup
         </Button>
       </Form>
       <p className="mt-3">
-    Already have an account? <Link to="/login">Login</Link>
+    Already have an account? <Link aria-label="Go to login" to="/login">Login</Link>
 </p>
     </div>
   );

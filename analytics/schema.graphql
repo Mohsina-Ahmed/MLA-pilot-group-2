@@ -2,14 +2,13 @@ schema {
     query: Query
 }
 
-type Stats{
-    username: String!
-    exercises: [Exercise]
-}
-
-type Exercise{
-    exerciseType: String
-    totalDuration: Int
+type Query{
+    stats: StatsResult
+    weeklyGoal(name: String): GoalResult
+    homePage(name: String): HomePageResults
+    filteredStats(name: String): StatsResult
+    weeklyStats(name: String, start_date: String, end_date: String): StatsResult
+    exerciseStats(name: String, start_date: String, end_date: String): ExerciseResult
 }
 
 type StatsResult{
@@ -18,8 +17,58 @@ type StatsResult{
     results: [Stats]
 }
 
-type Query{
-    stats: StatsResult
-    filteredStats(name: String): StatsResult
-    weeklyStats(name: String, start_date: String, end_date: String): StatsResult
+type Stats{
+    username: String!
+    exercises: [Exercise]
+}
+
+type Exercise{
+    exerciseType: String
+    exerciseDuration: Int
+}
+
+type ExerciseResult{
+    success: Boolean!
+    errors: [String]
+    results: [ExerciseCount]
+}
+
+type ExerciseCount{
+    username: String
+    totalDuration: Int
+    totalDistance: Int
+    totalCount: Int
+    exerciseCount: [DailyCount]
+}
+
+type DailyCount{
+    date: String
+    count: Int
+    dailyDuration: Int
+    dailyDistance: Int
+}
+
+type GoalResult{
+    success: Boolean!
+    errors: [String]
+    results: [ExerciseGoal]
+}
+
+type ExerciseGoal{
+  exercise: String
+  goal: String
+  unit: String
+  value: Int
+}
+
+type HomePageResults{
+    success: Boolean!
+    errors: [String]
+    results: [LastExercise]
+}
+
+type LastExercise{
+  exercise: String
+  duration: Int
+  date: String
 }

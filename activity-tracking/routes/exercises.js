@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 router.post('/add', async (req, res) => {
   console.log(req.body)
   try {
-    const { username, exerciseType, description, duration, distance, speed, pace, sets, reps, date, mood } = req.body;
+    const { username, exerciseType, description, duration, distance, speed, pace, sets, reps, date, intensity, calories, mood } = req.body;
 
     const newExercise = new Exercise({
       username,
@@ -30,7 +30,9 @@ router.post('/add', async (req, res) => {
       sets: Number(sets),
       reps: Number(reps),
       date: Date.parse(date),
-      mood,
+      intensity: Number(intensity), // Perceived effort of activity - used for calorie calculation, as MET (metabolic exertion of task).
+      calories: Number(calories),
+      mood
     });
 
     await newExercise.save();
@@ -71,7 +73,7 @@ router.delete('/:id', async (req, res) => {
 // PUT: Update an exercise by ID
 router.put('/update/:id', async (req, res) => {
     try {
-      const { username, description, duration, distance, speed, pace, sets, reps, date, mood } = req.body;
+      const { username, description, duration, distance, speed, pace, sets, reps, date, intensity, calories, mood } = req.body;
   
       if (!username || !description || !duration || !date || !mood) {
         res.status(400).json({ error: 'All fields are required' });
@@ -94,6 +96,8 @@ router.put('/update/:id', async (req, res) => {
       exercise.sets = Number(sets);
       exercise.reps = Number(reps);
       exercise.date = new Date(date);
+      exercise.intensity = Number(intensity);
+      exercise.calories = Number(calories);
       exercise.mood = mood;
   
       await exercise.save();

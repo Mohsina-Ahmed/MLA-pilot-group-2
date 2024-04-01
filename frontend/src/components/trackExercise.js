@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Form, Col, Row, Dropdown, DropdownButton } from 'react-bootstrap';
 import { trackExercise } from '../config';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -8,7 +8,8 @@ import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike';
 import PoolIcon from '@mui/icons-material/Pool';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
-import OtherIcon from '@mui/icons-material/HelpOutline';
+import DirectionsWalkOutlinedIcon from '@mui/icons-material/DirectionsWalkOutlined';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import HappyIcon from '@mui/icons-material/SentimentVerySatisfied';
 import PainfulIcon from "@mui/icons-material/MoodBad";
 import UnhappyIcon from "@mui/icons-material/SentimentVeryDissatisfied";
@@ -16,6 +17,8 @@ import NeutralIcon from "@mui/icons-material/SentimentSatisfied";
 import TiredIcon from "@mui/icons-material/BatteryAlert";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import config from '../config';
+import axios from 'axios';
 
 
 const TrackExercise = ({ currentUser }) => {
@@ -25,31 +28,97 @@ const TrackExercise = ({ currentUser }) => {
     duration: 0,
     distance: 0,
     speed: 0,
+    pace: 0,
     sets: 0,
     reps: 0,
     date: new Date(),
-    mood: '',
+    intensity: 3, // Set default MET as 3 which is relative to walking.
+    calories: 0,
+    mood: ''
   });
-  const [message, setMessage] = useState(''); 
+
+  const [message, setMessage] = useState('');
+
+  // States used to track type of exercise being recorded, if other or custom selected by user. Update with one var.
+  const [exerciseName, setExerciseName] = useState("normal");
+
+  // Variable to store weight logged by user in profile. If empty, assumed average weight of 75kg for calories calculation.
+  const [userWeight, setUserWeight] = useState(75);
+
+  // Fetching weight data from user profile stored in authentication service.
+  const fetchUserWeight = async () => {
+    try {
+      const response = await axios.get(`${config.apiUrl}/auth/profile/${currentUser}`);
+
+      if (response.status === 200) {
+        const userData = response.data;
+        if (parseInt(userData.weight) > 0) {
+          setUserWeight(parseInt(userData.weight));
+        } else {
+          console.log("User has not set a weight, average of 75kg applied.")
+          setUserWeight(75); // Set an average weight value for calorie calculation.
+        };
+        
+      } else {
+        console.log('Failed to fetch user data.');
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
+  useEffect(() => {
+    console.log(`Fetching user data for ${currentUser}...`);
+    fetchUserWeight();
+  }, [currentUser]);
 
   const calculateSpeed = () => {
     if (state.distance > 0) {
       state.speed = (state.distance / (state.duration / 60)).toFixed(2);
-      return state.speed;
     } else {
       state.speed = 0;
-      return state.speed;
     };
-  };
+    return state.speed;
+    };
 
   const calculatePace = () => {
     if (state.distance > 0) {
       state.pace = (state.duration / state.distance).toFixed(2);
-      return state.pace;
     } else {
       state.pace = 0;
-      return state.pace;
     };
+    return state.pace;
+    };
+
+  const calculateCalories = () => {
+    if (state.duration > 0) {
+      const MET = parseInt(state.intensity) + 2;
+      state.calories = ((( MET * userWeight * 3.5 ) / 200 ) * state.duration).toFixed(0); // Calorie calculation using METs - source: https://www.calories.info/calories-burned-calculator#:~:text=For%20a%20visual%20of%20the,the%20number%20of%20calories%20burned.
+    } else {
+      state.calories = 0;
+    };
+    return state.calories;
+  };
+
+  const updateExercise = (exercise, type) => {
+    if (type === "other") {
+      setState({ ...state, exerciseType: exercise });
+      setExerciseName(type);
+    } else if (type === "custom") {
+      setState({ ...state, exerciseType: exercise });
+      setExerciseName(type);
+    } else {
+      setState({ ...state, exerciseType: exercise });
+      setExerciseName("normal");
+    }
+  };
+
+  const toTitleCase = (str) => {
+    str = str.toLowerCase().split(' ');
+    for (var i = 0; i < str.length; i++) {
+      str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1); 
+    }
+    return str.join(' ');
   };
 
   const onSubmit = async (e) => {
@@ -69,7 +138,7 @@ const TrackExercise = ({ currentUser }) => {
       return;
     } else if (state.mood === '') {
       setMessage("Don't forget to log how the activity felt!");
-    };
+    } else if (userWeight );
 
     const dataToSubmit = {
       username: currentUser,
@@ -86,9 +155,12 @@ const TrackExercise = ({ currentUser }) => {
         duration: 0,
         distance: 0,
         speed: 0,
+        pace: 0,
         sets: 0,
         reps: 0,
         date: new Date(),
+        intensity: 3,
+        calories: 0,
         mood: '',
       });
 
@@ -106,54 +178,67 @@ const TrackExercise = ({ currentUser }) => {
         <Row>
         <div style={{ marginBottom: '20px' }}>
           <Tooltip title="Running">
-          <IconButton data-testid="Run Icon" color={state.exerciseType === 'Running' ? "primary" : "default"} onClick={() => setState({ ...state, exerciseType: 'Running' })}>
+          <IconButton aria-label="Running" data-testid="Run Icon" color={state.exerciseType === 'Running' ? "primary" : "default"} onClick={() => updateExercise("Running", "none")}>
             <DirectionsRunIcon fontSize="large" />
           </IconButton>
           </Tooltip>
           <Tooltip title="Cycling">
-          <IconButton color={state.exerciseType === 'Cycling' ? "primary" : "default"} onClick={() => setState({ ...state, exerciseType: 'Cycling' })}>
+          <IconButton aria-label="Cycling" color={state.exerciseType === 'Cycling' ? "primary" : "default"} onClick={() => updateExercise("Cycling", "none")}>
             <DirectionsBikeIcon fontSize="large" />
           </IconButton>
           </Tooltip>
           <Tooltip title="Swimming">
-          <IconButton color={state.exerciseType === 'Swimming' ? "primary" : "default"} onClick={() => setState({ ...state, exerciseType: 'Swimming' })}>
+          <IconButton aria-label="Swimming" color={state.exerciseType === 'Swimming' ? "primary" : "default"} onClick={() => updateExercise("Swimming", "none")}>
             <PoolIcon fontSize="large" />
           </IconButton>
           </Tooltip>
           <Tooltip title="Workout">
-          <IconButton data-testid="Gym Icon" color={state.exerciseType === 'Gym' ? "primary" : "default"} onClick={() => setState({ ...state, exerciseType: 'Gym' })}>
+          <IconButton aria-label="Gym workout" data-testid="Gym Icon" color={state.exerciseType === 'Gym' ? "primary" : "default"} onClick={() => updateExercise("Gym", "none")}>
             <FitnessCenterIcon fontSize="large" />
           </IconButton>
           </Tooltip>
+          <Tooltip title="Walking">
+          <IconButton aria-label="Walking" color={state.exerciseType === 'Walking' ? "primary" : "default"} onClick={() => updateExercise("Walking", "none")}>
+            <DirectionsWalkOutlinedIcon fontSize="large" />
+          </IconButton>
+          </Tooltip>
           <Tooltip title="Other Activity">
-          <IconButton color={state.exerciseType === 'Other' ? "primary" : "default"} onClick={() => setState({ ...state, exerciseType: 'Other' })}>
-            <OtherIcon fontSize="large" /> 
+          <IconButton aria-label="Other activities" color={exerciseName === "other" || exerciseName === "custom"  ? "primary" : "default"} onClick={() => updateExercise("Other", "other")}>
+            <AddCircleOutlineIcon fontSize="large" /> 
           </IconButton>  
           </Tooltip>
         </div>
         </Row>
-        <Row>
-        <div id="div-other" className={state.exerciseType === 'Other' ? "div-other" : "invisible"}>            
-          <Dropdown style={{ marginBottom: '40px' }}>
-            <DropdownButton title="Which activity would you like to track?">
-              <Dropdown.Item onClick={() => setState({ ...state, exerciseType: 'Rowing' })}>Rowing &#128675;</Dropdown.Item>
-              <Dropdown.Item onClick={() => setState({ ...state, exerciseType: 'Football' })}>Football &#9917;</Dropdown.Item>
-              <Dropdown.Item onClick={() => setState({ ...state, exerciseType: 'Skiing' })}>Skiing &#9975;</Dropdown.Item>
-              <Dropdown.Item onClick={() => setState({ ...state, exerciseType: 'Golf' })}>Golf &#9971;</Dropdown.Item>
-              <Dropdown.Item onClick={() => setState({ ...state, exerciseType: 'Horse Riding' })}>Horse Riding &#127943;</Dropdown.Item>
-              <Dropdown.Item onClick={() => setState({ ...state, exerciseType: 'Climbing' })}>Climbing &#129495;</Dropdown.Item>
-              <Dropdown.Item onClick={() => setState({ ...state, exerciseType: 'Surfing' })}>Surfing &#127940;</Dropdown.Item>
+        <Row style={{ marginBottom: '20px' }}>
+        <div id="div-other" className={exerciseName === "other" ? "div-other" : "invisible"}>            
+          <Dropdown>
+            <DropdownButton title={state.exerciseType === "Other" ? "Which activity would you like to track?" : state.exerciseType}>
+              <Dropdown.Item aria-label="Rowing" onClick={() => updateExercise("Rowing", "other")}>Rowing &#128675;</Dropdown.Item>
+              <Dropdown.Item aria-label="Football" onClick={() => updateExercise("Football", "other")}>Football &#9917;</Dropdown.Item>
+              <Dropdown.Item aria-label="Skiing" onClick={() => updateExercise("Skiing", "other")}>Skiing &#9975;</Dropdown.Item>
+              <Dropdown.Item aria-label="Golf" onClick={() => updateExercise("Golf", "other")}>Golf &#9971;</Dropdown.Item>
+              <Dropdown.Item aria-label="Horse Riding" onClick={() => updateExercise("Horse Riding", "other")}>Horse Riding &#127943;</Dropdown.Item>
+              <Dropdown.Item aria-label="Climbing" onClick={() => updateExercise("Climbing", "other")}>Climbing &#129495;</Dropdown.Item>
+              <Dropdown.Item aria-label="Surfing" onClick={() => updateExercise("Surfing", "other")}>Surfing &#127940;</Dropdown.Item>
+              <Dropdown.Item aria-label="Add custom activity" onClick={() => updateExercise("", "custom")}>Custom Activity &#x2795;</Dropdown.Item>
             </DropdownButton>
           </Dropdown>
         </div>
+        <Form.Group aria-label="Enter custom activity" id="custom" className={exerciseName === "custom" ? "default" : "invisible"}>
+        <Form.Label>Enter the activity you want to track:</Form.Label>
+          <Form.Control
+            placeholder="e.g. Wheelchair Basketball"
+            as="textarea"
+            fontSize="large"
+            rows={1}
+            required 
+            value={state.exerciseType} 
+            onChange={(e) => updateExercise(toTitleCase(e.target.value),"custom")}
+          />
+        </Form.Group>
         </Row>
         <Row>
-        <div id="other-label" className={state.exerciseType === 'Rowing' || state.exerciseType === 'Football' || state.exerciseType === 'Skiing' || state.exerciseType === 'Golf' || state.exerciseType === 'Horse Riding' || state.exerciseType === 'Climbing' || state.exerciseType === 'Surfing'? "other-label" : "invisible"}>
-          <p id="other-exercise">Activity: {state.exerciseType}</p>
-        </div>
-        </Row>
-        <Row>
-          <Form.Group controlId="description" data-testid="title" style={{ marginBottom: '40px' }}>
+          <Form.Group aria-label="Activity title" controlId="description" data-testid="title" style={{ marginBottom: '40px' }}>
           <Form.Label>Title your activity:</Form.Label>
           <Form.Control
             placeholder={state.exerciseType} 
@@ -167,7 +252,7 @@ const TrackExercise = ({ currentUser }) => {
           </Form.Group>
         </Row>
         <Row>
-          <Form.Group controlId="formDate" className="form-margin">
+          <Form.Group aria-label="Activity date" controlId="formDate" className="form-margin">
           <Form.Label>Date:</Form.Label>
           <DatePicker 
             selected={state.date}
@@ -178,7 +263,7 @@ const TrackExercise = ({ currentUser }) => {
         </Row>
         <Row>
           <Col>
-          <Form.Group controlId="duration" data-testid="duration" style={{ marginBottom: '40px' }}>
+          <Form.Group aria-label="Duration in minutes" controlId="duration" data-testid="duration" style={{ marginBottom: '40px' }}>
             <Form.Label>Duration (in minutes):</Form.Label>
             <Form.Control 
               type="number" 
@@ -189,7 +274,7 @@ const TrackExercise = ({ currentUser }) => {
           </Form.Group>
           </Col>
           <Col className={state.exerciseType === 'Gym' ? "invisible" : "col"}>
-          <Form.Group controlId="distance" data-testid="distance" className={state.exerciseType === 'Gym' ? "invisible" : "col"} style={{ marginBottom: '40px' }}>
+          <Form.Group aria-label="Distance in kilometres" controlId="distance" data-testid="distance" className={state.exerciseType === 'Gym' ? "invisible" : "col"} style={{ marginBottom: '40px' }}>
             <Form.Label>Distance (in kilometers):</Form.Label>
             <Form.Control 
               type="number"
@@ -202,32 +287,30 @@ const TrackExercise = ({ currentUser }) => {
         <Row className={state.exerciseType === 'Gym' ? "invisible" : "row"}>
           <Col>
           <Tooltip title="Auto-calculated.">
-          <Form.Group controlId="speed" data-testid="speed" className={state.exerciseType === 'Gym' ? "invisible" : "row"} style={{ marginBottom: '40px' }}>
+          <Form.Group aria-label="Calculated speed" controlId="speed" data-testid="speed" className={state.exerciseType === 'Gym' ? "invisible" : "row"} style={{ marginBottom: '40px' }}>
             <Form.Label>Speed (km/hr):</Form.Label>
             <Form.Control 
               type="number"
               value={calculateSpeed()} 
-              onChange={(e) => setState({ ...state, speed: e.target.value })}
             />
           </Form.Group>
           </Tooltip>
           </Col>
           <Col>
           <Tooltip title="Auto-calculated.">
-          <Form.Group controlId="pace" data-testid="pace" className={state.exerciseType === 'Gym' ? "invisible" : "row"} style={{ marginBottom: '40px' }}>
+          <Form.Group aria-label="Calculated pace" controlId="pace" data-testid="pace" className={state.exerciseType === 'Gym' ? "invisible" : "row"} style={{ marginBottom: '40px' }}>
             <Form.Label>Pace (min/km):</Form.Label>
             <Form.Control 
               type="number"
               value={calculatePace()} 
-              onChange={(e) => setState({ ...state, pace: e.target.value })}
             />
           </Form.Group>
           </Tooltip>
           </Col>
         </Row>
-        <Row className={state.exerciseType === 'Gym' ? "row" : "invisible"}>
+        <Row className={state.exerciseType === 'Gym' || exerciseName === "custom" ? "row" : "invisible"}>
           <Col>
-          <Form.Group controlId="sets" data-testid="sets" className={state.exerciseType === 'Gym' ? "row" : "invisible"} style={{ marginBottom: '40px' }}>
+          <Form.Group aria-label="Number of sets" controlId="sets" data-testid="sets" className={state.exerciseType === 'Gym' || exerciseName === "custom" ? "row" : "invisible"} style={{ marginBottom: '40px' }}>
             <Form.Label>Number of Sets:</Form.Label>
             <Form.Control 
               type="number"
@@ -237,7 +320,7 @@ const TrackExercise = ({ currentUser }) => {
           </Form.Group>
           </Col>
           <Col>
-          <Form.Group controlId="reps" data-testid="reps" className={state.exerciseType === 'Gym' ? "row" : "invisible"} style={{ marginBottom: '40px' }}>
+          <Form.Group aria-label="Number of reps" controlId="reps" data-testid="reps" className={state.exerciseType === 'Gym' || exerciseName === "custom" ? "row" : "invisible"} style={{ marginBottom: '40px' }}>
             <Form.Label>Number of Reps per set:</Form.Label>
             <Form.Control 
               type="number"
@@ -247,37 +330,66 @@ const TrackExercise = ({ currentUser }) => {
           </Form.Group>
           </Col>
         </Row>
+        <Row style={{ marginBottom: '20px' }}>
+        <Col style={{ maxWidth: '65%' }}>
+        <Tooltip title="How exerting was this exercise? &#10; 0️⃣ = Normal breathing, no effort, e.g. a stroll. &#10; 🔟 = Maximum effort, heavy breathing - e.g. sprinting.">
+        <Form.Group aria-label="Exercise intensity" controlId="intensity" data-testid="intensity">
+          <Form.Label>
+          Exercise Intensity:
+          </Form.Label>
+          <Form.Range
+            min={0}
+            max={10}
+            value={state.intensity}
+            onChange={(e) => setState({ ...state, intensity: e.target.value })}
+          />
+          <p>{state.intensity}</p>
+        </Form.Group>
+        </Tooltip>
+        </Col>
+        <Col style={{ maxWidth: '35%' }}>
+        <Tooltip title="This calculation uses your weight, make sure this is up to date. This is done on the User Profile page!">
+          <Form.Group aria-label="Calculated calories burned" controlId="calories" data-testid="calories">
+            <Form.Label>Calories 🔥:</Form.Label>
+            <Form.Control 
+              type="number"
+              value={calculateCalories()} 
+            />
+          </Form.Group>
+        </Tooltip>
+        </Col>
+        </Row>
         <Row>
-          <div style={{ marginBottom: '40px' }}>
-            <p fontSize="medium" style={{ marginBottom: '10px' }}>How did it feel?</p>
-            <Tooltip title="That felt good / easy - yay!">
-              <IconButton data-testid="Happy" color={state.mood === 'Happy' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Happy' })}>
+          <div style={{ marginBottom: '20px' }}>
+            <p aria-label="How the activity felt" fontSize="medium" style={{ marginBottom: '10px' }}>How did it feel?</p>
+            <Tooltip title="That felt good / easy - yay 😃">
+              <IconButton aria-label="Great" data-testid="Happy" color={state.mood === 'Happy' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Happy' })}>
                 <HappyIcon fontSize="large" />
               </IconButton>
             </Tooltip>
-            <Tooltip title="That felt OK - could have been better!">
-              <IconButton color={state.mood === 'Neutral' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Neutral' })}>
+            <Tooltip title="That felt OK - could have been better 🙂">
+              <IconButton aria-label="OK" color={state.mood === 'Neutral' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Neutral' })}>
                 <NeutralIcon fontSize="large" />
               </IconButton>
             </Tooltip>
-            <Tooltip title="That was difficult - glad it's over!">
-              <IconButton color={state.mood === 'Difficult' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Difficult' })}>
+            <Tooltip title="That was difficult - glad it's over 🥵">
+              <IconButton aria-label="Difficult" color={state.mood === 'Difficult' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Difficult' })}>
                 <UnhappyIcon fontSize="large" />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Ouch - that was painful.">
-              <IconButton color={state.mood === 'Painful' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Painful' })}>
+            <Tooltip title="Ouch - that was painful 😓">
+              <IconButton aria-label="Painful" color={state.mood === 'Painful' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Painful' })}>
                 <PainfulIcon fontSize="large" />
               </IconButton>
             </Tooltip>
-            <Tooltip title="That was tiring - no energy.">
-              <IconButton color={state.mood === 'Tiring' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Tiring' })}>
+            <Tooltip title="That was tiring - no energy 😴">
+              <IconButton aria-label="Tiring" color={state.mood === 'Tiring' ? "primary" : "default"} onClick={() => setState({ ...state, mood: 'Tiring' })}>
                 <TiredIcon fontSize="large" />
               </IconButton>
             </Tooltip>
           </div>
         </Row>
-        <Button variant="success" type="submit">
+        <Button aria-label="Save activity" variant="success" type="submit">
           Save activity
         </Button>
       </Form>

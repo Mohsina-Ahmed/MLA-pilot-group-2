@@ -31,7 +31,7 @@ const NavbarComponent = ({ onLogout }) => {
   };
 
   return (
-    <Navbar className="nav-back custom-navbar" expand="lg" activeKey=""> 
+    <Navbar id="navBar" className="nav-back custom-navbar" expand="lg" activeKey=""> 
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">

@@ -143,11 +143,11 @@ const UserProfile = ({ currentUser }) => {
         
       <Form onSubmit={onSubmit} style={{ maxWidth: '400px', margin: 'auto' }}>
         
-        <h3>{userData.firstName}'s Profile</h3>
+        <h3 aria-label="Your user profile">{userData.firstName}'s Profile</h3>
 
         <Row style={{ marginBottom: '20px' }}>
         <Col>
-          <Form.Group controlId="firstName" >
+          <Form.Group aria-label="Your first name" controlId="firstName" >
             <Form.Label>First Name</Form.Label>
             <Form.Control
               type="text"
@@ -160,7 +160,7 @@ const UserProfile = ({ currentUser }) => {
         </Col>
 
         <Col>
-          <Form.Group controlId="surname">
+          <Form.Group aria-label="Your surname" controlId="surname">
             <Form.Label>Surname</Form.Label>
             <Form.Control
               type="text"
@@ -175,7 +175,7 @@ const UserProfile = ({ currentUser }) => {
 
         <Row style={{ marginBottom: '20px' }}>
         <Col style={{ maxWidth: '70%' }} >
-          <Form.Group controlId="email">
+          <Form.Group aria-label="Your email address" controlId="email">
             <Form.Label>Email Address</Form.Label>
             <Form.Control
               type="text"
@@ -188,7 +188,7 @@ const UserProfile = ({ currentUser }) => {
         </Col>
 
         <Col style={{ maxWidth: '30%' }} >
-          <Form.Group controlId="dob">
+          <Form.Group aria-label="Your date of birth" controlId="dob">
             <Form.Label>Date of birth</Form.Label>
             <Form.Control
               type="text" // To be formatted as a date if there is time!!
@@ -203,8 +203,8 @@ const UserProfile = ({ currentUser }) => {
 
         <Row style={{ marginBottom: '20px' }}>
         <Col>
-          <Form.Group controlId="height">
-            <Form.Label>Height</Form.Label>
+          <Form.Group aria-label="Your height in meters" controlId="height">
+            <Form.Label>Height (in meters)</Form.Label>
             <Form.Control
               type="number" 
               name="height"
@@ -215,8 +215,8 @@ const UserProfile = ({ currentUser }) => {
           </Form.Group>
         </Col>
         <Col>
-          <Form.Group controlId="weight">
-            <Form.Label>Weight</Form.Label>
+          <Form.Group aria-label="Your weight in kilograms" controlId="weight">
+            <Form.Label>Weight (in kilograms)</Form.Label>
             <Form.Control
               type="number" 
               name="weight"
@@ -230,7 +230,7 @@ const UserProfile = ({ currentUser }) => {
 
         <div style={{ marginBottom: '20px' }}>
           <Dropdown>
-            <DropdownButton title={goalData.exerciseType ? `Preferred Activity: ${goalData.exerciseType}` : "Select your preferred activity"}>
+            <DropdownButton aria-label="Your preferred activity" title={goalData.exerciseType ? `Preferred Activity: ${goalData.exerciseType}` : "Select your preferred activity"}>
               <Dropdown.Item onClick={() => setGoalData({ ...goalData, exerciseType: 'Running' })}>Running</Dropdown.Item>
               <Dropdown.Item onClick={() => setGoalData({ ...goalData, exerciseType: 'Cycling' })}>Cycling</Dropdown.Item>
               <Dropdown.Item onClick={() => setGoalData({ ...goalData, exerciseType: 'Swimming' })}>Swimming</Dropdown.Item>
@@ -253,18 +253,18 @@ const UserProfile = ({ currentUser }) => {
         <Row style={{ marginTop: '20px' }}>
         <Col>
         <div style={{ margin: 'auto' }}>
-          <Dropdown >
-            <DropdownButton title={goalData.goalType ? goalData.goalType : "Goal Metric"}>
-              <Dropdown.Item onClick={() => setGoalType("Duration")} >Duration</Dropdown.Item>
-              <Dropdown.Item onClick={() => setGoalType("Distance")} >Distance</Dropdown.Item>
-              <Dropdown.Item onClick={() => setGoalType("Sets")} >Sets</Dropdown.Item>
+          <Dropdown>
+            <DropdownButton aria-label="Weekly goal metric" title={goalData.goalType ? goalData.goalType : "Goal Metric"}>
+              <Dropdown.Item aria-label="Duration" onClick={() => setGoalType("Duration")} >Duration</Dropdown.Item>
+              <Dropdown.Item aria-label="Distance" onClick={() => setGoalType("Distance")} >Distance</Dropdown.Item>
+              <Dropdown.Item aria-label="Sets" onClick={() => setGoalType("Sets")} >Sets</Dropdown.Item>
             </DropdownButton>
           </Dropdown>
         </div>
         </Col>
 
         <Col>
-        <Form.Group controlId="goalValue" >
+        <Form.Group aria-label="Your goal value" controlId="goalValue" >
           <Form.Label>Goal /{goalData.goalUnit}</Form.Label>
           <Form.Control
             type="number" 
@@ -277,7 +277,7 @@ const UserProfile = ({ currentUser }) => {
         </Col>
         </Row>
 
-        <Button variant="primary" type="submit" style={{ marginTop: '20px' }}>
+        <Button aria-label="Update profile" variant="primary" type="submit" style={{ marginTop: '20px' }}>
           Update Profile
         </Button>
       </Form>
