@@ -97,4 +97,16 @@ const EXERCISE_QUERY = gql
   }
   `;
 
-  export { STATS_QUERY, EXERCISE_QUERY, GOAL_QUERY, LAST_EXERCISE_QUERY, STATS_ACTIVITY_QUERY }
+  const CALORIES_QUERY = gql
+  `query homePage ($name: String: $today_date: String){
+    homePage(name: $name, today_date: $today_date) {
+      success
+      errors
+      results {
+        daily_calories
+      }
+    }
+  }
+  `;
+
+  export { STATS_QUERY, EXERCISE_QUERY, GOAL_QUERY, LAST_EXERCISE_QUERY, STATS_ACTIVITY_QUERY, CALORIES_QUERY }
