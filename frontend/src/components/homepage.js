@@ -22,12 +22,12 @@ const Homepage = ({ currentUser }) => {
     date: ''
   });
   const [calories, setCalories] = useState({
-    value: 0,
-    test: 0
+    value: 0
   });
 
   const [selectedEmoji, setSelectedEmoji] = useState(null);
   const [userHasExercise, setUserHasExercise] = useState(false);
+  const [themeColor, setThemeColor] = useState('#F54996ff');
 
   useEffect( () => {
     if (lastExerciseResponse.data) {
@@ -54,10 +54,10 @@ const Homepage = ({ currentUser }) => {
       if (caloriesResult.hasOwnProperty('results')) {
         if (caloriesResult.success && caloriesResult.results.length > 0) {
           const calData = caloriesResult.results[0];
-          setCalories({ value: calData.daily_calories, test: 0 });
+          setCalories({ value: calData.daily_calories });
           console.log(calories);
         } else {
-          setCalories({ value: 0, test: 0 });
+          setCalories({ value: 0 });
         }
     }
     } else {
@@ -67,6 +67,7 @@ const Homepage = ({ currentUser }) => {
   
   const updateBackgroundColor = (emoji, color) => {
     setSelectedEmoji(emoji);
+    setThemeColor(color);
     const navBar = document.getElementById("navBar");
     navBar.style.backgroundColor = color;
   };
@@ -107,44 +108,10 @@ const Homepage = ({ currentUser }) => {
       )}
       </Col>
       <Col>
-      <div width='100%' height='300px'>
-      <text>Calories Burned Today: {calories.value}</text>
-      <div width='100%' height='300px'>
-      <ResponsiveContainer width='100%' height='100%' >
-          <RadialBarChart 
-            startAngle={90} // adjust start/end angle to make rotate clockwise
-            endAngle={-270} 
-            innerRadius={60}
-            outerRadius={80} 
-            barSize={15} 
-            data={[calories]}
-            >
-            {/* Title */}
-            <PolarAngleAxis
-              type="number"
-              domain={[0, calories.value]}
-              angleAxisId={0}
-              tick={false}
-            />
-            <RadialBar
-              minAngle={5}
-              background
-              clockWise={true}
-              cornerRadius={10 / 2}
-              dataKey="value"
-            >
-              <Cell
-                  key={`cell-1`}
-                  fill={ calories.value === 1000 ? "#49ff8f" : "#8884d8"} // adjust colour for 100% goal
-                />
-            </RadialBar>
-            {/* Label component for text */}
-            <text x='50%' y='50%' textAnchor='middle' style={{ fontSize: 20, fontWeight: 'bold', dominantBaseline:'middle' }}>
-                  {`${calories.value}`}
-            </text>
-            <Tooltip />
-          </RadialBarChart>
-        </ResponsiveContainer>
+      <div>
+        <p style={{marginBottom: "20px"}}>Calories Burned Today: {calories.value}</p>
+        <div class="progress" style={{height: "40px", marginBottom: "20px"}}>
+          <div class="progress-bar progress-bar-striped progress-bar-animated" style={{width: "50%"}} color={themeColor} aria-valuenow={parseInt(calories.value)} aria-valuemin="0" aria-valuemax="1000">{calories.value}</div>
         </div>
         { calories.value > 0 ? (
           <p>Great work today 🔥</p>
@@ -152,7 +119,7 @@ const Homepage = ({ currentUser }) => {
           <p>Have you tracked today's exercise?</p>
         )
         }
-        </div>
+      </div>
       </Col>
       </Row>   
       
