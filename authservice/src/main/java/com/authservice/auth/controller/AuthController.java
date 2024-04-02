@@ -83,7 +83,6 @@ public class AuthController {
         User existingUser = userRepository.findByUsername(user.getUsername());
         
         if (userRepository.existsByUsername(user.getUsername())) {
-            userRepository.save(user);
             // Validating email address
             if (!signUpService.validateEmail(user.getEmail())) {
                 return ResponseEntity.badRequest().body("Email address is invalid. Please check and try again.");
@@ -92,6 +91,8 @@ public class AuthController {
             if (!signUpService.validateDob(user.getDob())) {
                 return ResponseEntity.badRequest().body("Date of birth is invalid. Please make sure it is in the format of DD/MM/YYYY and try again.");
             }
+            // Save user profile if passes validation checks.
+            userRepository.save(user);
             return ResponseEntity.ok("User profile updated.");
         } else {
             return ResponseEntity.badRequest().body("User not found.");
