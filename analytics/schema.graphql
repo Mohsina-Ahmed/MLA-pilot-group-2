@@ -6,7 +6,9 @@ type Query{
     stats: StatsResult
     weeklyGoal(name: String): GoalResult
     homePage(name: String): HomePageResults
+    dailyCalories(name: String, today_date: String): CaloriesResult
     filteredStats(name: String): StatsResult
+    filteredActivityStats(name: String, activity: String): StatsFilteredResult
     weeklyStats(name: String, start_date: String, end_date: String): StatsResult
     exerciseStats(name: String, start_date: String, end_date: String): ExerciseResult
 }
@@ -17,6 +19,21 @@ type StatsResult{
     results: [Stats]
 }
 
+type StatsFilteredResult{
+    success: Boolean!
+    errors: [String]
+    results: [ExerciseFiltered]
+}
+
+type ExerciseFiltered{
+    longestDistance: Float
+    longestDuration: Float
+    fastestPace: Float
+    totalDistance: Float
+    totalDuration: Float
+    totalActivities: Int
+}
+
 type Stats{
     username: String!
     exercises: [Exercise]
@@ -24,7 +41,7 @@ type Stats{
 
 type Exercise{
     exerciseType: String
-    exerciseDuration: Int
+    exerciseDuration: Float
 }
 
 type ExerciseResult{
@@ -35,8 +52,8 @@ type ExerciseResult{
 
 type ExerciseCount{
     username: String
-    totalDuration: Int
-    totalDistance: Int
+    totalDuration: Float
+    totalDistance: Float
     totalCount: Int
     exerciseCount: [DailyCount]
 }
@@ -44,8 +61,8 @@ type ExerciseCount{
 type DailyCount{
     date: String
     count: Int
-    dailyDuration: Int
-    dailyDistance: Int
+    dailyDuration: Float
+    dailyDistance: Float
 }
 
 type GoalResult{
@@ -69,6 +86,16 @@ type HomePageResults{
 
 type LastExercise{
   exercise: String
-  duration: Int
+  duration: Float
   date: String
+}
+
+type CaloriesResult{
+    success: Boolean!
+    errors: [String]
+    results: [Calories]
+}
+
+type Calories{
+  daily_calories: Float
 }

@@ -1,5 +1,40 @@
 import { gql } from '@apollo/client';
 
+
+const STATS_QUERY = gql
+  `query filteredStats($name: String) {
+    filteredStats(name: $name) {
+      success
+      errors
+      results {
+        username 
+        exercises {
+          exerciseType
+          exerciseDuration
+        }
+      }
+    }
+  }
+  `;
+
+const STATS_ACTIVITY_QUERY = gql
+  `query filteredActivityStats($name: String, $activity: String) {
+    filteredActivityStats(name: $name, activity: $activity) {
+      success
+      errors
+      results {
+        longestDistance 
+				longestDuration
+				fastestPace 
+				totalDistance
+				totalDuration
+				totalActivities
+      }
+    }
+  }
+  `;
+
+
 // setup schema query 
 const JOURNAL_QUERY = gql
   `query weeklyStats($name: String, $start_date: String, $end_date: String) {
@@ -65,4 +100,16 @@ const EXERCISE_QUERY = gql
   }
   `;
 
-  export { EXERCISE_QUERY, GOAL_QUERY, LAST_EXERCISE_QUERY }
+  const CALORIES_QUERY = gql
+  `query dailyCalories ($name: String, $today_date: String){
+    dailyCalories(name: $name, today_date: $today_date) {
+      success
+      errors
+      results {
+        daily_calories
+      }
+    }
+  }
+  `;
+
+  export { STATS_QUERY, EXERCISE_QUERY, GOAL_QUERY, LAST_EXERCISE_QUERY, STATS_ACTIVITY_QUERY, CALORIES_QUERY }
