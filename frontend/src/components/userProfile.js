@@ -111,37 +111,57 @@ const UserProfile = ({ currentUser }) => {
       };
   
       try {
+        setError(null); // Reseting error message to blank.
         // Updating information in auth service.
         const authResponse = await axios.post(`${config.apiUrl}/auth/profile`, userDataToSubmit);
         // Checking profile updated correctly.
-        if (authResponse.data !== 'User profile updated.') {
-          setError(authResponse.data);
-        }
-        // Updating goal data in activity tracking service.
-        if (goalData.duration === 0 && goalData.distance === 0) {
-          console.log('No goal set by user.')
-        } else if (!state) {
-          const response = await axios.post(`${config.apiUrl}/goals/add`, goalDataToSubmit);
-          setState(true);
-          if (response.data !== 'New goal saved!') {
-            setError(response.data);
-          }
-        } else if (state) {
-          const response = await axios.put(`${config.apiUrl}/goals/update/${goalData.username}`, goalDataToSubmit);
-          if (response.data !== 'Goal updated!') {
-            setError(response.data);
-          }
-        }
-
         if (authResponse.data === 'User profile updated.') {
+          setError(null); // Reseting error message to blank.
+          console.log('User profile updated successfully.');
+
+          // Updating goal data in activity tracking service.
+          if (goalData.goalValue === 0) {
+            console.log('No goal set by user.');
+
+          } else if (!state && goalData.goalValue > 0) {
+            const response = await axios.post(`${config.apiUrl}/goals/add`, goalDataToSubmit);
+            console.log(response);
+            setState(true);
+            if (response.data.message === 'New goal saved!') {
+              console.log('Goal saved successfully: ', response.data);
+            } else {
+              setMessage('An error occurred when adding your weekly goal. Please try again.');
+              setTimeout(() => setMessage(''), 2000);
+              return;
+            }
+
+          } else if (state && goalData.goalValue > 0) {
+            const response = await axios.put(`${config.apiUrl}/goals/update/${goalData.username}`, goalDataToSubmit);
+            console.log(response);
+            if (response.data.message === 'Goal updated!') {
+              console.log('Goal saved successfully: ', response.data);
+            } else {
+              setMessage('An error occurred when updating your weekly goal. Please try again.');
+              setTimeout(() => setMessage(''), 2000);
+              return;
+            }
+          }
+          // Profile updated successfully.
+          setError(null); // Reseting error message to blank.
           setMessage('Your profile has been updated successfully.');
           setTimeout(() => setMessage(''), 2000);
-        }
 
+          // User profile not updated successfully, setting alert message.
+        } else {
+          console.log(authResponse.data);
+          setError(authResponse.data);
+        }
       } catch (error) {
         console.error('There was an error updating your profile', error);
+        setError(error.response?.data);
         setMessage('An error occurred when updating your profile. Please try again.');
         setTimeout(() => setMessage(''), 2000);
+        return;
       }
     };
 
