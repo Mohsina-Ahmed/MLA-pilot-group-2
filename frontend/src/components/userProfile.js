@@ -23,7 +23,7 @@ const UserProfile = ({ currentUser }) => {
     goalValue: 0
   });
   const [message, setMessage] = useState(null);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState('');
 
     useEffect(() => {
       console.log(`Fetching profile for ${currentUser}...`);
@@ -45,10 +45,6 @@ const UserProfile = ({ currentUser }) => {
         goalData.goalUnit = '';
       }
   };
-
-  //   const setUserAlert = () => {
-      
-  // };
 
   const setHeader = () => {
     if (goalData.exerciseType === '' || null) {
@@ -115,30 +111,63 @@ const UserProfile = ({ currentUser }) => {
       };
   
       try {
+        setError(null); // Reseting error message to blank.
+        // Updating information in auth service.
         const authResponse = await axios.post(`${config.apiUrl}/auth/profile`, userDataToSubmit);
-        console.log(`Auth api response: ${authResponse.data}`);
-        if (goalData.duration === 0 && goalData.distance === 0) {
-          console.log('No goal set by user, no request sent.')
-        } else if (!state) {
-          const addResponse = await axios.post(`${config.apiUrl}/goals/add`, goalDataToSubmit);
-          console.log(`Goal added`);
-          setState(true);
-        } else if (state) {
-          const updateResponse = await axios.put(`${config.apiUrl}/goals/update/${goalData.username}`, goalDataToSubmit);
-          console.log(`Goal updated`);
+        // Checking profile updated correctly.
+        if (authResponse.data === 'User profile updated.') {
+          setError(null); // Reseting error message to blank.
+          console.log('User profile updated successfully.');
+
+          // Updating goal data in activity tracking service.
+          if (goalData.goalValue === 0) {
+            console.log('No goal set by user.');
+
+          } else if (!state && goalData.goalValue > 0) {
+            const response = await axios.post(`${config.apiUrl}/goals/add`, goalDataToSubmit);
+            console.log(response);
+            setState(true);
+            if (response.data.message === 'New goal saved!') {
+              console.log('Goal saved successfully: ', response.data);
+            } else {
+              setMessage('An error occurred when adding your weekly goal. Please try again.');
+              setTimeout(() => setMessage(''), 2000);
+              return;
+            }
+
+          } else if (state && goalData.goalValue > 0) {
+            const response = await axios.put(`${config.apiUrl}/goals/update/${goalData.username}`, goalDataToSubmit);
+            console.log(response);
+            if (response.data.message === 'Goal updated!') {
+              console.log('Goal saved successfully: ', response.data);
+            } else {
+              setMessage('An error occurred when updating your weekly goal. Please try again.');
+              setTimeout(() => setMessage(''), 2000);
+              return;
+            }
+          }
+          // Profile updated successfully.
+          setError(null); // Reseting error message to blank.
+          setMessage('Your profile has been updated successfully.');
+          setTimeout(() => setMessage(''), 2000);
+
+          // User profile not updated successfully, setting alert message.
+        } else {
+          console.log(authResponse.data);
+          setError(authResponse.data);
         }
-
-        setMessage(`Your profile has been updated successfully.`);
-        setTimeout(() => setMessage(''), 2000);
-
       } catch (error) {
         console.error('There was an error updating your profile', error);
+        setError(error.response?.data);
+        setMessage('An error occurred when updating your profile. Please try again.');
+        setTimeout(() => setMessage(''), 2000);
+        return;
       }
     };
 
   return (
     <div>
-      <Alert variant="danger" className={error ? 'default' : 'invisible'}>{error}</Alert>
+      {error && <Alert variant="danger" style={{ padding: "5px" }}>{error}</Alert>}
       {userData && (
         
       <Form onSubmit={onSubmit} style={{ maxWidth: '400px', margin: 'auto' }}>
@@ -283,7 +312,7 @@ const UserProfile = ({ currentUser }) => {
         </Button>
       </Form>
       )}
-      {message && <p style={ {color: 'green'} }>{message}</p>}
+      {message && <p style={ message === 'Your profile has been updated successfully.' ? {color: 'green'} : {color: 'red'} }>{message}</p>}
     </div>
   );
 };

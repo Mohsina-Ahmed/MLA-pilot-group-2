@@ -36,6 +36,14 @@ public class AuthController {
         if (!signUpService.validatePassword(user.getPassword())) {
             return ResponseEntity.badRequest().body("Password is invalid. It must contain at least one uppercase letter, one lowercase letter, one digit, one special character, and be at least 6 characters long.");
         }
+        // Validating email address
+        if (!signUpService.validateEmail(user.getEmail())) {
+            return ResponseEntity.badRequest().body("Email address is invalid. Please check and try again.");
+        }
+        // Validating date of birth
+        if (!signUpService.validateDob(user.getDob())) {
+            return ResponseEntity.badRequest().body("Date of birth is invalid. Please make sure it is in the format of DD/MM/YYYY and try again.");
+        }
         //Code finishes
         if (userRepository.existsByUsername(user.getUsername())) {
             return ResponseEntity.badRequest().body("User already exists - please log in");
@@ -75,6 +83,15 @@ public class AuthController {
         User existingUser = userRepository.findByUsername(user.getUsername());
         
         if (userRepository.existsByUsername(user.getUsername())) {
+            // Validating email address
+            if (!signUpService.validateEmail(user.getEmail())) {
+                return ResponseEntity.badRequest().body("Email address is invalid. Please check and try again.");
+            }
+            // Validating date of birth
+            if (!signUpService.validateDob(user.getDob())) {
+                return ResponseEntity.badRequest().body("Date of birth is invalid. Please make sure it is in the format of DD/MM/YYYY and try again.");
+            }
+            // Save user profile if passes validation checks.
             userRepository.save(user);
             return ResponseEntity.ok("User profile updated.");
         } else {
