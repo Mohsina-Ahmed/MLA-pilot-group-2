@@ -20,7 +20,9 @@ const UserProfile = ({ currentUser }) => {
     exerciseType: '',
     goalType: '',
     goalUnit: '',
-    goalValue: 0
+    goalValue: 0,
+    caloriesGoal: 0,
+    goalAim: ''
   });
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
@@ -34,7 +36,6 @@ const UserProfile = ({ currentUser }) => {
 
     
     const setGoalType = (type) => {
-      console.log("Setting the goal type...")
       if (type === 'Duration') {
         setGoalData({ ...goalData, goalType: 'Duration', goalUnit: 'hours' });
       } else if (type === 'Distance') {
@@ -46,16 +47,12 @@ const UserProfile = ({ currentUser }) => {
       }
   };
 
-  //   const setUserAlert = () => {
-      
-  // };
-
   const setHeader = () => {
     if (goalData.exerciseType === '' || null) {
-      const header = `Your Goals`;
+      const header = `Weekly Goals`;
       return header;
     } else {
-      const header = `Your ${goalData.exerciseType} Goals`;
+      const header = `Weekly ${goalData.exerciseType} Goals`;
       return header;
     }
   };
@@ -89,7 +86,7 @@ const UserProfile = ({ currentUser }) => {
           setGoalData(response.data);
         } else {
           setState(false);
-          setError('You have not set your weekly goal. Select your preferred activity to do this.');
+          setError('You have not set your goals. Select your preferred activity to do this.');
           console.log("User has not set a goal yet.")
         }
       } else {
@@ -121,11 +118,9 @@ const UserProfile = ({ currentUser }) => {
           console.log('No goal set by user, no request sent.')
         } else if (!state) {
           const addResponse = await axios.post(`${config.apiUrl}/goals/add`, goalDataToSubmit);
-          console.log(`Goal added`);
           setState(true);
         } else if (state) {
           const updateResponse = await axios.put(`${config.apiUrl}/goals/update/${goalData.username}`, goalDataToSubmit);
-          console.log(`Goal updated`);
         }
 
         setMessage(`Your profile has been updated successfully.`);
@@ -247,13 +242,28 @@ const UserProfile = ({ currentUser }) => {
             </DropdownButton>
           </Dropdown>
         </div>
-        
-        <h3 style={{ marginTop: '40px' }} >{setHeader()}</h3>
-        <p>Weekly Target:</p>
 
+        <h3 style={{ marginTop: '40px' }} >Your Goals:</h3>
         <Row style={{ marginTop: '20px' }}>
-        <Col>
-        <div style={{ margin: 'auto' }}>
+          <Col style={{ width: '80%' }}>
+          <p style={{ marginBottom: '20px' }} >What's your aim?</p>
+          <div style={{ margin: 'auto' }}>
+          <Dropdown>
+            <DropdownButton aria-label="Your aim" title={goalData.goalAim ? goalData.goalAim : "Choose your aim"}>
+              <Dropdown.Item onClick={() => setGoalData({ ...goalData, goalAim: 'Fitness' })}>Fitness</Dropdown.Item>
+              <Dropdown.Item onClick={() => setGoalData({ ...goalData, goalAim: 'Weight loss' })}>Weight loss</Dropdown.Item>
+              <Dropdown.Item onClick={() => setGoalData({ ...goalData, goalAim: 'Weight gain' })}>Weight gain</Dropdown.Item>
+              <Dropdown.Item onClick={() => setGoalData({ ...goalData, goalAim: 'Flexibility' })}>Flexibility</Dropdown.Item>
+              <Dropdown.Item onClick={() => setGoalData({ ...goalData, goalAim: 'Mobility' })}>Mobility</Dropdown.Item>
+              <Dropdown.Item onClick={() => setGoalData({ ...goalData, goalAim: 'Body toning' })}>Body toning</Dropdown.Item>
+            </DropdownButton>
+          </Dropdown>
+          </div>
+          </Col>
+
+          <Col style={{ width: '80%' }}>
+          <p style={{ marginBottom: '20px' }} >{setHeader()}:</p>
+          <div style={{ margin: 'auto' }}>
           <Dropdown>
             <DropdownButton aria-label="Weekly goal metric" title={goalData.goalType ? goalData.goalType : "Goal Metric"}>
               <Dropdown.Item aria-label="Duration" onClick={() => setGoalType("Duration")} >Duration</Dropdown.Item>
@@ -261,21 +271,36 @@ const UserProfile = ({ currentUser }) => {
               <Dropdown.Item aria-label="Sets" onClick={() => setGoalType("Sets")} >Sets</Dropdown.Item>
             </DropdownButton>
           </Dropdown>
-        </div>
-        </Col>
+          </div>
+          </Col>
+        </Row>
 
-        <Col>
-        <Form.Group aria-label="Your goal value" controlId="goalValue" >
-          <Form.Label>Goal /{goalData.goalUnit}</Form.Label>
-          <Form.Control
-            type="number" 
-            name="goalValue"
-            value={goalData.goalValue}
-            onChange={(e) => setGoalData({ ...goalData, goalValue: e.target.value })}
-            required
-          />
-        </Form.Group>
-        </Col>
+        <Row style={{ marginTop: '20px', marginBottom: '20px' }}>
+          <Col style={{ width: '80%' }}>
+          <Form.Group aria-label="Daily calories goal" controlId="caloriesGoal" >
+            <Form.Label>Daily Calories Goal</Form.Label>
+            <Form.Control
+              type="number" 
+              name="caloriesGoal"
+              value={goalData.caloriesGoal}
+              onChange={(e) => setGoalData({ ...goalData, caloriesGoal: e.target.value })}
+              required
+            />
+          </Form.Group>
+          </Col>
+
+          <Col style={{ width: '80%' }}>
+          <Form.Group aria-label="Your weekly goal value" controlId="goalValue" >
+            <Form.Label>Goal /{goalData.goalUnit}</Form.Label>
+            <Form.Control
+              type="number" 
+              name="goalValue"
+              value={goalData.goalValue}
+              onChange={(e) => setGoalData({ ...goalData, goalValue: e.target.value })}
+              required
+            />
+          </Form.Group>
+          </Col>
         </Row>
 
         <Button aria-label="Update profile" variant="primary" type="submit" style={{ marginTop: '20px' }}>

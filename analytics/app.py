@@ -126,6 +126,11 @@ def create_app(config_object=Config):
     def resolve_daily_calories(*_, name=None, today_date=None):
         print("Resolving the daily calorie info")
         return resolve_query(func=daily_calories, username=name, today_date_str=today_date)
+
+    @query.field("caloriesGoal")
+    def resolve_calories_goal(*_, name=None):
+        print("Resolving the daily calories goal info")
+        return resolve_query(func=calories_goal, username=name)
         
     schema = make_executable_schema(type_defs, query)
 
@@ -222,6 +227,15 @@ def create_app(config_object=Config):
             {"$match": {"username": username}},
             {"$project": { "exercise": "$exerciseType", "goal": "$goalType",
                          "unit": "$goalUnit", "value": "$goalValue", "_id": 0}
+            }
+        ]
+
+        return list(db.goals.aggregate(pipeline))
+
+    def calories_goal(username):
+        pipeline = [
+            {"$match": {"username": username}},
+            {"$project": {"_id": 0, "value": "$caloriesGoal"}
             }
         ]
 

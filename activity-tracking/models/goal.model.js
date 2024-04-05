@@ -24,6 +24,16 @@ const goalSchema = new Schema(
         required: true,
         min: [0, 'Goal should be positive.']
     },
+    caloriesGoal: {
+      type: Number,
+      required: true,
+      min: [0, 'Goal should be positive.']
+    },
+    goalAim: {
+      type: String,
+      required: true,
+      enum: ['Fitness', 'Weight loss', 'Weight gain', 'Flexibility', 'Mobility', 'Body toning']
+    }
   },
     { methods: {
     setGoal() {
