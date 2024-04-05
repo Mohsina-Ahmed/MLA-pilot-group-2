@@ -101,6 +101,7 @@ const Homepage = ({ currentUser }) => {
             }
         }
         } else {
+          calories.goal = 500;
           console.log('No response for calories goal.');
           }
   }, [caloriesResponse, caloriesGoalResponse, currentUser, todayDate]);
@@ -116,10 +117,10 @@ const Homepage = ({ currentUser }) => {
   return (
     <div className="Homepage-container">
       <h3 style={{ marginBottom: '30px'}}>🌟 Your Daily Summary 🌟</h3>
-      <h4 style={{ marginBottom: '20px'}}>Hello, {currentUser}!</h4>
+      <h4 data-testid="title" style={{ marginBottom: '20px'}}>Hello, {currentUser}!</h4>
       <p style={{ marginBottom: '10px'}}>How are you today?:</p>
       <div className="emojis" style={{ marginBottom: '25px'}}>
-        <IconButton className="emoji" color={selectedEmoji === 1 ? "primary" : "default"} onClick={() => updateBackgroundColor(1, '#83F0F3')}>
+        <IconButton className="emoji" data-testid="mood" color={selectedEmoji === 1 ? "primary" : "default"} onClick={() => updateBackgroundColor(1, '#83F0F3')}>
           <Mood fontSize='large' />
         </IconButton>
         <IconButton className="emoji" color={selectedEmoji === 2 ? "primary" : "default"} onClick={() => updateBackgroundColor(2, '#FBF071')}>
@@ -138,7 +139,7 @@ const Homepage = ({ currentUser }) => {
         <div>
         <p style={{marginBottom: "5px"}}>Your last exercise was on</p> 
         <p>{lastExercise.date}:</p>
-        <p style={{marginBottom: "5px"}}>Well done on {lastExercise.exercise}</p>
+        <p data-testid="lastEx" style={{marginBottom: "5px"}}>Well done on {lastExercise.exercise}</p>
         <p>for {lastExercise.duration} minutes!</p>
         <h4>👏👏👏</h4>
         </div>
@@ -166,7 +167,7 @@ const Homepage = ({ currentUser }) => {
           {/* Title */}
           <PolarAngleAxis
             type="number"
-            domain={[0, calories.value]}
+            domain={[0, calories.goal]}
             angleAxisId={0}
             tick={false}
           />
