@@ -11,10 +11,20 @@ import moment from 'moment';
 
 const Homepage = ({ currentUser }) => {
 
-  const lastExerciseResponse = useQuery(LAST_EXERCISE_QUERY, { variables: { name: currentUser } });
+  const lastExerciseResponse = useQuery(LAST_EXERCISE_QUERY, { 
+    variables: { name: currentUser },
+    notifyOnNetworkStatusChange: true,
+    // Refetch when new exercises are added.
+    fetchPolicy: 'cache-and-network' 
+  });
 
   const [todayDate, setTodayDate] = useState(moment(new Date()).format('DD-MM-YYYY'));
-  const caloriesResponse = useQuery(CALORIES_QUERY, { variables: { name: currentUser, today_date: todayDate } });
+  const caloriesResponse = useQuery(CALORIES_QUERY, { variables: 
+    { name: currentUser, today_date: todayDate },
+    notifyOnNetworkStatusChange: true,
+    // Refetch when new exercises are added.
+    fetchPolicy: 'cache-and-network' 
+  });
 
   const caloriesGoalResponse = useQuery(CALORIES_GOAL_QUERY, { 
     variables: { name: currentUser },
