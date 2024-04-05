@@ -112,4 +112,16 @@ const EXERCISE_QUERY = gql
   }
   `;
 
-  export { STATS_QUERY, EXERCISE_QUERY, GOAL_QUERY, LAST_EXERCISE_QUERY, STATS_ACTIVITY_QUERY, CALORIES_QUERY }
+  const CALORIES_GOAL_QUERY = gql
+  `query caloriesGoal ($name: String){
+    caloriesGoal(name: $name) {
+      success
+      errors
+      results {
+        value
+      }
+    }
+  }
+  `;
+
+  export { STATS_QUERY, EXERCISE_QUERY, GOAL_QUERY, LAST_EXERCISE_QUERY, STATS_ACTIVITY_QUERY, CALORIES_QUERY, CALORIES_GOAL_QUERY }

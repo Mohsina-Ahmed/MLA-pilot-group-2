@@ -18,14 +18,16 @@ router.post('/add', async (req, res) => {
   console.log(req.body)
   try {
 
-    const { username, exerciseType, goalType, goalUnit, goalValue } = req.body;
+    const { username, exerciseType, goalType, goalUnit, goalValue, caloriesGoal, goalAim } = req.body;
 
     const newGoal = new Goal({
       username,
       exerciseType,
       goalType,
       goalUnit,
-      goalValue: Number(goalValue)
+      goalValue: Number(goalValue),
+      caloriesGoal: Number(caloriesGoal),
+      goalAim
     });
 
     await newGoal.save();
@@ -38,9 +40,9 @@ router.post('/add', async (req, res) => {
 // PUT: Update the user's goal by username (User should only have one goal)
 router.put('/update/:username', async (req, res) => {
     try {
-      const { username, exerciseType, goalType, goalUnit, goalValue } = req.body;
+      const { username, exerciseType, goalType, goalUnit, goalValue, caloriesGoal, goalAim } = req.body;
   
-      if (!username || !exerciseType || !goalType || !goalUnit || !goalValue ) {
+      if (!username || !exerciseType || !goalType || !goalUnit || !goalValue || !caloriesGoal || !goalAim ) {
         res.status(400).json({ error: 'All fields are required' });
         return;
       }
@@ -56,6 +58,8 @@ router.put('/update/:username', async (req, res) => {
       goal.goalType = goalType;
       goal.goalUnit = goalUnit;
       goal.goalValue = Number(goalValue);
+      goal.caloriesGoal = Number(caloriesGoal);
+      goal.goalAim = goalAim;
   
       await goal.save();
       res.json({ message: 'Goal updated!', goal });

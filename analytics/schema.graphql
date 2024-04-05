@@ -5,6 +5,7 @@ schema {
 type Query{
     stats: StatsResult
     weeklyGoal(name: String): GoalResult
+    caloriesGoal(name: String): CaloriesGoalResult
     homePage(name: String): HomePageResults
     dailyCalories(name: String, today_date: String): CaloriesResult
     filteredStats(name: String): StatsResult
@@ -71,10 +72,21 @@ type GoalResult{
     results: [ExerciseGoal]
 }
 
+
 type ExerciseGoal{
   exercise: String
   goal: String
   unit: String
+  value: Int
+}
+
+type CaloriesGoalResult{
+    success: Boolean!
+    errors: [String]
+    results: [CaloriesGoal]
+}
+
+type CaloriesGoal{
   value: Int
 }
 

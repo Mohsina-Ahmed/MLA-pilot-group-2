@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import IconButton from '@mui/material/IconButton';
 import { useQuery } from '@apollo/client';
-import { LAST_EXERCISE_QUERY, CALORIES_QUERY } from './queries/graphql';
+import { LAST_EXERCISE_QUERY, CALORIES_QUERY, CALORIES_GOAL_QUERY } from './queries/graphql';
 import { Mood, MoodBad, SentimentSatisfied, SentimentVeryDissatisfied } from '@mui/icons-material'; 
-import { BarChart, Bar, RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell} from 'recharts';
+import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer, Tooltip, Cell} from 'recharts';
 import moment from 'moment';
 
 const Homepage = ({ currentUser }) => {
@@ -26,13 +26,22 @@ const Homepage = ({ currentUser }) => {
     fetchPolicy: 'cache-and-network' 
   });
 
+  const caloriesGoalResponse = useQuery(CALORIES_GOAL_QUERY, { 
+    variables: { name: currentUser },
+    notifyOnNetworkStatusChange: true,
+    // Refetch when new goal added.
+    fetchPolicy: 'cache-and-network'
+  
+  });
+
   const [lastExercise, setLastExercise] = useState({
     exercise: '',
     duration: 0,
     date: ''
   });
   const [calories, setCalories] = useState({
-    value: 0
+    value: 0,
+    goal: 0
   });
 
   const [selectedEmoji, setSelectedEmoji] = useState(null);
@@ -45,7 +54,7 @@ const Homepage = ({ currentUser }) => {
       
       if (lastExerciseResult.success && lastExerciseResult.results.length > 0) {
         let lastEx = lastExerciseResult.results[0];
-        setLastExercise({...lastEx, exercise: lastEx.exercise, duration: lastEx.duration, date: lastEx.date.split(' ', 1)});
+        setLastExercise({...lastEx, exercise: lastEx.exercise, duration: lastEx.duration, date: lastEx.date});
         // Setting that user has an exercise so that page can render accordingly.
         setUserHasExercise(true);
       } else {
@@ -64,16 +73,37 @@ const Homepage = ({ currentUser }) => {
       if (caloriesResult.hasOwnProperty('results')) {
         if (caloriesResult.success && caloriesResult.results.length > 0) {
           const calData = caloriesResult.results[0];
-          setCalories({ value: parseInt(calData.daily_calories) });
-          console.log(calories);
+          calories.value = parseInt(calData.daily_calories);
         } else {
-          setCalories({ value: 0 });
+          calories.value = 0;
         }
     }
     } else {
-      console.log('No GraphQL response.');
+      console.log('No response for calories.');
       }
-  }, [caloriesResponse, currentUser, todayDate]);
+
+      if (caloriesGoalResponse.data) {
+        const goalResult = caloriesGoalResponse.data.caloriesGoal;
+        
+          if (goalResult.hasOwnProperty('results')) {
+            if (goalResult.success && goalResult.results.length > 0) {
+              const goalData = goalResult.results[0];
+              if (goalData.value > 0) {
+                calories.goal = parseInt(goalData.value);
+                console.log(calories);
+              } else {
+                calories.goal = 500;
+                console.log("No goal set by user, set default value...", calories);
+              }
+            } else {
+              calories.goal = 500;
+              console.log("No goal set by user, set default value...", calories);
+            }
+        }
+        } else {
+          console.log('No response for calories goal.');
+          }
+  }, [caloriesResponse, caloriesGoalResponse, currentUser, todayDate]);
   
   const updateBackgroundColor = (emoji, color) => {
     setSelectedEmoji(emoji);
@@ -136,7 +166,7 @@ const Homepage = ({ currentUser }) => {
           {/* Title */}
           <PolarAngleAxis
             type="number"
-            domain={[0, 1000]}
+            domain={[0, calories.value]}
             angleAxisId={0}
             tick={false}
           />
@@ -149,12 +179,12 @@ const Homepage = ({ currentUser }) => {
           >
             <Cell
               key={`cell-1`}
-              fill={calories.value === 1000 ? "#8884d8" : themeColor} // adjust colour for 100% goal
+              fill={calories.value >= calories.goal ? "#8884d8" : themeColor} // adjust colour for 100% goal
             />
           </RadialBar>
           {/* Label component for text */}
-          <text x='50%' y='50%' textAnchor='middle' style={{ fontSize: 20, fontWeight: 'bold', dominantBaseline:'middle' }}>
-            {`${calories.value}`}
+          <text x='50%' y='50%' textAnchor='middle' style={{ fontSize: 15, fontWeight: 'bold', dominantBaseline:'middle' }}>
+            {`${calories.value}\n/ ${calories.goal}`}
           </text>
           <Tooltip />
         </RadialBarChart>
@@ -168,8 +198,13 @@ const Homepage = ({ currentUser }) => {
         }
       </div>
       </Col>
-      </Row>   
-      
+      </Row>  
+
+      <Row>
+      <p>
+        Want to change your goals? <Link aria-label="Change calories goal" to="/userProfile">User Profile</Link>
+      </p>
+      </Row>
     </div>
   );
 };
