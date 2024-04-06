@@ -50,7 +50,7 @@ const Homepage = ({ currentUser }) => {
 
   useEffect( () => {
     if (lastExerciseResponse.data) {
-      const lastExerciseResult = lastExerciseResponse.data.homePage;
+      const lastExerciseResult = lastExerciseResponse.data.lastExercise;
       
       if (lastExerciseResult.success && lastExerciseResult.results.length > 0) {
         let lastEx = lastExerciseResult.results[0];

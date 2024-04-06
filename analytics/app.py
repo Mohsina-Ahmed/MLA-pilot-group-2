@@ -1,20 +1,27 @@
 
-from flask import Flask, render_template, jsonify, request
-from pymongo import MongoClient
+from flask import Flask, jsonify, request
 from flask_pymongo import PyMongo
 from flask_cors import CORS
-from urllib.parse import quote_plus
 from bson import json_util
 import traceback
-import os
 import logging
 from datetime import datetime, timedelta
 from ariadne import load_schema_from_path, make_executable_schema, graphql_sync, ObjectType, QueryType
 from ariadne.constants import PLAYGROUND_HTML
 from config_settings import Config
 
-# flask app wrapped into a function call, required to be able to have alternate  
-# configuration options for dev and test setups
+"""
+Creates and configures the Flask application.
+flask app wrapped into a function call, required to be able to have alternate  
+configuration options for dev and test setups
+
+Parameters:
+    config_object (object): The configuration object to use for the Flask application. Defaults to `Config`.
+
+Returns:
+    app (Flask): The configured Flask application.
+"""
+
 
 def create_app(config_object=Config):
     app = Flask(__name__)
@@ -26,12 +33,13 @@ def create_app(config_object=Config):
 
     # get database name
     mongo_db = app.config['MONGO_DB']
-    
+    print(mongo_db)
+
     # connect to mongoDB through Flask wrapper PyMongo - reads the MONGO URI from the app config
     mongo = PyMongo()
     mongo.init_app(app, connect=True)
     
-    print(mongo_db)
+    # get database connection
     db = mongo.cx.get_database(mongo_db)
 
     query = QueryType()
@@ -85,81 +93,38 @@ def create_app(config_object=Config):
             logging.error(f"Error parsing dates: {e}")
             return jsonify(error="Invalid date format"), 400
         
-    # graphql queries 
-    @query.field("stats")
-    def resolve_stats(_):
-        print("Resolving the list stats info")
-        return resolve_query(func=stats)
+    # graphql queries and resolvers     
+    @query.field("weeklyGoal")
+    def resolve_weekly_goal(*_, name=None):
+        print("Resolving the weekly goal info")
+        return resolve_query(func=user_weekly_goal, username=name)
 
-    @query.field("filteredStats")
-    def resolve_filtered_stats(*_, name=None):
-        print("Resolving the filtered stats info")
-        return resolve_query(func=user_stats, username=name)
+    @query.field("caloriesGoal")
+    def resolve_calories_goal(*_, name=None):
+        print("Resolving the daily calories goal info")
+        return resolve_query(func=calories_goal, username=name)
+    
+    @query.field("lastExercise")
+    def resolve_last_exercise(*_, name=None):
+        print("Resolving the last exercise info")
+        return resolve_query(func=last_exercise, username=name)
+    
+    @query.field("dailyCalories")
+    def resolve_daily_calories(*_, name=None, today_date=None):
+        print("Resolving the daily calorie info")
+        return resolve_query(func=daily_calories, username=name, today_date_str=today_date)
     
     @query.field("filteredActivityStats")
     def resolve_activity_stats(*_, name=None, activity=None):
         print("Resolving the filtered activity stats info")
         return resolve_query(func=user_activity_stats, username=name, activity=activity)
 
-
     @query.field("weeklyStats")
-    def resolve_weekly_stats(*_, name=None, start_date=None, end_date=None):
-        print("Resolving the weekly stats info")
+    def resolve_weekly_exercise_stats(*_, name=None, start_date=None, end_date=None):
+        print("Resolving the exercise stats info")
         return resolve_query(func=weekly_user_stats, username=name, start_date_str=start_date, end_date_str=end_date)
 
-    @query.field("exerciseStats")
-    def resolve_exercise_stats(*_, name=None, start_date=None, end_date=None):
-        print("Resolving the exercise stats info")
-        return resolve_query(func=daily_exercise_user_stats, username=name, start_date_str=start_date, end_date_str=end_date)
-
-    @query.field("weeklyGoal")
-    def resolve_weekly_goal(*_, name=None):
-        print("Resolving the weekly goal info")
-        return resolve_query(func=user_weekly_goal, username=name)
-
-    @query.field("homePage")
-    def resolve_home_page(*_, name=None):
-        print("Resolving the home page info")
-        return resolve_query(func=home_page_last_exercise, username=name)
-    
-    @query.field("dailyCalories")
-    def resolve_daily_calories(*_, name=None, today_date=None):
-        print("Resolving the daily calorie info")
-        return resolve_query(func=daily_calories, username=name, today_date_str=today_date)
-
-    @query.field("caloriesGoal")
-    def resolve_calories_goal(*_, name=None):
-        print("Resolving the daily calories goal info")
-        return resolve_query(func=calories_goal, username=name)
-        
     schema = make_executable_schema(type_defs, query)
-
-    def stats():
-        pipeline = [
-            {"$group": {"_id": {"username": "$username", "exerciseType": "$exerciseType"},
-                    "totalDuration": {"$sum": "$duration"}}},
-            {"$group": {"_id": "$_id.username", "exercises": {
-                        "$push": {"exerciseType": "$_id.exerciseType","totalDuration": "$totalDuration" }}
-                        }
-            },
-            { "$project": {"username": "$_id", "exercises": 1, "_id": 0}}
-        ]
-
-        return list(db.exercises.aggregate(pipeline))
-
-
-    def user_stats(username):
-        pipeline = [
-            {"$match": {"username": username}},
-            {"$group": {"_id": {"username": "$username", "exerciseType": "$exerciseType"},
-                    "totalDuration": {"$sum": "$duration"}}},
-            {"$group": {"_id": "$_id.username", "exercises": {
-                        "$push": {"exerciseType": "$_id.exerciseType", "exerciseDuration": "$totalDuration"}}}
-            },
-            {"$project": {"username": "$_id", "exercises": 1, "_id": 0}}
-        ]
-
-        return list(db.exercises.aggregate(pipeline))
 
     def user_activity_stats(username, activity):
         pipeline = [
@@ -175,26 +140,8 @@ def create_app(config_object=Config):
         ]
 
         return list(db.exercises.aggregate(pipeline))
-   
-    def weekly_user_stats(username, start_date_str, end_date_str):
-        start_date = parse_date(start_date_str)
-        end_date = parse_date(end_date_str) + timedelta(days=1)  # Include the whole end day
-        logging.info(f"Fetching weekly stats for user: {username} from {start_date} to {end_date}")
-        pipeline = [
-            {"$match": {"username": username, "date": {"$gte": start_date, "$lt": end_date}}},
-            {"$group": {"_id": {"username": "$username","exerciseType": "$exerciseType"},
-                    "exerciseDuration": {"$sum": "$duration"}}},
-            {"$group": {"_id": "$_id.username",
-                    "exercises": {"$push": {
-                            "exerciseType": "$_id.exerciseType",
-                            "exerciseDuration": "$exerciseDuration"}}}
-            },
-            {"$project": {"username": "$_id","exercises": 1,"_id": 0}}
-        ]
-        
-        return list(db.exercises.aggregate(pipeline))
     
-    def daily_exercise_user_stats(username, start_date_str, end_date_str):
+    def weekly_user_stats(username, start_date_str, end_date_str):
         start_date = parse_date(start_date_str)
         end_date = parse_date(end_date_str) + timedelta(days=1)  # Include the whole end day
         logging.info(f"Fetching weekly stats for user: {username} from {start_date} to {end_date}")
@@ -235,13 +182,12 @@ def create_app(config_object=Config):
     def calories_goal(username):
         pipeline = [
             {"$match": {"username": username}},
-            {"$project": {"_id": 0, "value": "$caloriesGoal"}
-            }
+            {"$project": {"_id": 0, "value": "$caloriesGoal"}}
         ]
 
         return list(db.goals.aggregate(pipeline))
     
-    def home_page_last_exercise(username):
+    def last_exercise(username):
         pipeline = [
             {"$match": {"username": username}},
 			{"$sort": {"createdAt": -1}},
