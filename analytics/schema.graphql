@@ -3,46 +3,72 @@ schema {
 }
 
 type Query{
-    stats: StatsResult
     weeklyGoal(name: String): GoalResult
     caloriesGoal(name: String): CaloriesGoalResult
-    homePage(name: String): HomePageResults
+    lastExercise(name: String): LastExerciseResults
     dailyCalories(name: String, today_date: String): CaloriesResult
-    filteredStats(name: String): StatsResult
     filteredActivityStats(name: String, activity: String): StatsFilteredResult
-    weeklyStats(name: String, start_date: String, end_date: String): StatsResult
-    exerciseStats(name: String, start_date: String, end_date: String): ExerciseResult
+    weeklyStats(name: String, start_date: String, end_date: String): ExerciseResult
 }
 
-type StatsResult{
+type GoalResult{
     success: Boolean!
     errors: [String]
-    results: [Stats]
+    results: [ExerciseGoal]
+}
+
+type ExerciseGoal{
+  exercise: String
+  goal: String
+  unit: String
+  value: Int
+}
+
+type CaloriesGoalResult{
+    success: Boolean!
+    errors: [String]
+    results: [CaloriesGoal]
+}
+
+type CaloriesGoal{
+  value: Int
+}
+
+type LastExerciseResults{
+    success: Boolean!
+    errors: [String]
+    results: [LastExercise]
+}
+
+type LastExercise{
+  exercise: String
+  duration: Float
+  date: String
+}
+
+type CaloriesResult{
+    success: Boolean!
+    errors: [String]
+    results: [Calories]
+}
+
+type Calories{
+  daily_calories: Float
 }
 
 type StatsFilteredResult{
     success: Boolean!
     errors: [String]
-    results: [ExerciseFiltered]
+    results: [ExerciseStats]
 }
 
-type ExerciseFiltered{
+type ExerciseStats{
     longestDistance: Float
     longestDuration: Float
     fastestPace: Float
     totalDistance: Float
     totalDuration: Float
     totalActivities: Int
-}
-
-type Stats{
-    username: String!
-    exercises: [Exercise]
-}
-
-type Exercise{
-    exerciseType: String
-    exerciseDuration: Float
 }
 
 type ExerciseResult{
@@ -66,48 +92,17 @@ type DailyCount{
     dailyDistance: Float
 }
 
-type GoalResult{
-    success: Boolean!
-    errors: [String]
-    results: [ExerciseGoal]
-}
 
 
-type ExerciseGoal{
-  exercise: String
-  goal: String
-  unit: String
-  value: Int
-}
 
-type CaloriesGoalResult{
-    success: Boolean!
-    errors: [String]
-    results: [CaloriesGoal]
-}
 
-type CaloriesGoal{
-  value: Int
-}
 
-type HomePageResults{
-    success: Boolean!
-    errors: [String]
-    results: [LastExercise]
-}
 
-type LastExercise{
-  exercise: String
-  duration: Float
-  date: String
-}
 
-type CaloriesResult{
-    success: Boolean!
-    errors: [String]
-    results: [Calories]
-}
 
-type Calories{
-  daily_calories: Float
-}
+
+
+
+
+
+

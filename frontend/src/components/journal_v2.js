@@ -5,7 +5,7 @@ import './journal.css';
 import { useQuery, NetworkStatus } from '@apollo/client';
 import { BarChart, Bar, RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell} from 'recharts';
 
-import { EXERCISE_QUERY, GOAL_QUERY } from './queries/graphql';
+import { WEEK_QUERY, GOAL_QUERY } from './queries/graphql';
 
 // default bar data - 0 exercises
 const zeroExerciseList = () => {
@@ -40,7 +40,7 @@ const Journal = ({ currentUser }) => {
 
 
   const goalResponse = useQuery(GOAL_QUERY, {variables: {name: currentUser}})
-  const exerciseResponse = useQuery(EXERCISE_QUERY, {
+  const exerciseResponse = useQuery(WEEK_QUERY, {
     variables: {
       name: currentUser,
       start_date: moment(startDate).format('DD-MM-YYYY'),
@@ -82,7 +82,7 @@ const Journal = ({ currentUser }) => {
 
     // check for data object
     if (exerciseResponse.data) {
-      const exercises = exerciseResponse.data.exerciseStats;
+      const exercises = exerciseResponse.data.weeklyStats;
 
       // check for results in graphql response
       if (exercises.hasOwnProperty('results')){
@@ -104,7 +104,7 @@ const Journal = ({ currentUser }) => {
     let exerciseTotal
     if (weeklyGoalList.value > 0 ) {
         if (exerciseResponse.data) {
-      const exercises = exerciseResponse.data.exerciseStats;
+      const exercises = exerciseResponse.data.weeklyStats;
 
       // check for results in graphql response
       if (exercises.hasOwnProperty('results')){
