@@ -1,4 +1,5 @@
 // base url configured in cypress.config.js
+
 // run through docker compose to enable database connection
 
 describe('Load App and Sign Up', () => {
