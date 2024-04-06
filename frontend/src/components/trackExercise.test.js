@@ -12,7 +12,7 @@
 // If they fail, the test results will be shown in the terminal.
 
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react';
+import { render, fireEvent, waitFor, toBeVisible } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import TrackExercise from './trackExercise';
 import { expect } from '@jest/globals';
@@ -67,4 +67,24 @@ describe('TrackExercise Component', () => {
     const caloriesInput = getByTestId('calories').querySelector('input');
     expect(caloriesInput.value).toBe(((( 7 * 75 * 3.5 ) / 200 ) * 60).toFixed(0));
   });
+
+  test('error message shows for negative distance', async () => {
+    const { getByTestId, getByText } = render(<TrackExercise currentUser="testUser" />);
+    fireEvent.click(getByTestId('Run Icon'));
+    fireEvent.input(getByTestId('title'), { target: { value: 'Run' } });
+    fireEvent.input(getByTestId('duration').querySelector('input'), { target: { value: '60' } });
+    fireEvent.input(getByTestId('distance').querySelector('input'), { target: { value: '-10' } });
+    fireEvent.click(getByTestId('Happy')); 
+    fireEvent.click(getByTestId('submit'));
+    
+    await waitFor(() => {
+      expect(getByText('Please check the distance is a positive value!')).toBeInTheDocument()
+    });
+  });
+
+  test('dropdown list appears when selecting other exercise icon', () => {
+    const { getByTestId } = render(<TrackExercise currentUser="testUser" />);
+    fireEvent.click(getByTestId('other icon'));
+    expect(getByTestId('other dropdown')).toBeInTheDocument();
+  });  
 });

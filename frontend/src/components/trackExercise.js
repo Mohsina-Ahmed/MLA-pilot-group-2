@@ -202,7 +202,7 @@ const TrackExercise = ({ currentUser }) => {
             <DirectionsWalkOutlinedIcon fontSize="large" />
           </IconButton>
           </Tooltip>
-          <Tooltip title="Other Activity">
+          <Tooltip data-testid="other icon" title="Other Activity">
           <IconButton aria-label="Other activities" color={exerciseName === "other" || exerciseName === "custom"  ? "primary" : "default"} onClick={() => updateExercise("Other", "other")}>
             <AddCircleOutlineIcon fontSize="large" /> 
           </IconButton>  
@@ -212,7 +212,7 @@ const TrackExercise = ({ currentUser }) => {
         <Row style={{ marginBottom: '20px' }}>
         <div id="div-other" className={exerciseName === "other" ? "div-other" : "invisible"}>            
           <Dropdown>
-            <DropdownButton title={state.exerciseType === "Other" ? "Which activity would you like to track?" : state.exerciseType}>
+            <DropdownButton data-testid="other dropdown" title={state.exerciseType === "Other" ? "Which activity would you like to track?" : state.exerciseType}>
               <Dropdown.Item aria-label="Rowing" onClick={() => updateExercise("Rowing", "other")}>Rowing &#128675;</Dropdown.Item>
               <Dropdown.Item aria-label="Football" onClick={() => updateExercise("Football", "other")}>Football &#9917;</Dropdown.Item>
               <Dropdown.Item aria-label="Skiing" onClick={() => updateExercise("Skiing", "other")}>Skiing &#9975;</Dropdown.Item>
@@ -220,11 +220,11 @@ const TrackExercise = ({ currentUser }) => {
               <Dropdown.Item aria-label="Horse Riding" onClick={() => updateExercise("Horse Riding", "other")}>Horse Riding &#127943;</Dropdown.Item>
               <Dropdown.Item aria-label="Climbing" onClick={() => updateExercise("Climbing", "other")}>Climbing &#129495;</Dropdown.Item>
               <Dropdown.Item aria-label="Surfing" onClick={() => updateExercise("Surfing", "other")}>Surfing &#127940;</Dropdown.Item>
-              <Dropdown.Item aria-label="Add custom activity" onClick={() => updateExercise("", "custom")}>Custom Activity &#x2795;</Dropdown.Item>
+              <Dropdown.Item data-testid="custom option" aria-label="Add custom activity" onClick={() => updateExercise("", "custom")}>Custom Activity &#x2795;</Dropdown.Item>
             </DropdownButton>
           </Dropdown>
         </div>
-        <Form.Group aria-label="Enter custom activity" id="custom" className={exerciseName === "custom" ? "default" : "invisible"}>
+        <Form.Group aria-label="Enter custom activity" data-testid="custom" id="custom" className={exerciseName === "custom" ? "default" : "invisible"}>
         <Form.Label>Enter the activity you want to track:</Form.Label>
           <Form.Control
             placeholder="e.g. Wheelchair Basketball"
@@ -238,9 +238,10 @@ const TrackExercise = ({ currentUser }) => {
         </Form.Group>
         </Row>
         <Row>
-          <Form.Group aria-label="Activity title" controlId="description" data-testid="title" style={{ marginBottom: '40px' }}>
+          <Form.Group aria-label="Activity title" controlId="description" style={{ marginBottom: '40px' }}>
           <Form.Label>Title your activity:</Form.Label>
           <Form.Control
+            data-testid="title"
             placeholder={state.exerciseType} 
             as="textarea"
             fontSize="large"
@@ -389,11 +390,11 @@ const TrackExercise = ({ currentUser }) => {
             </Tooltip>
           </div>
         </Row>
-        <Button aria-label="Save activity" variant="success" type="submit">
+        <Button aria-label="Save activity" data-testid="submit" variant="success" type="submit">
           Save activity
         </Button>
       </Form>
-      {message && <p style={message === 'Activity logged successfully! Well done!' ? {color: 'green'} : {color: 'red'} }>{message}</p>}
+      {message && <p data-testid="message" style={message === 'Activity logged successfully! Well done!' ? {color: 'green'} : {color: 'red'} }>{message}</p>}
     </div>
   );
 };
