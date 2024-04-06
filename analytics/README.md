@@ -6,8 +6,6 @@ This service is built using Python and Flask.
 
 The analytics service pulls information from the mongodb database and returns to the graphql queries. 
 
-The 
-
 ### Prerequisites
 
 handled by requirements.txt
