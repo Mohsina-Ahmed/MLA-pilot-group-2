@@ -1,5 +1,4 @@
 // base url configured in cypress.config.js
-
 // run through docker compose to enable database connection
 
 describe('Load App and Sign Up', () => {
@@ -12,7 +11,6 @@ describe('Load App and Sign Up', () => {
   })
   before(function () {
     cy.task('connectAndCleanDB')
-
   })
   it('Loads the application', function () {
     cy.visit(Cypress.env('baseUrl'))
@@ -24,12 +22,12 @@ describe('Load App and Sign Up', () => {
     // alias this route so we can wait on it later
     cy.intercept('POST', '/auth/login').as('postLogin')
 
-    //fail an unregistered user 
+    //fail on unregistered user 
     cy.get('#formUsername').type(this.user.wrongUsername)
     cy.get('#formPassword').type(`${this.user.wrongPassword}{enter}`)
 
     // wait for the response 
-    // cy.wait('@postLogin')
+    cy.wait('@postLogin')
 
     // error is visible
     cy.get('.alert-danger')
@@ -38,7 +36,7 @@ describe('Load App and Sign Up', () => {
     
     cy.screenshot()
   })
-  it('loads the sign up page and save new user', function () {
+  it('loads the sign up page and saves new user', function () {
     // verify the link to sign up page
     cy.get('a').should('have.attr', 'href').and('equal', '/signup')
 

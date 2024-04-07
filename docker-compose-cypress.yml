@@ -18,7 +18,7 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: e2e.Dockerfile
     networks:
       - app_network
 
@@ -73,28 +73,45 @@ services:
     networks:
       - app_network
 
-  prometheus:
-    image: prom/prometheus:latest
+  cypress:
+    build:
+      context: ./cypress-test
+      dockerfile: Dockerfile
+    working_dir: /cypress-test 
+    environment:
+      - CYPRESS_API_GATEWAY_URL=http://172.20.0.1
+      - CYPRESS_MONGO_URI=mongodb://root:cfgmla23@mongodb:27017
+    depends_on:
+      - nginx
+      - mongodb
     volumes:
-      - ./prometheus:/etc/prometheus
-    ports:
-      - "9090:9090"
+      - ./cypress-test:/cypress-test/
+    command: npx cypress run 
     networks:
       - app_network
 
-  grafana:
-    image: grafana/grafana:latest
-    ports:
-      - "3000:3000"
-    volumes:
-      - grafana_data:/var/lib/grafana
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=cfgmla23
-      - GF_USERS_ALLOW_SIGN_UP=false
-    depends_on:
-      - prometheus
-    networks:
-      - app_network
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   volumes:
+  #     - ./prometheus:/etc/prometheus
+  #   ports:
+  #     - "9090:9090"
+  #   networks:
+  #     - app_network
+
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - grafana_data:/var/lib/grafana
+  #   environment:
+  #     - GF_SECURITY_ADMIN_PASSWORD=cfgmla23
+  #     - GF_USERS_ALLOW_SIGN_UP=false
+  #   depends_on:
+  #     - prometheus
+  #   networks:
+  #     - app_network
 
 networks:
   app_network:
