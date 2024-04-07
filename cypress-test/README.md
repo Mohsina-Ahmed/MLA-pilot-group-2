@@ -2,6 +2,9 @@
 
 cypress is configured to run within the docker containers - this provides the ability to access and control test data within the mongoDB database
 docker compose has been updated to create a external app network to link with the cypress container 
+
+the test runs create a new 'testUser' at the start of each test run this data is cleared so the tests can be executed again. 
+
 ### note: url paths must be updated to IP address of the docker container ###
 
 ### IMPORTANT ###
