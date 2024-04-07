@@ -16,7 +16,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install git python3 python3-pip gradle && apt-get clean
 
 # Npm packages installation
-RUN npm install -g cors axios express create-react-app
+RUN npm install -g cors axios express create-react-app cypress
 
 # Install Python requirements
 RUN pip3 install Flask pymongo gunicorn python-dotenv Flask-PyMongo Flask-CORS

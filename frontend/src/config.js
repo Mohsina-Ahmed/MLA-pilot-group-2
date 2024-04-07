@@ -4,7 +4,10 @@ import axios from "axios";
 const config = {
   apiUrl: process.env.REACT_APP_API_GATEWAY_URL || "http://127.0.0.1:80",
 };
+
 export default config;
+
+console.log(config.apiUrl)
 
 // track exercise
 function getUrl() {

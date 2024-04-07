@@ -1,0 +1,23 @@
+# docker-compose -f docker-compose-cypress.yml up 
+# docker compose -f docker-compose-cypress.yml up --build
+version: "3.8"
+services:
+    
+  cypress:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    working_dir: /cypress-test 
+    environment:
+      - CYPRESS_API_GATEWAY_URL=http://172.20.0.1
+      - CYPRESS_MONGO_URI=mongodb://root:cfgmla23@172.20.0.2:27017
+    volumes:
+      - ./:/cypress-test/
+    command: npx cypress run 
+    networks:
+      - proxy_net
+
+networks:
+  proxy_net:
+    external: 
+      name: mla_app_network
