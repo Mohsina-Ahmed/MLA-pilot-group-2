@@ -3,7 +3,7 @@ FROM node:14 AS build
 
 WORKDIR /app
 
-# ENV REACT_APP_API_GATEWAY_URL=http://localhost
+ENV REACT_APP_API_GATEWAY_URL=http://172.20.0.1
 
 COPY package*.json ./
 RUN npm install
