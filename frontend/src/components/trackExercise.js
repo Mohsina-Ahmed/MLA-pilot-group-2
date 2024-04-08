@@ -259,6 +259,7 @@ const TrackExercise = ({ currentUser }) => {
             selected={state.date}
             onChange={(date) => setState({ ...state, date })}
             dateFormat="dd/MM/yyyy"
+            calendarStartDay={1} // set monday as start of week
           />
           </Form.Group>
         </Row>

@@ -133,6 +133,7 @@ def create_app(config_object=Config):
 				"longestDistance": {"$max": "$distance"}, 
 				"longestDuration": {"$max": "$duration"}, 
 				"fastestPace": {"$min": "$pace"}, 
+				"fastestSpeed": {"$min": "$speed"}, 
 				"totalDistance": {"$sum": "$distance"}, 
 				"totalDuration": {"$sum": "$duration"},
 				"totalActivities": {"$sum": 1}}},

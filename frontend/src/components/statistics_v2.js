@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
-import * as ReactDOM from 'react-dom/client';
-import axios from 'axios';
-import moment from 'moment';
 import './statistics.css';
-import { useQuery, NetworkStatus } from '@apollo/client';
-import { STATS_QUERY, STATS_ACTIVITY_QUERY } from './queries/graphql';
-
+import { useQuery } from '@apollo/client';
+import { STATS_ACTIVITY_QUERY } from './queries/graphql';
 
 
 const Statistics = ({currentUser}) => {
   const [data, setData] = useState([]);
   const [currentActivity, setCurrentActivity] = useState({activity: "Running"});  // set default as first activity - GOAL: default to preferred user activity from profile
-
-  const statsResponse = useQuery(STATS_ACTIVITY_QUERY, {variables: {name: currentUser, activity: currentActivity.activity}})
+  
+  // graphQl stats query
+  const statsResponse = useQuery(STATS_ACTIVITY_QUERY, {variables: {name: currentUser, activity: currentActivity.activity}, 
+                                                        fetchPolicy: 'cache-and-network'})
 
   // make graphql request
   useEffect(() => {
@@ -28,13 +26,12 @@ const Statistics = ({currentUser}) => {
         setData([])
       }
     }
+  }, [currentActivity, statsResponse, currentUser]);
 
-  }, [setCurrentActivity, statsResponse, currentUser]);
-
-  // handle loading and error states
-  if (statsResponse.loading) return <p>Loading...</p>;
+  // handle error states
   if (statsResponse.error) return <p>Error: {statsResponse.error.message}</p>;
       
+  // create a drop down list of activities
   const makeDropdownList = () => {
     return  <Dropdown>
               <DropdownButton aria-label="Your selected activity" title={`Activity: ${currentActivity.activity}`}>
@@ -55,6 +52,7 @@ const Statistics = ({currentUser}) => {
             </Dropdown>
   } 
 
+  //  create a list of the exercise stats
   const makeStatsList = () => {
       return (Object.keys(data).length > 0) ? (     
           <div className="stats-list">     
@@ -76,7 +74,7 @@ const Statistics = ({currentUser}) => {
               </div>
               <div className="stats-list-container">
                 <li key={2}>Pace: {data.fastestPace} min/km</li> 
-                <li key={3}>Goal Streak: -</li>
+                <li key={3}>Speed: {data.fastestSpeed} km/h</li> 
               </div>
             </div>
           </div>
@@ -86,12 +84,12 @@ const Statistics = ({currentUser}) => {
   }
 
   return (
-    <div className="stats-container">
-      <h4>Well done, {currentUser}! This is your overall effort:</h4>
-      <div style={{ marginTop: '10px', marginBottom: '10px' }}> 
-        {makeDropdownList()} 
-      </div>
-      <ul> {makeStatsList()} </ul>
+    <div className="stats-container" >
+        <h4>Well done, {currentUser}! This is your overall effort:</h4>
+        <div style={{ marginTop: '10px', marginBottom: '10px' }}> 
+          {makeDropdownList()} 
+        </div>
+        <ul> {makeStatsList()} </ul>
     </div>
   );
 };

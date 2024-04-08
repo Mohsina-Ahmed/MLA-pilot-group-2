@@ -66,6 +66,7 @@ type ExerciseStats{
     longestDistance: Float
     longestDuration: Float
     fastestPace: Float
+    fastestSpeed: Float
     totalDistance: Float
     totalDuration: Float
     totalActivities: Int
