@@ -1,5 +1,6 @@
 .stats-container {
     max-width: 600px;
+    min-height: 55vh;
     margin: auto;
     background-color: #f5f5f5;
     padding: 20px;

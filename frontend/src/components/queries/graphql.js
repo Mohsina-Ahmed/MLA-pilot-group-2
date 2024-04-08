@@ -9,6 +9,7 @@ const STATS_ACTIVITY_QUERY = gql
         longestDistance 
 				longestDuration
 				fastestPace 
+				fastestSpeed
 				totalDistance
 				totalDuration
 				totalActivities
