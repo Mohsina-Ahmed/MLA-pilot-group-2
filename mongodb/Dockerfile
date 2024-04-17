@@ -1,5 +1,5 @@
 # Use the official MongoDB image as the base image
-FROM mongo:latest
+FROM mongo:7.0.8
 
 #ARG MONGO_USERNAME
 #ARG MONGO_PASSWORD
