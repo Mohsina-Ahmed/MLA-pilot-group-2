@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "cypress": "^13.7.2",
-    "mongoose": "^7.6.10"
+    "mongoose": "^7.6.11"
   },
   "devDependencies": {
     "mongodb-memory-server": "^9.0.0"
