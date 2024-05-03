@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "cypress": "^13.7.2",
+    "cypress": "^13.7.3",
     "mongoose": "^7.6.10"
   },
   "devDependencies": {
