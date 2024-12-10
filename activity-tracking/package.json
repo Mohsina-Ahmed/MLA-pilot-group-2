@@ -5,8 +5,8 @@
     "dependencies": {
         "cors": "^2.8.5",
         "dotenv": "^16.4.5",
-        "express": "^4.19.1",
-        "mongoose": "^7.6.10",
+        "express": "^4.21.2",
+        "mongoose": "^8.8.3",
         "web-vitals": "^2.1.0"
     },
     "devDependencies": {
