@@ -14,7 +14,7 @@ RUN npm run build
 RUN npm test
 
 # Run stage
-FROM nginx:alpine
+FROM nginx:1.29.5-alpine3.23
 COPY --from=build /app/build /usr/share/nginx/html
 
 EXPOSE 80
